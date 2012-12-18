@@ -13,7 +13,7 @@
 
 namespace WPRavenAuth;
 
-class AuthException extends WPRavenAuth\WPRException {
+class AuthException extends WPRException {
     // TODO!
 }
 ?>
