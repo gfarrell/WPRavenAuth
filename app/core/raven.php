@@ -23,6 +23,7 @@ class Raven {
             Raven::webauth = new Ucam_Webauth(array(
                 'key_dir'       => WPRavenAuth_keys,
                 'cookie_key'    => Config::get('cookie'),
+                'cookie_name'   => Config::get('cookie'),
                 'hostname'      => home_url()
             ));
         }
@@ -37,7 +38,10 @@ class Raven {
     }
 
     public function logout() {
-        // TODO
+        setcookie(Config::get('cookie', '');
+        session_destroy();
+                  
+        // redirect to homepage?
     }
 
     public function authenticate() {
@@ -52,11 +56,11 @@ class Raven {
     }
 
     public function userExists($crsid) {
-        // TODO
+        return (get_user_by('login', $crsid) != false);
     }
 
     public function getWpUser($crsid) {
-        return get_userdatabylogin($crsid);
+        return get_user_by('login', $crsid);
     }
 }
 ?>
