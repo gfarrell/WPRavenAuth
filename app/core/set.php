@@ -185,5 +185,27 @@ class Set {
             $reference = $value;
         }
     }
+
+    /**
+     * merge
+     * Merges the values of two arrays completely.
+     * 
+     * @static
+     * @access public
+     * @param  array  $a the first array to merge (least priority)
+     * @param  array  $b the second array to merge (overwrites $a)
+     * @return array     the merged result
+     */
+    public static function merge($a, $b) {
+        foreach($b as $key => $value) {
+            if(array_key_exists($key, $a) && is_array($a[$key]) && is_array($value)) {
+                $a[$key] = Set::merge($a[$key], $value);
+            } else {
+                $a[$key] = $value;
+            }
+        }
+
+        return $a;
+    }
 }
 ?>
