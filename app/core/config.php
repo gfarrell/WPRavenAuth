@@ -11,29 +11,47 @@
     @author  Gideon Farrell <me@gideonfarrell.co.uk>
  */
 
+require('set.php');
+
 namespace WPRavenAuth;
 
 class Config {
     /**
-     * $_prefix
-     * The prefix to use for all options to avoid namespace collisions.
+     * $key
+     * The database key to use for the configuration array.
+     * 
+     * @var    string
      * @static
      * @access private
      */
-    private static $_prefix = 'wpravenauth_';
+    private static $key = 'WPRavenAuthOptions';
 
     /**
-     * prefix
-     * Prefixes a string with the option prefix.
+     * $cfg
+     * The configuration array.
      * 
+     * @var    array
      * @static
-     * @access public
-     * @param  string $what the string to prefix
-     * @return string       a prefixed string
+     * @access private
      */
-    public static prefix($what = null) {
-        return Config::_prefix . ((string)$what);
-    }
+    private static $cfg = array(
+        // default options
+        'ldap'  => array(
+            'server' => 'ldap.lookup.cam.ac.uk',
+            'base'   => 'ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk',
+            'port'   => '636'
+        )
+    );
+
+    /**
+     * $bootstrapped
+     * Whether or not the class has been bootstrapped.
+     * 
+     * @var    boolean
+     * @static
+     * @access private
+     */
+    private static $bootstrapped = false;
 
     /**
      * bootstrap
@@ -44,14 +62,18 @@ class Config {
      * @return void
      */
     public static function bootstrap() {
-        // LDAP options
-        Config::__create('ldap', array(
-            'server' => 'ldap.lookup.cam.ac.uk',
-            'base'   => 'ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk',
-            'port'   => '636'
-        ));
+        if(Config::bootstrapped) return;
 
-        // ...
+        // fetch from DB, if non-existent, then create
+        $db = get_option(Config::key);
+        if(!$db) {
+            Config::install();
+        } else {
+            // initialise config, merging with the defaults
+            Config::cfg = Set::merge(Config::cfg, $db);
+        }
+
+        Config::bootstrapped = true;
     }
 
     /**
@@ -60,23 +82,21 @@ class Config {
      * 
      * @static
      * @access public
-     * @param  string $what the option name
-     * @return mixed        the option value
+     * @param  string|array $what the option name(s)
+     * @return mixed              the option value
      */
-    public function get($what) {
-        if(strpos($what, '.')) {
-            $names = explode('.', $what);
-            $result = get_option(Config::prefix(array_shift($names));
-            if(is_array($result)) {
-                $result = Config::__getNested($result, $names);
-            } else {
-                $result = null;
-            }
-        } else {
-            $result = get_option(Config::prefix($what));
+    public function get($what = null) {
+        if(!Config::bootstrapped) Config::bootstrap();
+
+        if(is_null($what)) {
+            return Config::cfg;
         }
 
-        return $result;
+        if(is_array($what)) {
+            return Set::select(Config::cfg, $what);
+        } else {
+            return Set::extract(Config::cfg, $what);
+        }
     }
 
     /**
@@ -90,81 +110,35 @@ class Config {
      * @return void
      */
     public function set($what, $value) {
-        if(strpos($what, '.')) {
-            $names = explode('.', $what);
-            $key = array_shift($names);
-            $result = get_option(Config::prefix($key);
-            if(is_array($result)) {
-                Config::__setNested($result, $names, $value);
-                update_option(Config::prefix($key), $result);
-            } else {
-                update_option($what, $value);
-            }
-        } else {
-            update_option(Config::prefix($what), $value);
-        }
+        if(!Config::bootstrapped) Config::bootstrap();
+
+        Set::set(Config::cfg, $value);
+
+        Config::update();
     }
 
     /**
-     * __create
-     * Creates a configuration option in the database.
+     * install
+     * Installs the options to the database.
      * 
      * @static
      * @access private
-     * @param  string  $option   the option name
-     * @param  mixed   $value    the initial value to use
-     * @param  string  $autoload whether or not to automatically load this option ('yes' or 'no')
      * @return void
      */
-    private static function __create($option, $value = null, $autoload = 'yes') {
-        if(!in_array($autoload, array('yes','no'))) {
-            $autoload = 'no';
-        }
-        add_option(Config::prefix($option), $value, null, $autoload);
+    private static function install() {
+        add_option(Config::key, Config::cfg);
     }
 
     /**
-     * __getNested
-     * Parses a (possibly) nested options array.
+     * update
+     * Updates the database with the new options.
      * 
      * @static
      * @access private
-     * @param  array   $arr  the array to parse
-     * @param  array   $keys the keys to walk over
-     * @return mixed         value of keys if found, null if not found
-     */
-    private static function __getNested($arr, $keys) {
-        $current = array_shift($keys);
-        if(array_key_exists($current, $arr)) {
-            return Config::__getNested($arr[$current], $keys);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * __setNested
-     * Sets a value in a (possibly) nested options array.
-     * 
-     * @static
-     * @access private
-     * @param  array   $arr   the array to parse
-     * @param  array   $keys  the keys to walk over
-     * @param  mixed   $value the value to set to
      * @return void
      */
-    private static function __setNested(&$arr, $keys, $value) {
-        $pointer &= $arr;
-
-        while(count($keys) > 1) {
-            $key = array_shift($keys);
-            if(!array_key_exists($key, $pointer)) {
-                $pointer[$key] = array();
-            }
-            $pointer &= $pointer[$key];
-        }
-
-        $pointer[array_shift($keys)] = $value;
+    private static function update() {
+        update_option(Config::key, Config::cfg);
     }
 }
 ?>
