@@ -36,11 +36,12 @@ class Config {
      */
     private static $cfg = array(
         // default options
-        'ldap'  => array(
+        'ldap'   => array(
             'server' => 'ldap.lookup.cam.ac.uk',
             'base'   => 'ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk',
             'port'   => '636'
-        )
+        ),
+        'cookie' => 'WPRavenAuth'
     );
 
     /**
