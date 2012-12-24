@@ -73,10 +73,10 @@ class Config {
      * Constructor
      * Bootstraps the configuration of the plugin by creating options.
      * 
-     * @access public
+     * @access private
      * @return void
      */
-    function __construct() {
+    private function __construct() {
         if(!$this->bootstrapped) {
             // fetch from DB, if non-existent, then create
             $db = get_option($this->key);
