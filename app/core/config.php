@@ -11,9 +11,9 @@
     @author  Gideon Farrell <me@gideonfarrell.co.uk>
  */
 
-require('set.php');
-
 namespace WPRavenAuth;
+
+require('set.php');
 
 class Config {
     /**
