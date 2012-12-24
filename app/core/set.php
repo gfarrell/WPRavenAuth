@@ -147,11 +147,10 @@ class Set {
             return $extract;
         }
 
-        // Check if anything is here...
+        // Otherwise just normally extract the data
         if(!array_key_exists($c, $array)) {
             return null;
         }
-
         if(count($ps) > 0) {
             return Set::extractReference($array[$c], $path);
         } else {
