@@ -21,20 +21,18 @@ class Config {
      * The database key to use for the configuration array.
      * 
      * @var    string
-     * @static
      * @access private
      */
-    private static $key = 'WPRavenAuthOptions';
+    private $key = 'WPRavenAuthOptions';
 
     /**
      * $cfg
      * The configuration array.
      * 
      * @var    array
-     * @static
      * @access private
      */
-    private static $cfg = array(
+    private $cfg = array(
         // default options
         'ldap'   => array(
             'server' => 'ldap.lookup.cam.ac.uk',
@@ -49,32 +47,48 @@ class Config {
      * Whether or not the class has been bootstrapped.
      * 
      * @var    boolean
-     * @static
      * @access private
      */
-    private static $bootstrapped = false;
+    private $bootstrapped = false;
 
     /**
-     * bootstrap
-     * Bootstraps the configuration of the plugin by creating options.
+     * getInstance
+     * Retrieves the Singleton instance.
      * 
      * @static
      * @access public
-     * @return void
+     * @return Config config instance
      */
-    public static function bootstrap() {
-        if(Config::bootstrapped) return;
+    public static function &getInstance() {
+        static $instance;
 
-        // fetch from DB, if non-existent, then create
-        $db = get_option(Config::key);
-        if(!$db) {
-            Config::install();
-        } else {
-            // initialise config, merging with the defaults
-            Config::cfg = Set::merge(Config::cfg, $db);
+        if(is_null($instance)) {
+            $instance = new Config();
         }
 
-        Config::bootstrapped = true;
+        return $instance;
+    }
+
+    /**
+     * Constructor
+     * Bootstraps the configuration of the plugin by creating options.
+     * 
+     * @access public
+     * @return void
+     */
+    function __construct() {
+        if(!$this->bootstrapped) {
+            // fetch from DB, if non-existent, then create
+            $db = get_option($this->key);
+            if(!$db) {
+                Config::install();
+            } else {
+                // initialise config, merging with the defaults
+                $this->cfg = Set::merge($this->cfg, $db);
+            }
+
+            $this->bootstrapped = true;
+        }
     }
 
     /**
@@ -87,16 +101,16 @@ class Config {
      * @return mixed              the option value
      */
     public function get($what = null) {
-        if(!Config::bootstrapped) Config::bootstrap();
+        $_this =& Config::getInstance();
 
         if(is_null($what)) {
-            return Config::cfg;
+            return $_this->cfg;
         }
 
         if(is_array($what)) {
-            return Set::select(Config::cfg, $what);
+            return Set::select($_this->cfg, $what);
         } else {
-            return Set::extract(Config::cfg, $what);
+            return Set::extract($_this->cfg, $what);
         }
     }
 
@@ -111,11 +125,11 @@ class Config {
      * @return void
      */
     public function set($what, $value) {
-        if(!Config::bootstrapped) Config::bootstrap();
+        $_this =& Config::getInstance();
 
-        Set::set(Config::cfg, $value);
+        Set::set($_this->cfg, $value);
 
-        Config::update();
+        $_this->update();
     }
 
     /**
@@ -134,12 +148,12 @@ class Config {
      * update
      * Updates the database with the new options.
      * 
-     * @static
      * @access private
      * @return void
      */
-    private static function update() {
-        update_option(Config::key, Config::cfg);
+    private function update() {
+        $_this =& Config::getInstance();
+        update_option($_this->key, $_this->cfg);
     }
 }
 ?>
