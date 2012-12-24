@@ -42,13 +42,31 @@ class Raven {
 
     public function authenticate() {
         $crsid  = Raven::webauth->principal();
-        
-        if($this->userExists($crsid)) {
-            $user = $this->getWpUser($crsid);
-            $password = $this->_pwd($user->user_pass);
-        }
 
         // If authorised, continue, otherwise throw them out.
+        $restrictions = Config::get('users.restrictions');
+        if(!is_null($restrictions)) {
+            foreach($restrictions as $restriction) {
+                if(!$this->_testRestriction($restriction, $user)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    protected function _testRestriction($restriction, $user) {
+        switch($restriction['type']) {
+            case 'crsid':
+                $test = $user->user_login;   // check!
+                break;
+            case 'college':
+                $test = $user->college;      // check!
+                break;
+        }
+
+        return in_array($test, $restriction['allowed']);
     }
 
     public function userExists($crsid) {
