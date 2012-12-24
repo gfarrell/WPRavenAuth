@@ -16,6 +16,8 @@ namespace WPRavenAuth;
 require('ucam_webauth.php');
 
 class Raven {
+    public static $salt = '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ';
+
     protected static $webauth = null;
 
     public function login() {
