@@ -58,12 +58,7 @@ class Set {
     /**
      * extract
      * Extracts a path from an array using dot notation (parent.child)
-     * Usage:
-     *     MyModel.name     = $array[MyModel][name]
-     *     MyModel.*.name  = an array of $array[MyModel][_all_][name]
-     *     MyModel.*       = $array[MyModel][_all_]
-     *     MyModel[name=x] = $array[MyModel][_all_] where MyModel[*][name] = x
-     *                         can also use !=, <, >, >=, <=
+     * See extractReference for dot notation usage.
      * 
      * @static
      * @access public
@@ -80,7 +75,7 @@ class Set {
      * extractReference
      * Extracts a path from an array using dot notation (parent.child) and returns a reference to it
      * Usage:
-     *     MyModel.name     = $array[MyModel][name]
+     *     MyModel.name    = $array[MyModel][name]
      *     MyModel.*.name  = an array of $array[MyModel][_all_][name]
      *     MyModel.*       = $array[MyModel][_all_]
      *     MyModel[name=x] = $array[MyModel][_all_] where MyModel[*][name] = x
@@ -167,6 +162,7 @@ class Set {
     /**
      * set
      * Sets a value in a nested array using a path spec (as above).
+     * See extractReference for dot notation usage.
      * 
      * @static
      * @access public
