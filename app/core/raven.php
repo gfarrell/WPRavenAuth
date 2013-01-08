@@ -91,7 +91,7 @@ class Raven {
      * @return void
      */
     public function logout() {
-        setcookie(Config::get('cookie', '');
+        setcookie(Config::get('cookie'), '');
         session_destroy();
     }
 
