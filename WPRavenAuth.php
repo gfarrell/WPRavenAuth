@@ -46,4 +46,14 @@ add_filter('show_password_fields','show_password_fields');   //
 add_action('wp_authenticate', 'Raven', 10, 2);  // authenticate
 add_action('wp_logout', 'raven_logout');                     // logout
 
-?>
+// Create admin menu
+add_action('admin_menu', __NAMESPACE__.'\register_pages');
+
+function register_pages() {
+    add_users_page('Raven Authentication', 'Raven', 'edit_users', 'raven-options', __NAMESPACE__.'\create_options_page');
+}
+function create_options_page() {
+    ob_start();
+    require('pages/options.php');
+    echo ob_get_clean();
+}
