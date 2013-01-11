@@ -1,5 +1,14 @@
 <?php
 /*
+Plugin Name: WPRavenAuth
+Plugin URI: http://github.com/gfarrell/WPRavenAuth
+Description: Raven authentication for Wordpress
+Version: 0.0.1
+Author: Gideon Farrell and Conor Burgess
+License: BSD-3
+*/
+
+/*
     WPRavenAuth - Raven authentication for Wordpress
     ================================================
 
