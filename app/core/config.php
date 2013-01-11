@@ -79,7 +79,7 @@ class Config {
             // fetch from DB, if non-existent, then create
             $db = get_option($this->key);
             if(!$db) {
-                Config::install();
+                $this->install();
             } else {
                 // initialise config, merging with the defaults
                 $this->cfg = Set::merge($this->cfg, $db);
@@ -134,12 +134,11 @@ class Config {
      * install
      * Installs the options to the database.
      * 
-     * @static
      * @access private
      * @return void
      */
-    private static function install() {
-        add_option(Config::key, Config::cfg);
+    private function install() {
+        add_option($this->key, $this->cfg);
     }
 
     /**
