@@ -13,8 +13,6 @@
 
 namespace WPRavenAuth;
 
-require('set.php');
-
 class Config {
     /**
      * $key

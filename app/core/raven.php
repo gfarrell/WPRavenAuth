@@ -13,8 +13,6 @@
 
 namespace WPRavenAuth;
 
-require('ucam_webauth.php');
-
 class Raven {
     /**
      * $salt
