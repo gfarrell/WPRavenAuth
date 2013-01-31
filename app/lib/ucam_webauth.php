@@ -26,6 +26,8 @@
 //
 // Version 0.51
 
+namespace WPRavenAuth;
+
 class Ucam_Webauth {
 
   var $PROTOCOL_VERSION = '1';
