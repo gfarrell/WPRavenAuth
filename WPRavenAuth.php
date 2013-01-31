@@ -26,15 +26,31 @@ require('app/core/raven.php');        // Interface between WP and Raven
 
 // Initialise Raven
 
-
 // Add action hooks
-add_action('lost_password', 'disabled');                     // Raven has no passwords
-add_action('retrieve_password', 'disabled');                 // ditto
-add_action('password_reset', 'disabled');                    // ditto
-add_action('register_form','disabled');                      // Registration is automatic
-add_action('check_passwords', 'check_passwords', 10, 3);     // ! check priority (10) is good
-add_filter('show_password_fields','show_password_fields');   // 
-add_action('wp_authenticate', 'Raven', 10, 2);  // authenticate
-add_action('wp_logout', 'raven_logout');                     // logout
+add_action('lost_password', 'WPRavenAuth_disable_function');                    // Raven has no passwords
+add_action('retrieve_password', 'WPRavenAuth_disable_function');                // ditto
+add_action('password_reset', 'WPRavenAuth_disable_function');                   // ditto
+add_action('check_passwords', 'WPRavenAuth_disable_function');                  // ditto
+add_filter('show_password_fields','WPRavenAuth_show_password_fields');          // ditto so return false
+add_action('register_form','WPRavenAuth_disable_function');                     // Registration is automatic
+add_action('login_head',  array(Raven->getInstance(), 'login'));           // authenticate
+add_action('wp_logout', array(Raven->getInstance(), 'logout'));                 // logout
+    
+// Don't show password fields on user profile page
+function WPRavenAuth_show_password_fields($show_password_fields) {
+    return false;
+}
 
+// Used to disable unnecessary functions
+function  WPRavenAuth_disable_function() {
+    die('Disabled');
+}
+    
+if ( !function_exists('wp_new_user_notification') ) :
+function wp_new_user_notification($user_id, $plaintext_pass = '')
+{
+    // Don't send any notifications
+}
+endif;
+    
 ?>

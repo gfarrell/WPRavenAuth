@@ -14,6 +14,9 @@
 namespace WPRavenAuth;
 
 require('ucam_webauth.php');
+require_once(ABSPATH . '/wp-settings.php');
+require_once(ABSPATH . WPINC . '/pluggable.php');
+require_once(ABSPATH . WPINC . '/registration.php');
 
 class Raven {
     /**
@@ -34,8 +37,17 @@ class Raven {
      * @access protected
      */
     protected $webauth = null;
-
-
+    
+    /**
+     * __construct
+     * Stop anyone else making a Raven instance.
+     * 
+     * @access private
+     */
+    private function __construct()
+    {
+    }
+    
     /**
      * getInstance
      * Creates or retrieves the Singleton instance.
@@ -75,11 +87,37 @@ class Raven {
 
         $auth = $this->webauth->authenticate();
 
-        if(!$auth) throw new WPRavenAuth\AuthException($this->webauth->status(), $this->webauth->msg());
+        if(!$auth) throw new AuthException($this->webauth->status(), $this->webauth->msg());
 
         if($this->webauth->success()) {
             $this->authenticate();
         }
+        
+        $username = $webauth->principal();
+		$email = $username . '@cam.ac.uk';
+		
+		if (function_exists('get_user_by') && function_exists('wp_create_user'))
+		{
+			if (!$this->userExists())
+            {
+                // User is not in the WordPress database
+                // they passed Raven and so are authorized
+                // add them to the database (password field is arbitrary, but must be hard to guess)
+				$user_id = wp_create_user( $username, $this->_pwd(), $email );
+				
+				if ( !$user_id )
+					throw new AuthException('Could not create user');
+				else {
+					wp_new_user_notification($user_id, '');
+                    $user = get_user_by('login', $username);
+				}
+			}
+            $user = $this->getWpUser($username);
+            wp_set_auth_cookie( $user->id, false, '' );
+		}				
+		else {
+			die("Could not load user data");
+		}
     }
 
     /**
@@ -93,6 +131,7 @@ class Raven {
     public function logout() {
         setcookie(Config::get('cookie'), '');
         session_destroy();
+        wp_clear_auth_cookie();
     }
 
     /**
@@ -105,7 +144,7 @@ class Raven {
      */
     public function authenticate() {
         $crsid = $this->webauth->principal();
-
+        
         // If authorised, continue, otherwise throw them out.
         $restrictions = Config::get('users.restrictions');
         if(!is_null($restrictions)) {
