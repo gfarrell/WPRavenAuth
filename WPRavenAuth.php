@@ -33,8 +33,8 @@ add_action('password_reset', 'WPRavenAuth_disable_function');                   
 add_action('check_passwords', 'WPRavenAuth_disable_function');                  // ditto
 add_filter('show_password_fields','WPRavenAuth_show_password_fields');          // ditto so return false
 add_action('register_form','WPRavenAuth_disable_function');                     // Registration is automatic
-add_action('login_head',  array(Raven->getInstance(), 'login'));           // authenticate
-add_action('wp_logout', array(Raven->getInstance(), 'logout'));                 // logout
+add_action('login_head',  array(Raven::getInstance(), 'login'));           // authenticate
+add_action('wp_logout', array(Raven::getInstance(), 'logout'));                 // logout
     
 // Don't show password fields on user profile page
 function WPRavenAuth_show_password_fields($show_password_fields) {
