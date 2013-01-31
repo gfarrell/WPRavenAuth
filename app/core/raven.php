@@ -13,7 +13,6 @@
 
 namespace WPRavenAuth;
 
-require('ucam_webauth.php');
 require_once(ABSPATH . '/wp-settings.php');
 require_once(ABSPATH . WPINC . '/pluggable.php');
 require_once(ABSPATH . WPINC . '/registration.php');
@@ -75,7 +74,7 @@ class Raven {
      *
      * @return void
      */
-    public static function login() {
+    public function login() {
         if(is_null($this->webauth)) {
             $this->webauth = new Ucam_Webauth(array(
                 'key_dir'       => WPRavenAuth_keys,
@@ -93,12 +92,12 @@ class Raven {
             $this->authenticate();
         }
         
-        $username = $webauth->principal();
+        $username = $this->webauth->principal();
 		$email = $username . '@cam.ac.uk';
 		
 		if (function_exists('get_user_by') && function_exists('wp_create_user'))
 		{
-			if (!$this->userExists())
+			if (!$this->userExists($username))
             {
                 // User is not in the WordPress database
                 // they passed Raven and so are authorized
@@ -209,7 +208,7 @@ class Raven {
      * @return string password
      */
     private function _pwd() {
-        return md5(Raven::salt);
+        return md5(Raven::$salt);
     }
 }
 ?>
