@@ -11,11 +11,19 @@
     @author  Gideon Farrell <me@gideonfarrell.co.uk>  
  */
 
-namespace WPRavenAuth;
+//namespace WPRavenAuth;
 
 require_once(ABSPATH . '/wp-settings.php');
 require_once(ABSPATH . WPINC . '/pluggable.php');
 require_once(ABSPATH . WPINC . '/registration.php');
+
+if(!defined('DS'))
+    define('DS', '/');
+if (!defined('WPRavenAuth_dir'))
+    define('WPRavenAuth_dir', substr(__FILE__, 0, strpos(__FILE__, 'app') - 1));
+if (!defined('WPRavenAuth_keys'))
+    define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
+require_once(WPRavenAuth_dir . '/app/lib/ucam_webauth.php');
 
 class Raven {
     /**
@@ -78,18 +86,19 @@ class Raven {
         if(is_null($this->webauth)) {
             $this->webauth = new Ucam_Webauth(array(
                 'key_dir'       => WPRavenAuth_keys,
-                'cookie_key'    => Config::get('cookie'),
-                'cookie_name'   => Config::get('cookie'),
-                'hostname'      => home_url()
+                'cookie_key'    => 'WPRaven_Cookie',
+                'cookie_name'   => 'WPRaven_Cookie',
+                'hostname'      => $_SERVER['HTTP_HOST'],
+                //'cookie_key'    => Config::get('cookie'),
+                //'cookie_name'   => Config::get('cookie'),
+                //'hostname'      => home_url()
             ));
         }
-
         $auth = $this->webauth->authenticate();
-
         if(!$auth) throw new AuthException($this->webauth->status(), $this->webauth->msg());
 
         if($this->webauth->success()) {
-            $this->authenticate();
+            //$this->authenticate();
         }
         
         $username = $this->webauth->principal();
@@ -101,20 +110,20 @@ class Raven {
             {
                 // User is not in the WordPress database
                 // they passed Raven and so are authorized
-                // add them to the database (password field is arbitrary, but must be hard to guess)
+                // add them to the database (password field is arbitrary, but must
+                // be hard to guess)
 				$user_id = wp_create_user( $username, $this->_pwd(), $email );
 				
 				if ( !$user_id )
 					throw new AuthException('Could not create user');
-				else {
-					wp_new_user_notification($user_id, '');
-                    $user = get_user_by('login', $username);
-				}
 			}
+            
             $user = $this->getWpUser($username);
             wp_set_auth_cookie( $user->id, false, '' );
+            wp_set_current_user( $user->id );
 		}				
-		else {
+		else
+        {
 			die("Could not load user data");
 		}
     }
@@ -129,7 +138,6 @@ class Raven {
      */
     public function logout() {
         setcookie(Config::get('cookie'), '');
-        session_destroy();
         wp_clear_auth_cookie();
     }
 
