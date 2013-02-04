@@ -13,7 +13,7 @@
 
 //namespace WPRavenAuth;
     
-    $root = substr(__FILE__, 0, strpos(__FILE__, 'wp-content'));
+    $root = substr($_SERVER["SCRIPT_FILENAME"], 0, strpos($_SERVER["SCRIPT_FILENAME"], 'wp-content'));
     require_once( $root . 'wp-load.php' );
     require_once('raven.php');
 
