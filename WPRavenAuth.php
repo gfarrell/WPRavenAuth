@@ -87,11 +87,12 @@ function  disable_function()
     
 namespace {// Global namespace
     
+
 // Don't send any notifications (needs to be outisde namespace to work)
-function wp_new_user_notification($user_id, $plaintext_pass = '')
-{
+if (!function_exists('wp_new_user_notification') {
+    function wp_new_user_notification($user_id, $plaintext_pass = '') {}
 }
 
-}
+} // End global namespace
     
 ?>
