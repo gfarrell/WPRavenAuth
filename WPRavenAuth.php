@@ -88,7 +88,7 @@ function  disable_function()
 namespace {// Global namespace
     
 // Don't send any notifications (needs to be outisde namespace to work)
-if (!function_exists('wp_new_user_notification') { // this is to stop problems with activation
+if (!function_exists('wp_new_user_notification')) { // this is to stop problems with activation
     function wp_new_user_notification($user_id, $plaintext_pass = '')
     {
     }
