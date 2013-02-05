@@ -21,7 +21,8 @@ namespace WPRavenAuth {
 if(!defined('DS')) {
     define('DS', '/');
 }
-define('WPRavenAuth_dir', dirname($_SERVER["SCRIPT_FILENAME"]));
+define('WPRavenAuth_parent', end(explode(DS, dirname(__FILE__))));
+define('WPRavenAuth_dir', dirname(__file__));
 define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 
 // Load required files
@@ -52,7 +53,7 @@ function setup()
 // Redirect login page
 function raven_login_url( $redirect )
 {
-    $login_url = plugins_url( 'app/core/login.php' , $_SERVER["SCRIPT_FILENAME"] );
+    $login_url = plugins_url( WPRavenAuth_parent.DS.'app/core/login.php');
     
     if ( !empty($redirect) )
         $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url );
@@ -63,7 +64,7 @@ function raven_login_url( $redirect )
 // Redirect logout page
 function raven_logout_url( $redirect )
 {
-    $logout_url = plugins_url( 'app/core/logout.php' , $_SERVER["SCRIPT_FILENAME"] );
+    $logout_url = plugins_url( WPRavenAuth_parent.DS.'app/core/logout.php' );
     
     if ( !empty($redirect) )
         $logout_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $logout_url );
@@ -87,12 +88,12 @@ function  disable_function()
     
 namespace {// Global namespace
     
-
 // Don't send any notifications (needs to be outisde namespace to work)
-if (!function_exists('wp_new_user_notification') {
-    function wp_new_user_notification($user_id, $plaintext_pass = '') {}
+if (!function_exists('wp_new_user_notification')) { // this is to stop problems with activation
+    function wp_new_user_notification($user_id, $plaintext_pass = '')
+    {
+    }
 }
-
-} // End global namespace
+}
     
 ?>
