@@ -95,10 +95,10 @@ class Raven {
             ));
         }
         $auth = $this->webauth->authenticate();
-        if(!$auth) throw new AuthException($this->webauth->status(), $this->webauth->msg());
+        if(!$auth) throw new AuthException($this->webauth->status() . " " . $this->webauth->msg());
 
         if(!($this->webauth->success())) {
-            throw new AuthException($this->webauth->status(), $this->webauth->msg());
+            throw new AuthException("Raven Authentication not completed.");
         }
         
         /*if (!($this->authenticate())) {
@@ -125,6 +125,11 @@ class Raven {
             $user = $this->getWpUser($username);
             wp_set_auth_cookie( $user->id, false, '' );
             do_action('wp_login', $user->user_login, $user);
+            
+            if (isset($_REQUEST['redirect_to']))
+                wp_safe_redirect($_REQUEST['redirect_to']);
+            else
+                wp_safe_redirect(admin_url());
 		}				
 		else
         {

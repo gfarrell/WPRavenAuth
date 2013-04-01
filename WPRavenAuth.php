@@ -26,11 +26,12 @@ define('WPRavenAuth_dir', dirname(__file__));
 define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 
 // Load required files
-require('app/core/set.php');          // Array manipulation library
-require('app/core/config.php');       // Configuration wrapper
-require('app/core/ldap.php');         // LDAP lookups for users
-require('app/lib/ucam_webauth.php');  // Cantab authentication library
-require('app/core/raven.php');        // Interface between WP and Raven
+require('app/core/set.php');                // Array manipulation library
+require('app/core/config.php');             // Configuration wrapper
+require('app/core/ldap.php');               // LDAP lookups for users
+require('app/lib/ucam_webauth.php');        // Cantab authentication library
+require('app/core/raven.php');              // Interface between WP and Raven
+require('app/error/auth_exception.php');    // Exceptions
 
 // Initialise Raven
     
@@ -52,10 +53,21 @@ function setup()
 // Decide if login should use raven or not, and initiate raven if required
 function login_init()
 {
-    if (isset($_REQUEST['super_admin']) && $_REQUEST['super-admin'] == 1)
+    if (isset($_REQUEST["super-admin"]) && $_REQUEST["super-admin"] == 1)
         return;
     
-    header_remove()
+    if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "logout") {
+        do_action('wp_logout');
+        wp_safe_redirect(home_url());
+        return;
+    }
+    
+    if (isset($_REQUEST["loggedout"])) {
+        wp_safe_redirect(home_url());
+        return;
+    }
+    
+    header_remove();
     Raven::getInstance()->login();
 }
     
@@ -81,6 +93,8 @@ if (!function_exists('wp_new_user_notification')) { // this is to stop problems 
     function wp_new_user_notification($user_id, $plaintext_pass = '')
     {
     }
+    
+}
 
 } // End Global Namespace
     

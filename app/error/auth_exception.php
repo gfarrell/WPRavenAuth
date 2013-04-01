@@ -12,6 +12,8 @@
  */
 
 namespace WPRavenAuth;
+    
+require('exception.php');
 
 class AuthException extends WPRException {
     // TODO!

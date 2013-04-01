@@ -13,7 +13,7 @@
 
 namespace WPRavenAuth;
 
-class WPRException extends Exception {
+class WPRException extends \Exception {
 
 }
 ?>
