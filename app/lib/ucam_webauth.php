@@ -26,7 +26,7 @@
 //
 // Version 0.51
 
-//namespace WPRavenAuth;
+namespace WPRavenAuth;
     
 class Ucam_Webauth {
 
@@ -96,7 +96,7 @@ class Ucam_Webauth {
 			     '560' => 'Web server not authorized to use the authentication service',
 			     '570' => 'Operation declined by the authentication service');
 
-  function Ucam_Webauth($args) {
+  function __construct($args) {
     if (isset($args['auth_service'])) $this->auth_service = $args['auth_service'];
     else $this->auth_service = $this->DEFAULT_AUTH_SERVICE;
 
