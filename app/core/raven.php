@@ -11,7 +11,7 @@
     @author  Gideon Farrell <me@gideonfarrell.co.uk>  
  */
 
-//namespace WPRavenAuth;
+namespace WPRavenAuth;
 
 require_once(ABSPATH . '/wp-settings.php');
 require_once(ABSPATH . WPINC . '/pluggable.php');
