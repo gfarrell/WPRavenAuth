@@ -44,31 +44,19 @@ function setup()
     add_action('check_passwords', 'WPRavenAuth\disable_function');                  // ditto
     add_filter('show_password_fields','WPRavenAuth\show_password_fields');          // ditto so return false
     add_action('register_form','WPRavenAuth\disable_function');                     // Registration is automatic
-    add_action('login_init', 'WPRavenAuth\disable_function');                       // Stop default login form
-    add_filter('login_url', 'WPRavenAuth\raven_login_url', 10, 2);                              // Redirect to new login page
-    add_filter('logout_url', 'WPRavenAuth\raven_logout_url', 10, 1);                            // Redirect to new logout page
+    add_action('login_init', 'WPRavenAuth\login_init');                             // Intercept login
+    add_action('wp_logout', array(Raven::getInstance(), 'logout'));                 // Intercept logout
 }
+    
+// Decide if login should use raven or not, and initiate raven if required
+function login_init()
+{
+    if (isset($_REQUEST['super_admin']) && $_REQUEST['super-admin'] == 1)
+        return;
+    
+    header_remove()
+    Raven::getInstance()->login();
 
-// Redirect login page
-function raven_login_url( $redirect )
-{
-    $login_url = plugins_url( 'app/core/login.php' , $_SERVER["SCRIPT_FILENAME"] );
-    
-    if ( !empty($redirect) )
-        $login_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $login_url );
-    
-    return $login_url;
-}
-    
-// Redirect logout page
-function raven_logout_url( $redirect )
-{
-    $logout_url = plugins_url( 'app/core/logout.php' , $_SERVER["SCRIPT_FILENAME"] );
-    
-    if ( !empty($redirect) )
-        $logout_url = add_query_arg( 'redirect_to', urlencode( $redirect ), $logout_url );
-    
-    return $logout_url;
 }
     
 // Don't show password fields on user profile page

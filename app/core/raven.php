@@ -97,9 +97,13 @@ class Raven {
         $auth = $this->webauth->authenticate();
         if(!$auth) throw new AuthException($this->webauth->status(), $this->webauth->msg());
 
-        if($this->webauth->success()) {
-            //$this->authenticate();
+        if(!($this->webauth->success())) {
+            throw new AuthException($this->webauth->status(), $this->webauth->msg());
         }
+        
+        /*if (!($this->authenticate())) {
+            throw new AuthException("Insufficient privilidges");
+        }*/
         
         $username = $this->webauth->principal();
 		$email = $username . '@cam.ac.uk';
@@ -112,7 +116,7 @@ class Raven {
                 // they passed Raven and so are authorized
                 // add them to the database (password field is arbitrary, but must
                 // be hard to guess)
-				$user_id = wp_create_user( $username, $this->_pwd(), $email );
+				$user_id = wp_create_user( $username, $this->_pwd( $username ), $email );
 				
 				if ( !$user_id )
 					throw new AuthException('Could not create user');
@@ -120,11 +124,11 @@ class Raven {
             
             $user = $this->getWpUser($username);
             wp_set_auth_cookie( $user->id, false, '' );
-            wp_set_current_user( $user->id );
+            do_action('wp_login', $user->user_login, $user);
 		}				
 		else
         {
-			die("Could not load user data");
+			throw new AuthException('Could not load user data');
 		}
     }
 
@@ -137,7 +141,8 @@ class Raven {
      * @return void
      */
     public function logout() {
-        setcookie(Config::get('cookie'), '');
+        //setcookie(Config::get('cookie'), '');
+        setcookie('WPRaven_Cookie', '');
         wp_clear_auth_cookie();
     }
 
@@ -215,8 +220,8 @@ class Raven {
      *
      * @return string password
      */
-    private function _pwd() {
-        return md5(Raven::$salt);
+    private function _pwd($username) {
+        return md5(Raven::$salt . $username);
     }
 }
 ?>
