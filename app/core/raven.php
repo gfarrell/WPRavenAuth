@@ -20,7 +20,7 @@ require_once(ABSPATH . WPINC . '/registration.php');
 if(!defined('DS'))
     define('DS', '/');
 if (!defined('WPRavenAuth_dir'))
-    define('WPRavenAuth_dir', substr($_SERVER["SCRIPT_FILENAME"], 0, strpos($_SERVER["SCRIPT_FILENAME"], 'app') - 1));
+    define('WPRavenAuth_dir', substr(__FILE__, 0, strpos(__FILE__, 'app') - 1));
 if (!defined('WPRavenAuth_keys'))
     define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 require_once(WPRavenAuth_dir . '/app/lib/ucam_webauth.php');
