@@ -21,7 +21,8 @@ namespace WPRavenAuth {
 if(!defined('DS')) {
     define('DS', '/');
 }
-define('WPRavenAuth_dir', dirname($_SERVER["SCRIPT_FILENAME"]));
+define('WPRavenAuth_parent', end(explode(DS, dirname(__FILE__))));
+define('WPRavenAuth_dir', dirname(__file__));
 define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 
 // Load required files
@@ -75,10 +76,11 @@ function  disable_function()
     
 namespace {// Global namespace
     
-
 // Don't send any notifications (needs to be outisde namespace to work)
-if (!function_exists('wp_new_user_notification') {
-    function wp_new_user_notification($user_id, $plaintext_pass = '') {}
+if (!function_exists('wp_new_user_notification')) { // this is to stop problems with activation
+    function wp_new_user_notification($user_id, $plaintext_pass = '')
+    {
+    }
 }
 
 } // End global namespace
