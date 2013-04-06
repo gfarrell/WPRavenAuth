@@ -126,10 +126,15 @@ class Raven {
             wp_set_auth_cookie( $user->id, false, '' );
             do_action('wp_login', $user->user_login, $user);
             
-            if (isset($_REQUEST['redirect_to']))
-                wp_safe_redirect($_REQUEST['redirect_to']);
+            session_start();
+            
+            if (isset($_SESSION["raven_redirect_to"]))
+            {
+                wp_safe_redirect($_SESSION["raven_redirect_to"]);
+                unset($_SESSION["raven_redirect_to"]);
+            }
             else
-                wp_safe_redirect(admin_url());
+                wp_safe_redirect( admin_url() );
 		}				
 		else
         {

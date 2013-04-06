@@ -67,6 +67,16 @@ function login_init()
         return;
     }
     
+    if (isset($_REQUEST["redirect_to"]))
+    {
+        session_start();
+        $_SESSION["raven_redirect_to"] = $_REQUEST["redirect_to"];
+        $url = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $url = preg_replace('/\?.*/', '', $url);
+        wp_safe_redirect($url);
+        return;
+    }
+    
     header_remove();
     Raven::getInstance()->login();
 }
