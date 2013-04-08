@@ -25,7 +25,7 @@ WPRavenAuth requires hosting *within the University of Cambridge network*, so th
 Installation
 ------------
 
-Install the plugin as you would a normal WP plugin, then create a directory called "keys" in the plugin directory, and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
+Install the plugin as you would a normal WP plugin, then create a directory called "keys" in the plugin directory (that's "WPRavenAuth" or whatever you called it, not the `wp-content/plugins` directory), and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
 
 Usage
 -----
