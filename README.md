@@ -20,10 +20,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 Requirements
 ------------
 
-WPRavenAuth requires hosting *within the University of Cambridge network*, so that it may perform LDAP lookups. It also requires **ucam_webauth** to be active on the server in question because it uses the `$_SERVER['REMOTE_USER']` variable which is set by the Apache module **mod_ucam_webauth**.
+WPRavenAuth requires hosting *within the University of Cambridge network*, so that it may perform LDAP lookups, which is what we use to determine College and so on. Other than that it can run on any webserver (it doesn't require `mod_ucam_webauth`).
 
 Installation
 ------------
+
+Install the plugin as you would a normal WP plugin, then create a directory called "keys" in the plugin directory (that's "WPRavenAuth" or whatever you called it, not the `wp-content/plugins` directory), and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
 
 Usage
 -----
