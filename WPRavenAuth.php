@@ -43,7 +43,7 @@ function setup()
     add_action('lost_password', 'WPRavenAuth\disable_function');                    // Raven has no passwords
     add_action('retrieve_password', 'WPRavenAuth\disable_function');                // ditto
     add_action('password_reset', 'WPRavenAuth\disable_function');                   // ditto
-    add_action('check_passwords', 'WPRavenAuth\disable_function');                  // ditto
+    add_action('check_passwords', 'WPRavenAuth\check_passwords', 10, 3);            // need to play with passwords a little
     add_filter('show_password_fields','WPRavenAuth\show_password_fields');          // ditto so return false
     add_action('register_form','WPRavenAuth\disable_function');                     // Registration is automatic
     add_action('login_init', 'WPRavenAuth\login_init');                             // Intercept login
@@ -91,6 +91,11 @@ function show_password_fields($show_password_fields)
 function  disable_function()
 {
     die('Disabled');
+}
+// Just make sure we return the passwords
+function check_passwords($username, $password1, $password2)
+{
+	return $password1 = $password2 = md5(Raven::$salt . $username); // This is how Raven does passwords
 }
     
 } // End namespace
