@@ -95,7 +95,7 @@ function  disable_function()
 // Just make sure we return the passwords
 function check_passwords($username, $password1, $password2)
 {
-	return $password1 = $password2 = md5(Raven::$salt . $username); // This is how Raven does passwords
+	return $password1 = $password2 = Raven::_pwd($username); // This is how Raven does passwords
 }
     
 } // End namespace

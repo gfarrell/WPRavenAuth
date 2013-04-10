@@ -226,11 +226,11 @@ class Raven {
      * _pwd
      * Returns the generic password hash, since passwords aren't important for SSO, but are for WP.
      * 
-     * @access private
+     * @access public
      *
      * @return string password
      */
-    private function _pwd($username) {
+    public static function _pwd($username) {
         return md5(Raven::$salt . $username);
     }
 }
