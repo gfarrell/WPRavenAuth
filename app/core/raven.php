@@ -32,9 +32,9 @@ class Raven {
      * 
      * @static
      * @var    string
-     * @access public
+     * @access private
      */
-    public static $salt = '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ';
+    private static $salt = '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ';
 
     /**
      * $webauth
@@ -116,7 +116,7 @@ class Raven {
                 // they passed Raven and so are authorized
                 // add them to the database (password field is arbitrary, but must
                 // be hard to guess)
-				$user_id = wp_create_user( $username, $this->_pwd( $username ), $email );
+				$user_id = wp_create_user( $username, Raven::_pwd( $username ), $email );
 				
 				if ( !$user_id )
 					throw new AuthException('Could not create user');
@@ -226,6 +226,8 @@ class Raven {
      * _pwd
      * Returns the generic password hash, since passwords aren't important for SSO, but are for WP.
      * 
+     * @static
+     *
      * @access public
      *
      * @return string password
