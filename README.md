@@ -29,3 +29,7 @@ Install the plugin as you would a normal WP plugin, then create a directory call
 
 Usage
 -----
+
+The plugin will replace the login system with a Raven login page - if a user who has never used your site before logs in with their Raven account, a new Wordpress account will be automatically created for them (with their CRSID as the name of the account).
+
+By default, these new users with have *Subscriber* permissions. To promote a user to another permission level, find their account in the normal Wordpress *Users* section and modify it in the normal manner.
