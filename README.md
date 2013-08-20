@@ -22,6 +22,8 @@ Requirements
 
 WPRavenAuth requires hosting *within the University of Cambridge network*, so that it may perform LDAP lookups, which is what we use to determine College and so on. Other than that it can run on any webserver (it doesn't require `mod_ucam_webauth`).
 
+The plugin does require PHP > 5.3 because it uses the namespace construct, which was introduced in PHP 5.3.
+
 Installation
 ------------
 
