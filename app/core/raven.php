@@ -24,18 +24,11 @@ if (!defined('WPRavenAuth_dir'))
 if (!defined('WPRavenAuth_keys'))
     define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 require_once(WPRavenAuth_dir . '/app/lib/ucam_webauth.php');
+    
+require_once(WPRavenAuth_dir . '/app/lib/ibis-client/ibisclient/client/IbisClientConnection.php');
+require_once(WPRavenAuth_dir . '/app/lib/ibis-client/ibisclient/methods/PersonMethods.php');
 
 class Raven {
-    /**
-     * $salt
-     * Contains the password hashing salt.
-     * 
-     * @static
-     * @var    string
-     * @access private
-     */
-    private static $salt = '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ';
-
     /**
      * $webauth
      * Contains the ucam_webauth instance.
@@ -86,12 +79,9 @@ class Raven {
         if(is_null($this->webauth)) {
             $this->webauth = new Ucam_Webauth(array(
                 'key_dir'       => WPRavenAuth_keys,
-                'cookie_key'    => 'WPRaven_Cookie',
-                'cookie_name'   => 'WPRaven_Cookie',
+                'cookie_key'    => Config::get('cookie'),
+                'cookie_name'   => Config::get('cookie'),
                 'hostname'      => $_SERVER['HTTP_HOST'],
-                //'cookie_key'    => Config::get('cookie'),
-                //'cookie_name'   => Config::get('cookie'),
-                //'hostname'      => home_url()
             ));
         }
         $auth = $this->webauth->authenticate();
@@ -100,10 +90,6 @@ class Raven {
         if(!($this->webauth->success())) {
             throw new AuthException("Raven Authentication not completed.");
         }
-        
-        /*if (!($this->authenticate())) {
-            throw new AuthException("Insufficient privilidges");
-        }*/
         
         $username = $this->webauth->principal();
 		$email = $username . '@cam.ac.uk';
@@ -151,59 +137,20 @@ class Raven {
      * @return void
      */
     public function logout() {
-        //setcookie(Config::get('cookie'), '');
-        setcookie('WPRaven_Cookie', '');
+        setcookie(Config::get('cookie'), '');
         wp_clear_auth_cookie();
     }
 
     /**
-     * authenticate
-     * Tests if a user is allowed access.
-     * 
+     * userExists
+     * Checks if a given user exists by crsid
+     *
+     * @param string $crsid User's CRSID.
+     *
      * @access public
      *
-     * @return boolean authorised?
+     * @return Boolean
      */
-    public function authenticate() {
-        $crsid = $this->webauth->principal();
-        
-        // If authorised, continue, otherwise throw them out.
-        $restrictions = Config::get('users.restrictions');
-        if(!is_null($restrictions)) {
-            foreach($restrictions as $restriction) {
-                if(!$this->_testRestriction($restriction, $user)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * _testRestriction
-     * Tests a restriction (type, allowed) against a user
-     * 
-     * @param array  $restriction The restriction specification (array[type],[allowed]=>array).
-     * @param WPUser $user        The user object.
-     *
-     * @access protected
-     *
-     * @return boolean test result
-     */
-    protected function _testRestriction($restriction, $user) {
-        switch($restriction['type']) {
-            case 'crsid':
-                $test = $user->user_login;   // check!
-                break;
-            case 'college':
-                $test = $user->college;      // check!
-                break;
-        }
-
-        return in_array($test, $restriction['allowed']);
-    }
-
     public function userExists($crsid) {
         return (get_user_by('login', $crsid) != false);
     }
@@ -233,7 +180,7 @@ class Raven {
      * @return string password
      */
     public static function _pwd($username) {
-        return md5(Raven::$salt . $username);
+        return md5(Config::get('salt') . $username);
     }
 }
 ?>

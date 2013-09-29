@@ -15,15 +15,6 @@ namespace WPRavenAuth;
 
 class Config {
     /**
-     * $key
-     * The database key to use for the configuration array.
-     * 
-     * @var    string
-     * @access private
-     */
-    private $key = 'WPRavenAuthOptions';
-
-    /**
      * $cfg
      * The configuration array.
      * 
@@ -32,12 +23,8 @@ class Config {
      */
     private $cfg = array(
         // default options
-        'ldap'   => array(
-            'server' => 'ldap.lookup.cam.ac.uk',
-            'base'   => 'ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk',
-            'port'   => '636'
-        ),
-        'cookie' => 'WPRavenAuth'
+        'cookie' => 'WPRavenAuth',
+        'salt'   => '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ',
     );
 
     /**
@@ -77,7 +64,7 @@ class Config {
     private function __construct() {
         if(!$this->bootstrapped) {
             // fetch from DB, if non-existent, then create
-            $db = get_option($this->key);
+            $db = get_option($this::key());
             if(!$db) {
                 $this->install();
             } else {
@@ -87,6 +74,19 @@ class Config {
 
             $this->bootstrapped = true;
         }
+    }
+    
+    /**
+     * key
+     * The database key to use for the configuration array.
+     *
+     * @access public
+     *
+     * @returns String
+     */
+    public static function key()
+    {
+        return 'WPRavenAuthOptions';
     }
 
     /**
@@ -138,7 +138,7 @@ class Config {
      * @return void
      */
     private function install() {
-        add_option($this->key, $this->cfg);
+        add_option($this::key(), $this->cfg);
     }
 
     /**
@@ -150,7 +150,7 @@ class Config {
      */
     private function update() {
         $_this =& Config::getInstance();
-        update_option($_this->key, $_this->cfg);
+        update_option($_this::key(), $_this->cfg);
     }
 }
 ?>

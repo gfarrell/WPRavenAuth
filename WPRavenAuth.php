@@ -28,18 +28,19 @@ define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 // Load required files
 require('app/core/set.php');                // Array manipulation library
 require('app/core/config.php');             // Configuration wrapper
-require('app/core/ldap.php');               // LDAP lookups for users
+//require('app/core/ldap.php');             // LDAP lookups for users
+require('app/core/ibis.php');               // Use Ibis database; much more robust than ldap
 require('app/lib/ucam_webauth.php');        // Cantab authentication library
 require('app/core/raven.php');              // Interface between WP and Raven
 require('app/error/auth_exception.php');    // Exceptions
-
-// Initialise Raven
+require('pages/options.php');
     
+// Initialise Raven
 add_action('init', 'WPRavenAuth\setup');
 
 function setup()
 {
-    // Add action hooks and filters
+    // Add action hooks and filters for login and logout
     add_action('lost_password', 'WPRavenAuth\disable_function');                    // Raven has no passwords
     add_action('retrieve_password', 'WPRavenAuth\disable_function');                // ditto
     add_action('password_reset', 'WPRavenAuth\disable_function');                   // ditto
@@ -48,6 +49,12 @@ function setup()
     add_action('register_form','WPRavenAuth\disable_function');                     // Registration is automatic
     add_action('login_init', 'WPRavenAuth\login_init');                             // Intercept login
     add_action('wp_logout', array(Raven::getInstance(), 'logout'));                 // Intercept logout
+    
+    // Add action hooks for authentication on pages
+    
+    
+    // Add custom fields to all pages for visibility
+    
 }
     
 // Decide if login should use raven or not, and initiate raven if required

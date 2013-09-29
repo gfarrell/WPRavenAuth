@@ -1,54 +1,121 @@
-<div class="wrap">
-<?php screen_icon(); ?>
-<h2>Raven Auth Settings</h2>
+<?php
 
-private $cfg = array(
-        // default options
-        'ldap'   => array(
-            'server' => 'ldap.lookup.cam.ac.uk',
-            'base'   => 'ou=people,o=University of Cambridge,dc=cam,dc=ac,dc=uk',
-            'port'   => '636'
-        ),
-        'cookie' => 'WPRavenAuth'
-    );
-
-<?php if(current_user_can('edit_users')):
-    $fields = Config::get();
-    function create_settings_field($name, $value, $prefices = array('WPRavenAuth')) {
-        if(!is_array($value)) {
-            
-        }
+namespace WPRavenAuth;
+    
+class OptionsPage
+{
+    /**
+     * Start up
+     */
+    public function __construct()
+    {
+        add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        add_action( 'admin_init', array( $this, 'page_init' ) );
     }
-?>
-<form method="post" action="options.php">
-    <!-- OK, I know that this is a table-based layout, which makes me want to kill myself, but that's all wordpress wants me to do, and it's a piece of shit framework -->
-    <table class="form-table">
-        <tbody>
-            <?php foreach($fields['ldap'])
-            <tr>
-                <th><label for="WPRavenAuthLdapServer">LDAP Server</label></th>
-                <td>
-                    <input type="text" id="WPRavenAuthLdapServer" name="WPRavenAuth[ldap][server]" value="<?php echo WPRavenAuth\Config::get('ldap.server'); ?>"
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</form>
-    <fieldset>
-        <legend>LDAP Settings</legend>
 
-    </fieldset>
-    <fieldset>
-        <legend>Other Settings</legend>
-        <label for="WPRavenAuthCookie">Cookie name</label>
-        <input type="text" value="<?php echo WPRavenAuth\Config::get('cookie'); ?>" id="WPRavenAuthCookie" />
-    </fieldset>
-</form>
+    /**
+     * Add options page
+     */
+    public function add_plugin_page()
+    {
+        // This page will be under "Settings"
+        add_options_page(
+            'Raven Auth Admin', 
+            'WPRavenAuth', 
+            'edit_users', 
+            'wpravenauth-admin', 
+            array( $this, 'create_admin_page' )
+        );
+    }
 
+    /**
+     * Options page callback
+     */
+    public function create_admin_page()
+    {
+        // Set class property
+        ?>
+        <div class="wrap">
+            <?php screen_icon(); ?>
+            <h2>Raven Auth Settings</h2>
+            <form method="post" action="options.php">
+            <?php
+                // This prints out all hidden setting fields
+                settings_fields( 'raven-auth-group' );   
+                do_settings_sections( 'wpravenauth-admin' );
+                submit_button(); 
+            ?>
+            </form>
+        </div>
+        <?php
+    }
 
-<?php else: ?>
+    /**
+     * Register and add settings
+     */
+    public function page_init()
+    {        
+        register_setting(
+            'raven-auth-group', // Option group
+            'WPRavenAuthOptions' // Option name
+        );
 
-<p class="red">Sorry, you do not have permission to access this!</p>
+        add_settings_section(
+            'raven-section', // ID
+            'Plugin Settings', // Title
+            array( $this, 'print_section_info' ), // Callback
+            'wpravenauth-admin' // Page
+        );  
 
-<?php endif; ?>
-</div>
+        add_settings_field(
+            'cookie', // ID
+            'Cookie Name', // Title 
+            array( $this, 'cookie_callback' ), // Callback
+            'wpravenauth-admin', // Page
+            'raven-section' // Section           
+        );      
+
+        add_settings_field(
+            'salt', 
+            'Random Salt', 
+            array( $this, 'salt_callback' ), 
+            'wpravenauth-admin', 
+            'raven-section'
+        );      
+    }
+
+    /** 
+     * Print the Section text
+     */
+    public function print_section_info()
+    {
+        print 'Enter your settings below, make salt really random!';
+    }
+
+    /** 
+     * Get the settings option array and print one of its values
+     */
+    public function cookie_callback()
+    {
+        printf(
+            '<input type="text" id="cookie" name="%s[cookie]" value="%s" />',
+               Config::key(),
+               Config::get('cookie')
+        );
+    }
+
+    /** 
+     * Get the settings option array and print one of its values
+     */
+    public function salt_callback()
+    {
+        printf(
+            '<input type="text" id="salt" name="%s[salt]" value="%s" />',
+               Config::key(),
+               Config::get('salt')
+        );
+    }
+}
+
+if( is_admin() )
+    $WPRavenAuthSettings = new OptionsPage();
