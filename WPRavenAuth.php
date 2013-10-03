@@ -123,6 +123,9 @@ function userCanAccessPost($postID, $crsid)
 {
     $postVisibility = get_field('custom_visibility', $postID);
     
+    if (!is_array($postVisibility))
+        $postVisibility = array('public');
+    
     if (in_array('public', $postVisibility))
         return true;
     elseif (in_array('raven', $postVisibility))

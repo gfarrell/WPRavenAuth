@@ -21,7 +21,7 @@ if (!defined('WPRavenAuth_dir'))
     
 require_once(WPRavenAuth_dir . '/app/lib/ibis-client/ibisclient/client/IbisClientConnection.php');
 require_once(WPRavenAuth_dir . '/app/lib/ibis-client/ibisclient/methods/PersonMethods.php');
-
+    
 class Ibis {
     
     /**
@@ -38,11 +38,11 @@ class Ibis {
         static $ibisPM = null;
         
         if(is_null($ibisConn)) {
-            $ibisConn = IbisClientConnection::createConnection();
+            $ibisConn = \IbisClientConnection::createConnection();
         }
         
         if(is_null($ibisPM)) {
-            $ibisPM = new PersonMethods($ibisConn);
+            $ibisPM = new \PersonMethods($ibisConn);
         }
         
         return $ibisPM;

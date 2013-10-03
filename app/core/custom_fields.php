@@ -52,7 +52,7 @@ if(function_exists("register_field_group"))
 				'choices' => array (
 					'public' => 'Public',
 					'raven' => 'Require Raven',
-					'KINGS' => 'All King\'s Members',
+					'COLL-KINGS' => 'All King\'s Members',
 				),
 				'default_value' => 'public',
 				'layout' => 'horizontal',
