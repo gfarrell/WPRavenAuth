@@ -20,8 +20,11 @@ if (!defined('WPRavenAuth_dir'))
 define('WPRavenAuth_dir', substr(__FILE__, 0, strpos(__FILE__, 'app') - 1));
 
 // Include ACF in lite mode
-define('ACF_LITE', true);
-include_once(WPRavenAuth_dir . '/app/lib/advanced-custom-fields/acf.php');
+if (!defined('ACF_LITE'))
+{
+    define('ACF_LITE', true);
+    include_once(WPRavenAuth_dir . '/app/lib/advanced-custom-fields/acf.php');
+}
 
 // Add-ons 
 // include_once('add-ons/acf-repeater/acf-repeater.php');
