@@ -56,6 +56,7 @@ if(function_exists("register_field_group"))
 					'public' => 'Public',
 					'raven' => 'Require Raven',
 					'COLL-KINGS' => 'All King\'s Members',
+                    'INST-KINGSUG' => 'King\'s Undergrads Only',
 				),
 				'default_value' => 'public',
 				'layout' => 'horizontal',

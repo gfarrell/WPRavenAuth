@@ -130,7 +130,7 @@ function userCanAccessPost($postID, $crsid)
         return true;
     elseif (in_array('raven', $postVisibility))
         return is_user_logged_in();
-    else
+    elseif (is_user_logged_in())
     {
         $person = Ibis::getPerson($crsid);
         foreach ($postVisibility as $inst)
