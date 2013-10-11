@@ -27,6 +27,40 @@ class OptionsPage
             array( $this, 'create_admin_page' )
         );
     }
+    
+    public $available_colleges = array(
+                                       'CHRISTS'    => 'Christ\'s',
+                                       'CHURCH'     => 'Churchill',
+                                       'CLARE'      => 'Clare',
+                                       'CLAREH'     => 'Clare Hall',
+                                       'CORPUS'     => 'Corpus Christi',
+                                       'DARWIN'     => 'Darwin',
+                                       'DOWN'       => 'Downing',
+                                       'EMM'        => 'Emmanuel',
+                                       'FITZ'       => 'Fitzwilliam',
+                                       'GIRTON'     => 'Girton',
+                                       'CAIUS'      => 'Gonville and Caius',
+                                       'HOM'        => 'Homerton',
+                                       'HUGHES'     => 'Hughes Hall',
+                                       'JESUS'      => 'Jesus',
+                                       'KINGS'      => 'King\'s',
+                                       'LCC'        => 'Lucy Cavendish',
+                                       'MAGD'       => 'Magdalen',
+                                       'NEWH'       => 'Murray Edwards',
+                                       'NEWN'       => 'Newnham',
+                                       'PEMB'       => 'Pembroke',
+                                       'PET'        => 'Peterhouse',
+                                       'QUEENS'     => 'Queens\'',
+                                       'ROBIN'      => 'Robinson',
+                                       'SEL'        => 'Selwyn',
+                                       'SID'        => 'Sidney Sussex',
+                                       'CATH'       => 'St Catharine\'s',
+                                       'EDMUND'     => 'St Edmund\'s',
+                                       'JOHNS'      => 'St John\'s',
+                                       'TRIN'       => 'Trinity',
+                                       'TRINH'      => 'Trinity Hall',
+                                       'WOLFC'      => 'Wolfson',
+                                       );
 
     /**
      * Options page callback
@@ -81,7 +115,15 @@ class OptionsPage
             array( $this, 'salt_callback' ), 
             'wpravenauth-admin', 
             'raven-section'
-        );      
+        );
+        
+        add_settings_field(
+            'colleges', 
+            'Colleges available for Visibility', 
+            array( $this, 'colleges_callback' ),
+            'wpravenauth-admin', 
+            'raven-section'
+        );
     }
 
     /** 
@@ -114,6 +156,24 @@ class OptionsPage
                Config::key(),
                Config::get('salt')
         );
+    }
+    
+    /** 
+     * Get the settings option array and print one of its values
+     */
+    public function colleges_callback()
+    {
+        $selectedColleges = Config::get('colleges');
+        foreach ($this->available_colleges as $id => $college)
+        {
+            printf(
+                   '<input type="checkbox" id="colleges" name="%s[colleges][]" value="%s" %s /> <label>%s</label>  <br>',
+                   Config::key(),
+                   $id,
+                   checked( (is_array($selectedColleges) ? in_array($id, $selectedColleges) : false), TRUE, false ),
+                   $college
+                   );
+        }
     }
 }
 

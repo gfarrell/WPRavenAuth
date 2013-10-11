@@ -23,8 +23,9 @@ class Config {
      */
     private $cfg = array(
         // default options
-        'cookie' => 'WPRavenAuth',
-        'salt'   => '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ',
+        'cookie'    => 'WPRavenAuth',
+        'salt'      => '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ',
+        'colleges'  => '',
     );
 
     /**
