@@ -34,13 +34,15 @@ require('app/lib/ucam_webauth.php');        // Cantab authentication library
 require('app/core/raven.php');              // Interface between WP and Raven
 require('app/error/auth_exception.php');    // Exceptions
 require('pages/options.php');               // Options page for wp-admin
-require('app/core/custom_fields.php');      // Custom fields for visibility settings
     
 // Initialise Raven
 add_action('init', 'WPRavenAuth\setup');
 
 function setup()
 {
+    // Need to require here so other ACF plugins are loaded first
+    require('app/core/custom_fields.php');      // Custom fields for visibility settings
+    
     // Add action hooks and filters for login and logout
     add_action('lost_password', 'WPRavenAuth\disable_function');                    // Raven has no passwords
     add_action('retrieve_password', 'WPRavenAuth\disable_function');                // ditto
