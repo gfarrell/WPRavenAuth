@@ -33,7 +33,7 @@ class Ucam_Webauth {
   var $PROTOCOL_VERSION = '1';
   var $SESSION_TICKET_VERSION = '1';
   var $DEFAULT_AUTH_SERVICE = 'https://raven.cam.ac.uk/auth/authenticate.html';
-  var $DEFAULT_KEY_DIR = 'ravenkeys';
+  var $DEFAULT_KEY_DIR = '/etc/httpd/conf/webauth_keys';
   var $DEFAULT_COOKIE_NAME = 'Ucam-WebAuth-Session';
   var $DEFAULT_TIMEOUT_MESSAGE = 'your logon to the site has expired';
   var $DEFAULT_HOSTNAME = NULL;		// must be supplied explicitly
@@ -488,12 +488,12 @@ class Ucam_Webauth {
     $token = NULL;
 
     if (isset($_SERVER['QUERY_STRING']) and
-	preg_match('/.*WLS-Response=/', $_SERVER['QUERY_STRING'])) {
+	preg_match('/^WLS-Response=/', $_SERVER['QUERY_STRING'])) {
 
       error_log('WLS response: '.$_SERVER['QUERY_STRING'], 0);
 
       // does this change QUERY_STRING??:
-      $token = explode('!', preg_replace('/.*WLS-Response=/', '', rawurldecode($_SERVER['QUERY_STRING'])));
+      $token = explode('!', preg_replace('/^WLS-Response=/', '', rawurldecode($_SERVER['QUERY_STRING'])));
     
       $this->session_ticket[$this->SESSION_TICKET_STATUS] = '200';
       $this->session_ticket[$this->SESSION_TICKET_MSG] = '';
@@ -666,19 +666,5 @@ class Ucam_Webauth {
     
     return FALSE;
   }
-    
-    function checkAuthentication($aauth = NULL, $interact = NULL, $fail = NULL, $parameters = NULL) {
-        
-        $token = NULL;
-        
-        if (isset($_SERVER['QUERY_STRING']) and
-            preg_match('/^WLS-Response=/', $_SERVER['QUERY_STRING'])) {
-            
-            // does this change QUERY_STRING??:
-            $token = explode('!', preg_replace('/^WLS-Response=/', '', rawurldecode($_SERVER['QUERY_STRING'])));
-            
-            header('Location: ' . $token[$this->WLS_TOKEN_URL] . '&' .  $_SERVER['QUERY_STRING']);
-        }
-    }
 }
 ?>
