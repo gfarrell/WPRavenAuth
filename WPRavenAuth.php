@@ -168,12 +168,14 @@ function showPost($aPosts = array())
         {
             //$aPost->post_title = "Restricted Content";
             $postContent = get_field('error_message', $aPost->ID);
+            $excerptContent = $postContent;
             if (!is_user_logged_in())
             {
                 $postContent .= '<p>You may be able to access this content if you <a href="' . wp_login_url() . '?redirect_to=' . get_permalink($aPost->ID) . '">login</a>.</p>';
+                $excerptContent .= ' <a href="' . wp_login_url() . '?redirect_to=' . get_permalink($aPost->ID) . '">Try logging in?</a>.';
             }
             $aPost->post_content = $postContent;
-            $aPost->post_excerpt = get_field('error_message', $aPost->ID);
+            $aPost->post_excerpt = $excerptContent;
         }
         $aShowPosts[] = $aPost;
     }

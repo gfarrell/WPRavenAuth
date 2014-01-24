@@ -31,6 +31,7 @@ if( !$acf )
 }
 
 // All of the available college ids and institutions
+global $available_colleges;
 $available_colleges = array(
                            'CHRISTS' => array(
                                               'COLL-CHRISTS' => 'All Christ\'s Members',
@@ -186,12 +187,6 @@ $available_colleges = array(
                                              'INST-WOLFCUG' => 'Wolfson Undergrads Only',
                                              ),
                            );
-    
-// Add-ons 
-// include_once('add-ons/acf-repeater/acf-repeater.php');
-// include_once('add-ons/acf-gallery/acf-gallery.php');
-// include_once('add-ons/acf-flexible-content/acf-flexible-content.php');
-// include_once( 'add-ons/acf-options-page/acf-options-page.php' );
 
 /**
  *  Register Field Groups
@@ -256,7 +251,7 @@ if(function_exists("register_field_group"))
 function getVisibilityOptions()
 {
     global $available_colleges;
-    $colleges = Config::get('colleges');
+    $colleges = Config::get('colleges'); 
     $output = array(
                      'public' => 'Public',
                      'raven'  => 'Require Raven',
