@@ -1,0 +1,3 @@
+[submodule "app/lib/advanced-custom-fields"]
+	path = app/lib/advanced-custom-fields
+	url = git@github.com:elliotcondon/acf.git
