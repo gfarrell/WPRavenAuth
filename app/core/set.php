@@ -13,6 +13,9 @@
 namespace WPRavenAuth;
 
 class Set {
+    // Blank constructor fixes bugs arising from the set() method being static
+    private function __construct() {}
+    
     /**
      * select
      * Selects certain keys from an array
