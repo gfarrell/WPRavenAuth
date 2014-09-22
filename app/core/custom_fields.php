@@ -112,9 +112,9 @@ $available_colleges = array(
                                              'INST-LCCUG' => 'Lucy Cavendish Undergrads Only',
                                              ),
                            'MAGD'   => array(
-                                             'COLL-MAGD' => 'All Magdalen Members',
-                                             'INST-MAGDPG' => 'Magdalen Postgrads Only',
-                                             'INST-MAGDUG' => 'Magdalen Undergrads Only',
+                                             'COLL-MAGD' => 'All Magdalene Members',
+                                             'INST-MAGDPG' => 'Magdalene Postgrads Only',
+                                             'INST-MAGDUG' => 'Magdalene Undergrads Only',
                                              ),
                            'NEWH'   => array(
                                              'COLL-NEWH' => 'All Murray Edwards Members',
