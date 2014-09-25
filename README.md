@@ -29,7 +29,7 @@ Installation
 
 To install the plugin, cd to the `wp-content/plugins` directory, and then run `git clone --recursive https://github.com/gfarrell/WPRavenAuth.git`. In the `WPRavenAuth` directory, create a directory called "keys", and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
 
-N.B. If you choose to install by downloading a zip from GitHub, it will not include the submodules (in `app/lib`), and you will need to download the Zips for those repositories and unpack them in the correct locations manually.
+N.B. If you choose to install by downloading a zip from GitHub, it will not include the submodule for ACF (in `app/lib`), and you will need to download the zip for that repository and unpack it in the correct location manually.
 
 Once you've done that, activate the plugin and go to the WPRavenAuth settings in the Wordpress Dashboard (under Settings). Here you can configure which colleges should be available to select for individual post or page visibility. You MUST also change the salt to be a long random string with alphanumeric characters and punctuation, which is used for making secure passwords. You MUST do this before attempting to log in any users with Raven.
 
