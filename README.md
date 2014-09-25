@@ -27,7 +27,7 @@ The plugin does require PHP > 5.3 because it uses the namespace construct, which
 Installation
 ------------
 
-Install the plugin as you would a normal WP plugin, then create a directory called "keys" in the plugin directory (that's "WPRavenAuth" or whatever you called it, not the `wp-content/plugins` directory), and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
+Install the plugin as you would a normal WP plugin (don't forget to pull the git submodule dependency), then create a directory called "keys" in the plugin directory (that's "WPRavenAuth" or whatever you called it, not the `wp-content/plugins` directory), and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
 
 Once you've done that, activate the plugin and go to the WPRavenAuth settings in the Wordpress Dashboard (under Settings). Here you can configure which colleges should be available to select for individual post or page visibility. You MUST also change the salt to be a long random string with alphanumeric characters and punctuation, which is used for making secure passwords. You MUST do this before attempting to log in any users with Raven.
 
