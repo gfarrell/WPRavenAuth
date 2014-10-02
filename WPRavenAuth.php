@@ -12,6 +12,8 @@
     Description: Replace wordpress login with Raven authentication.
     Version: 1.0.0
     Author: Gideon Farrell <me@gideonfarrell.co.uk>, Conor Burgess <Burgess.Conor@gmail.com>
+    
+    GitHub Plugin URI: https://github.com/gfarrell/WPRavenAuth
  
  */
     
