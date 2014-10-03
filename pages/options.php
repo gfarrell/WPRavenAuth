@@ -45,7 +45,7 @@ class OptionsPage
                                        'JESUS'      => 'Jesus',
                                        'KINGS'      => 'King\'s',
                                        'LCC'        => 'Lucy Cavendish',
-                                       'MAGD'       => 'Magdalen',
+                                       'MAGD'       => 'Magdalene',
                                        'NEWH'       => 'Murray Edwards',
                                        'NEWN'       => 'Newnham',
                                        'PEMB'       => 'Pembroke',
