@@ -40,7 +40,7 @@ add_action('init', 'WPRavenAuth\setup');
 register_activation_hook( __FILE__, 'WPRavenAuth\activate' );
     
 function generateRandomString($length = 20) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]{}@£^&:<>~';
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}@£^&:';
     $randomString = '';
     for ($i = 0; $i < $length; $i++) {
         $randomString .= $characters[mt_rand(0, strlen($characters) - 1)];
