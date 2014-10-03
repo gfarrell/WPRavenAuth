@@ -110,19 +110,19 @@ class OptionsPage
         );      
 
         add_settings_field(
-            'salt', 
-            'Random Salt', 
-            array( $this, 'salt_callback' ), 
-            'wpravenauth-admin', 
-            'raven-section'
+            'cookie-key', // ID
+            'Cookie Key', // Title
+            array( $this, 'cookie_key_callback' ), // Callback
+            'wpravenauth-admin', // Page
+            'raven-section' // Section
         );
         
         add_settings_field(
-            'colleges', 
-            'Colleges available for Visibility', 
-            array( $this, 'colleges_callback' ),
-            'wpravenauth-admin', 
-            'raven-section'
+            'colleges', // ID
+            'Colleges available for Visibility', // Title
+            array( $this, 'colleges_callback' ), // Callback
+            'wpravenauth-admin', // Page
+            'raven-section' // Section
         );
     }
 
@@ -131,7 +131,7 @@ class OptionsPage
      */
     public function print_section_info()
     {
-        print 'Enter your settings below, make salt really random!';
+        print 'Enter your settings below, make cookie key really random!';
     }
 
     /** 
@@ -149,12 +149,12 @@ class OptionsPage
     /** 
      * Get the settings option array and print one of its values
      */
-    public function salt_callback()
+    public function cookie_key_callback()
     {
         printf(
-            '<input type="text" id="salt" name="%s[salt]" value="%s" />',
+            '<input type="text" id="cookie_key" name="%s[cookie_key]" value="%s" />',
                Config::key(),
-               Config::get('salt')
+               Config::get('cookie_key')
         );
     }
     

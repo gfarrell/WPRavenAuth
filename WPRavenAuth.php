@@ -37,7 +37,21 @@ require('pages/options.php');               // Options page for wp-admin
     
 // Initialise Raven
 add_action('init', 'WPRavenAuth\setup');
-
+register_activation_hook( __FILE__, 'WPRavenAuth\activate' );
+    
+function generateRandomString($length = 20) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[]{}@£^&:<>~';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[mt_rand(0, strlen($characters) - 1)];
+    }
+    return $randomString;
+}
+    
+function activate() {
+    Config::set('salt', generateRandomString());
+}
+    
 function setup()
 {
     // Need to require here so other ACF plugins are loaded first
@@ -56,6 +70,11 @@ function setup()
     // Add filters for authentication on pages
     add_filter('the_posts', 'WPRavenAuth\showPost');
     add_filter('get_pages', 'WPRavenAuth\showPost');
+    
+    if (strcmp(Config::get('cookie_key'), 'rand0m+alphanum3r!icstr!n&') == 0) {
+        // cookie_key has not been changed - warn the user
+        trigger_error('You MUST change Cookie Key in Settings->WPRavenAuth', E_USER_WARNING);
+    }
 }
     
 // Decide if login should use raven or not, and initiate raven if required
