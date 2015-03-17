@@ -31,6 +31,8 @@ To install the plugin, cd to the `wp-content/plugins` directory, and then run `g
 
 N.B. If you choose to install by downloading a zip from GitHub, it will not include the submodule for ACF (in `app/lib`), and you will need to download the zip for that repository and unpack it in the correct location manually.
 
+Also N.B. That you may need to modify the `lib/advanced-custom-fields` directory to give it 775 permissions before the custom fields will function and display correctly.
+
 Once you've done that, activate the plugin and go to the WPRavenAuth settings in the Wordpress Dashboard (under Settings). Here you can configure which colleges should be available to select for individual post or page visibility. You MUST also change the cookie key to be a long random string with alphanumeric characters and punctuation, which is used for preventing malicious attacks via cookie tampering. You MUST do this immediately after plugin activation or the plugin will continue to throw a warning.
 
 Note that the `php_override.ini` file included in the root of the plugin directory should be moved to the root of your `public_html` directory if you are using the SRCF server for hosting. This is required to enable the `allow_fopen_url` directive, which Ibis requires to function.
