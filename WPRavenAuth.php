@@ -83,6 +83,9 @@ function login_init()
     if (isset($_REQUEST["super-admin"]) && $_REQUEST["super-admin"] == 1)
         return;
     
+    if (isset($_SERVER["HTTP_REFERER"]) && strpos($_SERVER["HTTP_REFERER"], "super-admin=1") !== FALSE)
+        return;
+    
     if (isset($_REQUEST["action"]) && $_REQUEST["action"] == "logout") {
         do_action('wp_logout');
         wp_safe_redirect(home_url());
