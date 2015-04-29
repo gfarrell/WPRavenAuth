@@ -66,6 +66,7 @@ function setup()
     add_action('register_form','WPRavenAuth\disable_function');                     // Registration is automatic
     add_action('login_init', 'WPRavenAuth\login_init');                             // Intercept login
     add_action('wp_logout', array(Raven::getInstance(), 'logout'));                 // Intercept logout
+    add_filter('site_url', 'WPRavenAuth\login_post_url');
     
     // Add filters for authentication on pages
     add_filter('the_posts', 'WPRavenAuth\showPost');
@@ -109,6 +110,16 @@ function login_init()
     
     header_remove();
     Raven::getInstance()->login();
+}
+    
+// Add the super-admin param to the login post url on the default login form
+function login_post_url($url, $path = '', $scheme = null)
+{
+    if ($scheme == "login_post")
+    {
+        return $url . "?super-admin=1";
+    }
+    return $url;
 }
     
 // Don't show password fields on user profile page
