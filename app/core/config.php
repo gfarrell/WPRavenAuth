@@ -23,9 +23,10 @@ class Config {
      */
     private $cfg = array(
         // default options
-        'cookie'    => 'WPRavenAuth',
-        'salt'      => '1wr0auZmxEsdRNVS3GZNX6Qf5XSO7yHZ',
-        'colleges'  => '',
+        'cookie'     => 'WPRavenAuth',
+        'cookie_key' => 'rand0m+alphanum3r!icstr!n&',
+        'salt'       => '',
+        'colleges'   => '',
     );
 
     /**
@@ -126,7 +127,7 @@ class Config {
     public function set($what, $value) {
         $_this =& Config::getInstance();
 
-        Set::set($_this->cfg, $value);
+        Set::set($_this->cfg, $what, $value);
 
         $_this->update();
     }

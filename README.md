@@ -27,11 +27,15 @@ The plugin does require PHP > 5.3 because it uses the namespace construct, which
 Installation
 ------------
 
-Install the plugin as you would a normal WP plugin (don't forget to pull the git submodule dependency), then create a directory called "keys" in the plugin directory (that's "WPRavenAuth" or whatever you called it, not the `wp-content/plugins` directory), and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
+To install the plugin, cd to the `wp-content/plugins` directory, and then run `git clone --recursive https://github.com/gfarrell/WPRavenAuth.git`. In the `WPRavenAuth` directory, create a directory called "keys", and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
 
-Once you've done that, activate the plugin and go to the WPRavenAuth settings in the Wordpress Dashboard (under Settings). Here you can configure which colleges should be available to select for individual post or page visibility. You MUST also change the salt to be a long random string with alphanumeric characters and punctuation, which is used for making secure passwords. You MUST do this before attempting to log in any users with Raven.
+N.B. If you choose to install by downloading a zip from GitHub, it will not include the submodule for ACF (in `app/lib`), and you will need to download the zip for that repository and unpack it in the correct location manually.
 
-Note that the php_override.ini file included in the root of the plugin directory should be moved to the root of your public_html directory if you are using the SRCF server for hosting. This is required to enable to allow_fopen_url directive, which Ibis requires to function.
+Also N.B. That you may need to modify the `lib/advanced-custom-fields` directory to give it 775 permissions before the custom fields will function and display correctly.
+
+Once you've done that, activate the plugin and go to the WPRavenAuth settings in the Wordpress Dashboard (under Settings). Here you can configure which colleges should be available to select for individual post or page visibility. You MUST also change the cookie key to be a long random string with alphanumeric characters and punctuation, which is used for preventing malicious attacks via cookie tampering. You MUST do this immediately after plugin activation or the plugin will continue to throw a warning.
+
+Note that the `php_override.ini` file included in the root of the plugin directory should be moved to the root of your `public_html` directory if you are using the SRCF server for hosting. This is required to enable the `allow_fopen_url` directive, which Ibis requires to function.
 
 Usage
 -----
@@ -42,7 +46,7 @@ NB: You can access the original Wordpress Login by adding `?super-admin=1` to yo
 
 If any existing users are set up with their univeristy email addresses *@cam.ac.uk* for the email field, they will never be able to log in with the new system (unless their username is also their crsid in lower case). If such users exist, they should be deleted, or if their username is NOT their crsid, they can change the email associated with their user to an external (i.e. non *@cam.ac.uk*) address. This should be done before activating this plugin.
 
-By default, these new users with have *Subscriber* permissions. To promote a user to another permission level, find their account in the normal Wordpress *Users* section and modify it in the normal manner.
+By default, these new users will have *Subscriber* permissions. To promote a user to another permission level, find their account in the normal Wordpress *Users* section and modify it in the normal manner.
 
 To use the visibility settings, you can select the desired levels of visibility for any page or post individually. These options should appear as custom fields on every post or page. You can also configure the error message which is displayed to users with insufficient privilidges to view the content.
 

@@ -79,7 +79,7 @@ class Raven {
         if(is_null($this->webauth)) {
             $this->webauth = new Ucam_Webauth(array(
                 'key_dir'       => WPRavenAuth_keys,
-                'cookie_key'    => Config::get('cookie'),
+                'cookie_key'    => Config::get('cookie_key'),
                 'cookie_name'   => Config::get('cookie'),
                 'hostname'      => $_SERVER['HTTP_HOST'],
             ));

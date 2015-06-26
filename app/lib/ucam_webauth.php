@@ -1,4 +1,5 @@
 <?php
+// vi: tabstop=8 shiftwidth=8 bs=2
 
 // This PHP module implements an agent for the University of Cambridge
 // Web Authentication System
@@ -22,9 +23,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 // USA
 //
-// $Id: ucam_webauth.php,v 1.6 2008-04-29 08:44:32 jw35 Exp $
+// $Id: ucam_webauth.php,v 1.3 2013/04/11 21:48:55 jes91 Exp $
 //
-// Version 0.51
+// Version 0.52
 
 namespace WPRavenAuth;
     
@@ -39,6 +40,7 @@ class Ucam_Webauth {
   var $DEFAULT_HOSTNAME = NULL;		// must be supplied explicitly
   var $COMPLETE = 1;
   var $TESTSTRING = 'Test';
+  var $WLS_LOGOUT = 'Not-authenticated';
 
   // array index constants
 
@@ -83,8 +85,10 @@ class Ucam_Webauth {
   var $cookie_name;
   var $cookie_domain;
   var $fail;
-  var $status;
-  var $headers;
+  //var $status;
+  //var $headers;
+  var $forced_reauth_message;
+  var $interact;
 
   var $error_message = array('200' => 'OK',
 			     '410' => 'Authentication cancelled at user\'s request',
@@ -139,6 +143,9 @@ class Ucam_Webauth {
     if (isset($args['fail'])) $this->fail = $args['fail'];
     else $this->fail = '';
 
+    if (isset($args['forced_reauth_message'])) $this->forced_reauth_message = $args['forced_reauth_message'];
+
+    if (isset($args['interact'])) $this->interact = $args['interact'];
   }
 
   // get/set functions for agent attributes
@@ -213,6 +220,16 @@ class Ucam_Webauth {
     return $this->hostname;
   }
 
+  function forced_reauth_message($arg = NULL) {
+    if (isset($arg)) $this->forced_reauth_message = $arg;
+    return $this->forced_reauth_message;
+  }
+
+  function interact($arg = NULL) {
+    if (isset($arg)) $this->interact = $arg;
+    return $this->interact;
+  }
+
   // read-only functions to access the authentication state
  
   function status() {
@@ -281,21 +298,15 @@ class Ucam_Webauth {
     return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on");
   }
 
-  function load_key($key_id) {
-    $key_filename = $this->key_dir . '/' . $key_id . '.crt';
-    if (file_exists($key_filename)) {
-      $key_file = fopen($key_filename, 'r');
-      $key = fread($key_file, filesize($key_filename));
-      fclose($key_file);
-      return $key;
-    }
-    return NULL;
-  }
-
   function check_sig($data, $sig, $key_id) {
 
     // **** TODO : remove trailing slash from key_dir
 
+    // Ensure keyid only contains digits (protect against path traversal)
+    if (preg_match('/^[1-9][0-9]{0,7}$/', $key_id) !== 1) {
+      error_log('Invalid key identifier in response message',0);
+      return false;
+    }
     $key_filename = $this->key_dir . '/' . $key_id . '.crt';
     $key_file = fopen($key_filename, 'r');
     // Band-aid test for the most obvious cause of error - whole
@@ -340,12 +351,20 @@ class Ucam_Webauth {
     $port = urlencode($port);           // should be redundant, of course
     $url = $protocol . $hostname;
     if ($port != '') $url .= ':' . $port;
+    /*
     $url .= $_SERVER['SCRIPT_NAME'];
     if (isset($_SERVER['PATH_INFO'])) $url .= $_SERVER['PATH_INFO'];
     if (isset($_SERVER['QUERY_STRING']) and $_SERVER['QUERY_STRING'] != '') 
     {
       $url .= '?' . $_SERVER['QUERY_STRING'];
     }
+    */
+    // jes91: must remove /webroot/ because Cake's mod_rewrite will trip over
+    // if an attempt is made to literally access a Cake controller. Easiest
+    // way to do this is to just use REQUEST_URI.
+    // In any case, can't see why you would not want to use
+    // REQUEST_URI in all circumstances, at least on Apache v2.
+    $url .= $_SERVER['REQUEST_URI'];
     return $url;
   }
 
@@ -383,7 +402,15 @@ class Ucam_Webauth {
     return $result;
   }
 
-  function authenticate($aauth = NULL, $interact = NULL, $fail = NULL, $parameters = NULL) {
+  function authenticate($authassertionid = NULL, $testauthonly = NULL) {
+    // consistency check
+
+    if ($testauthonly and !$this->do_session) {
+      $this->session_ticket[$this->SESSION_TICKET_STATUS] = '600';
+      $this->session_ticket[$this->SESSION_TICKET_MSG] = 'Requested dummy run but session cookie not managed';
+      return TRUE;
+    }
+
     // check that someone defined cookie key and if we are doing session management
 
     if ($this->do_session and !isset($this->cookie_key)) {
@@ -427,12 +454,13 @@ class Ucam_Webauth {
       error_log('session management ON', 0);
 
       if (isset($_COOKIE[$this->full_cookie_name()]) and
-	  $_COOKIE[$this->full_cookie_name()] != $this->TESTSTRING) {
+	  $_COOKIE[$this->full_cookie_name()] != $this->TESTSTRING and
+	  $_COOKIE[$this->full_cookie_name()] != $this->WLS_LOGOUT) {
 
 	error_log('existing authentication cookie found', 0);
         error_log('cookie: ' . rawurldecode($_COOKIE[$this->full_cookie_name()]));
 
-	$old_cookie = explode(' ', rawurldecode($_COOKIE[$this->full_cookie_name()]));
+	//$old_cookie = explode(' ', rawurldecode($_COOKIE[$this->full_cookie_name()]));
 	//$this->session_ticket = explode('!', $old__cookie[0]);
 	$this->session_ticket = explode('!', rawurldecode($_COOKIE[$this->full_cookie_name()]));
 
@@ -450,17 +478,23 @@ class Ucam_Webauth {
 	  $now = time();
 
 	  if ($issue <= $now and $now < $expire) {
-	    if ($this->session_ticket[$this->SESSION_TICKET_STATUS] != '200') {
-	      setcookie($this->full_cookie_name(),
-			'',
-			1,
-			$this->cookie_path,
-			$this->cookie_domain,
-			$this->using_https());
+	    if (!isset($authassertionid) or $authassertionid != $this->session_ticket[$this->SESSION_TICKET_ID]) {
+	      if ($this->session_ticket[$this->SESSION_TICKET_STATUS] != '200') {
+	        if (!$testauthonly) setcookie($this->full_cookie_name(),
+			  '',
+			  1,
+			  $this->cookie_path,
+			  $this->cookie_domain,
+			  $this->using_https());
 
+	      }
+	      error_log('AUTHENTICATION COMPLETE', 0);
+	      return TRUE;
+	    } else {
+	      $current_timeout_message = $this->forced_reauth_message;
+	      error_log('detection of \'stale\' authassertionid requested and found: ' . $authassertionid, 0);
+	      error_log('authentication using current session ticket denied', 0);
 	    }
-	    error_log('AUTHENTICATION COMPLETE', 0);
-	    return TRUE;
 	  } else {
 	    $current_timeout_message = $this->timeout_message;
             error_log('local session cookie expired', 0);
@@ -468,6 +502,7 @@ class Ucam_Webauth {
 	  }
 	} else {
 	  error_log('AUTHENTICATION FAILED, session cookie sig invalid', 0);
+	  $this->session_ticket[$this->SESSION_TICKET_MSG] = 'Session cookie signature invalid';
 	  $this->session_ticket[$this->SESSION_TICKET_STATUS] = '600';
 	  return TRUE;
 	}
@@ -497,15 +532,7 @@ class Ucam_Webauth {
     
       $this->session_ticket[$this->SESSION_TICKET_STATUS] = '200';
       $this->session_ticket[$this->SESSION_TICKET_MSG] = '';
-      /*
-      $key = $this->load_key($token[$this->WLS_TOKEN_KEYID]);
 
-      if ($key == NULL) {
-	$this->session_ticket[$this->SESSION_TICKET_MSG] = 'Failed to load '.$this->key_dir . '/' . $token[$this->WLS_TOKEN_KEYID] . '.crt';
-	$this->session_ticket[$this->SESSION_TICKET_STATUS] = '600';
-	return $this->COMPLETE;
-      }
-      */
       //echo '<p>' . implode('!', $token) . '</p>';
       $sig = array_pop($token);
       $key_id = array_pop($token);
@@ -599,7 +626,7 @@ class Ucam_Webauth {
 
       // End
 
-      setcookie($this->full_cookie_name(),
+      if (!$testauthonly) setcookie($this->full_cookie_name(),
 		$cookie,
 		0,
 		$this->cookie_path,
@@ -608,7 +635,9 @@ class Ucam_Webauth {
 
       error_log('session cookie established, redirecting...', 0);
       
-      header('Location: ' . $token[$this->WLS_TOKEN_URL]);
+      // Clean up the URL in browser location bar, i.e., remove WLS stuff
+      // in query string, and, inevitably, redo original request a second time?
+      if (!$testauthonly) header('Location: ' . $token[$this->WLS_TOKEN_URL]);
       
       return FALSE;
     }
@@ -633,12 +662,13 @@ class Ucam_Webauth {
       if (isset($_SERVER['HTTP_HOST']) and (strtolower($this->hostname) !=
                                             strtolower($_SERVER['HTTP_HOST'])))
       {
-	  header('Location: ' . $this->url());
+	  error_log('Redirect to tidy up hostname mismatch', 0);
+	  if (!$testauthonly) header('Location: ' . $this->url());
 	  return FALSE;
       }
 
       error_log('setting pre-session cookie', 0);
-      setcookie($this->full_cookie_name(),
+      if (!$testauthonly) setcookie($this->full_cookie_name(),
 		$this->TESTSTRING,
 		0,
 		$this->cookie_path,
@@ -650,8 +680,8 @@ class Ucam_Webauth {
       '?ver=' . $this->PROTOCOL_VERSION .
       '&url=' . rawurlencode($this->url());
     if (isset($this->description)) $dest .= '&desc=' . rawurlencode($this->description);
-    if (isset($this->aauth)) $dest .= '&aauth=' . rawurlencode($this->aauth);
-    if (isset($this->interact)) $dest .= '&iact=' . rawurlencode($this->interact);
+    //if (isset($this->aauth)) $dest .= '&aauth=' . rawurlencode($this->aauth);
+    if (isset($this->interact)) $dest .= '&iact=' . ($this->interact == TRUE ? 'yes' : 'no');
     if (isset($this->params)) $dest .= '&params' . rawurlencode($this->params);
     if (isset($current_timeout_message)) $dest .= '&msg=' . rawurlencode($current_timeout_message);
     if (isset($this->clock_skew)) {
@@ -662,7 +692,7 @@ class Ucam_Webauth {
     
     error_log('redirecting...', 0);
     
-    header($dest);
+    if (!$testauthonly) header($dest);
     
     return FALSE;
   }
