@@ -24,7 +24,7 @@ require_once "IbisGroup.php";
 require_once "IbisPerson.php";
 
 /**
- * Class representing an institution returned by the web services API.
+ * Class representing an institution returned by the web service API.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */
@@ -55,28 +55,31 @@ class IbisInstitution extends IbisDto
 
     /**
      * A list of the institution's attributes. This will only be populated
-     * if the <code>fetch</code> parameter includes the "all_attrs" option,
-     * or any specific attribute schemes such as "email" or "address", or
-     * the special pseudo-attribute scheme "phone_numbers".
+     * if the <code>fetch</code> parameter includes the {@code "all_attrs"}
+     * option, or any specific attribute schemes such as {@code "email"} or
+     * {@code "address"}, or the special pseudo-attribute scheme
+     * {@code "phone_numbers"}.
      */
     public $attributes;
 
     /**
      * A list of the institution's contact rows. This will only be populated
-     * if the <code>fetch</code> parameter includes the "contact_rows" option.
+     * if the <code>fetch</code> parameter includes the
+     * {@code "contact_rows"} option.
      */
     public $contactRows;
 
     /**
      * A list of the institution's members. This will only be populated if
-     * the <code>fetch</code> parameter includes the "all_members" option.
+     * the <code>fetch</code> parameter includes the {@code "all_members"}
+     * option.
      */
     public $members;
 
     /**
      * A list of the institution's parent institutions. This will only be
      * populated if the <code>fetch</code> parameter includes the
-     * "parent_insts" option.
+     * {@code "parent_insts"} option.
      *
      * NOTE: Currently all institutions have one parent, but in the future
      * institutions may have multiple parents.
@@ -86,28 +89,28 @@ class IbisInstitution extends IbisDto
     /**
      * A list of the institution's child institutions. This will only be
      * populated if the <code>fetch</code> parameter includes the
-     * "child_insts" option.
+     * {@code "child_insts"} option.
      */
     public $childInsts;
 
     /**
      * A list of all the groups that belong to the institution. This will
      * only be populated if the <code>fetch</code> parameter includes the
-     * "inst_groups" option.
+     * {@code "inst_groups"} option.
      */
     public $groups;
 
     /**
      * A list of the groups that form the institution's membership. This
      * will only be populated if the <code>fetch</code> parameter includes
-     * the "members_groups" option.
+     * the {@code "members_groups"} option.
      */
     public $membersGroups;
 
     /**
      * A list of the groups that manage this institution. This will only
      * be populated if the <code>fetch</code> parameter includes the
-     * "managed_by_groups" option.
+     * {@code "managed_by_groups"} option.
      */
     public $managedByGroups;
 

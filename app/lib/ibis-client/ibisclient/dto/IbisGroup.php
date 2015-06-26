@@ -23,7 +23,7 @@ require_once "IbisInstitution.php";
 require_once "IbisPerson.php";
 
 /**
- * Class representing a group returned by the web services API.
+ * Class representing a group returned by the web service API.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */
@@ -46,7 +46,7 @@ class IbisGroup extends IbisDto
     /** Flag indicating if the group is cancelled. */
     public $cancelled;
 
-    /** The group's numeric ID (actual text e.g., "100656"). */
+    /** The group's numeric ID (actually a string e.g., "100656"). */
     public $groupid;
 
     /** The group's unique name (e.g., "cs-editors"). */
@@ -65,14 +65,15 @@ class IbisGroup extends IbisDto
      * The details of the institution for which this group forms all or
      * part of the membership. This will only be set for groups that are
      * membership groups of institutions if the <code>fetch</code> parameter
-     * includes the "members_of_inst" option.
+     * includes the {@code "members_of_inst"} option.
      */
     public $membersOfInst;
 
     /**
      * A list of the group's members, including (recursively) any members of
      * any included groups. This will only be populated if the
-     * <code>fetch</code> parameter includes the "all_members" option.
+     * <code>fetch</code> parameter includes the {@code "all_members"}
+     * option.
      */
     public $members;
 
@@ -80,35 +81,35 @@ class IbisGroup extends IbisDto
      * A list of the group's direct members, not including any members
      * included via groups included by this group. This will only be
      * populated if the <code>fetch</code> parameter includes the
-     * "direct_members" option.
+     * {@code "direct_members"} option.
      */
     public $directMembers;
 
     /**
      * A list of the institutions to which this group belongs. This will only
      * be populated if the <code>fetch</code> parameter includes the
-     * "owning_insts" option.
+     * {@code "owning_insts"} option.
      */
     public $owningInsts;
 
     /**
      * A list of the institutions managed by this group. This will only be
      * populated if the <code>fetch</code> parameter includes the
-     * "manages_insts" option.
+     * {@code "manages_insts"} option.
      */
     public $managesInsts;
 
     /**
-     * A list of the groups managed by this group. This will only be populated
-     * if the <code>fetch</code> parameter includes the "manages_groups"
-     * option.
+     * A list of the groups managed by this group. This will only be
+     * populated if the <code>fetch</code> parameter includes the
+     * {@code "manages_groups"} option.
      */
     public $managesGroups;
 
     /**
-     * A list of the groups that manage this group. This will only be populated
-     * if the <code>fetch</code> parameter includes the "managed_by_groups"
-     * option.
+     * A list of the groups that manage this group. This will only be
+     * populated if the <code>fetch</code> parameter includes the
+     * {@code "managed_by_groups"} option.
      */
     public $managedByGroups;
 
@@ -116,24 +117,26 @@ class IbisGroup extends IbisDto
      * A list of the groups that this group has privileged access to. Members
      * of this group will be able to read the members of any of those groups,
      * regardless of the membership visibilities. This will only be populated
-     * if the <code>fetch</code> parameter includes the "reads_groups" option.
+     * if the <code>fetch</code> parameter includes the
+     * {@code "reads_groups"} option.
      */
     public $readsGroups;
 
     /**
-     * A list of the groups that have privileged access to this group. Members
-     * of those groups will be able to read the members of this group,
-     * regardless of the membership visibilities. This will only be populated
-     * if the <code>fetch</code> parameter includes the "read_by_groups"
-     * option.
+     * A list of the groups that have privileged access to this group.
+     * Members of those groups will be able to read the members of this
+     * group, regardless of the membership visibilities. This will only be
+     * populated if the <code>fetch</code> parameter includes the
+     * {@code "read_by_groups"} option.
      */
     public $readByGroups;
 
     /**
      * A list of the groups directly included in this group. Any members of
-     * the included groups (and recursively any groups that they include) will
-     * automatically be included in this group. This will only be populated if
-     * the <code>fetch</code> parameter includes the "includes_groups" option.
+     * the included groups (and recursively any groups that they include)
+     * will automatically be included in this group. This will only be
+     * populated if the <code>fetch</code> parameter includes the
+     * {@code "includes_groups"} option.
      */
     public $includesGroups;
 
@@ -142,7 +145,7 @@ class IbisGroup extends IbisDto
      * this group will automatically be included in those groups (and
      * recursively in any groups that include those groups). This will only
      * be populated if the <code>fetch</code> parameter includes the
-     * "included_by_groups" option.
+     * {@code "included_by_groups"} option.
      */
     public $includedByGroups;
 
