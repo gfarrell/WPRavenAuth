@@ -20,8 +20,8 @@ along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Exception thrown when a web service API method fails. This is wrapper
- * around the IbisError object returned by the server, which contains the
- * full details of what went wrong.
+ * around the {@link IbisError} object returned by the server, which contains
+ * the full details of what went wrong.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */
@@ -34,9 +34,9 @@ class IbisException extends Exception
      *
      * @param IbisError $ibisError The error from the server.
      */
-    public function __construct($error)
+    public function __construct($ibisError)
     {
-        parent::__construct($error->message);
+        parent::__construct($ibisError->message);
         $this->ibisError = $ibisError;
     }
 

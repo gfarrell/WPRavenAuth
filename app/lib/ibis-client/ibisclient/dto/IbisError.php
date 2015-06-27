@@ -21,7 +21,7 @@ along with this library.  If not, see <http://www.gnu.org/licenses/>.
 require_once "IbisDto.php";
 
 /**
- * Class representing an error returned by the web services API.
+ * Class representing an error returned by the web service API.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */

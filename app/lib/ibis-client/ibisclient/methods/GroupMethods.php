@@ -38,38 +38,49 @@ require_once dirname(__FILE__) . "/../client/IbisException.php";
  * people, institutions and groups will be included when fetching references.
  * The following references are supported:
  *
- * * "all_members" - fetches all the people who are members of the group,
- * including members of groups included by the group, and groups included
- * by those groups, and so on.
- * * "direct_members" - fetches all the poeple who are direct members of
- * the group, not taking into account any included groups.
- * * "members_of_inst" - if the group is a membership group for an
- * institution, this fetches that institution.
- * * "owning_insts" - fetches all the institutions to which the group
- * belongs.
- * * "manages_insts" - fetches all the institutions that the group
- * manages. Typically this only applies to "Editor" groups.
- * * "manages_groups" - fetches all the groups that this group manages.
- * Note that some groups are self-managed, so this may be a
- * self-reference.
- * * "managed_by_groups" - fetches all the groups that manage this
- * group.
- * * "reads_groups" - fetches all the groups that this group has
- * privileged access to. This means that members of this group can see the
- * members of the referenced groups regardless of the membership visibility
- * settings.
- * * "read_by_groups" - fetches all the groups that have privileged
- * access to this group.
- * * "includes_groups" - fetches all the groups included by this group.
- * * "included_by_groups" - fetches all the groups that include this
- * group.
+ * * {@code "all_members"} - fetches all the people who are members of the
+ *   group, including members of groups included by the group, and groups
+ *   included by those groups, and so on.
+ *
+ * * {@code "direct_members"} - fetches all the poeple who are direct
+ *   members of the group, not taking into account any included groups.
+ *
+ * * {@code "members_of_inst"} - if the group is a membership group for an
+ *   institution, this fetches that institution.
+ *
+ * * {@code "owning_insts"} - fetches all the institutions to which the
+ *   group belongs.
+ *
+ * * {@code "manages_insts"} - fetches all the institutions that the group
+ *   manages. Typically this only applies to "Editor" groups.
+ *
+ * * {@code "manages_groups"} - fetches all the groups that this group
+ *   manages. Note that some groups are self-managed, so this may be a
+ *   self-reference.
+ *
+ * * {@code "managed_by_groups"} - fetches all the groups that manage this
+ *   group.
+ *
+ * * {@code "reads_groups"} - fetches all the groups that this group has
+ *   privileged access to. This means that members of this group can see the
+ *   members of the referenced groups regardless of the membership visibility
+ *   settings.
+ *
+ * * {@code "read_by_groups"} - fetches all the groups that have privileged
+ *   access to this group.
+ *
+ * * {@code "includes_groups"} - fetches all the groups included by this
+ *   group.
+ *
+ * * {@code "included_by_groups"} - fetches all the groups that include
+ *   this group.
  *
  * As with person fetch parameters, the references may be used
  * in a chain by using the "dot" notation to fetch additional information
  * about referenced people, institutions or groups. For example
- * "all_members.email" will fetch the email addresses of all members of the
- * group. For more information about what can be fetched from referenced
- * people and institutions, refer to the documentation for
+ * {@code "all_members.email"} will fetch the email addresses of all members
+ * of the group. For more information about what can be fetched from
+ * referenced people and institutions, refer to the documentation for
  * {@link PersonMethods} and {@link InstitutionMethods}.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
@@ -180,15 +191,16 @@ class GroupMethods
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled groups to
-     * be included. Defaults to false.
+     * be included. Defaults to {@code false}.
      * @param int $offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
-     * This may be "groupid", "name" (the default) or "title".
+     * This may be {@code "groupid"}, {@code "name"} (the default) or
+     * {@code "title"}.
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -230,9 +242,9 @@ class GroupMethods
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled groups to
-     * be included. Defaults to false.
+     * be included. Defaults to {@code false}.
      *
      * @return int The number of matching groups.
      */
@@ -269,11 +281,11 @@ class GroupMethods
      *
      * @param string $groupid [required] The ID or name of the group to fetch. This
      * may be either the numeric ID or the short hyphenated group name (for
-     * example "100656" or "cs-editors").
+     * example {@code "100656"} or {@code "cs-editors"}).
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return IbisGroup The requested group or null if it was not found.
+     * @return IbisGroup The requested group or {@code null} if it was not found.
      */
     public function getGroup($groupid,
                              $fetch=null)
@@ -375,20 +387,25 @@ class GroupMethods
      * {@code addIds} will be added to the group. This list should be a
      * comma-separated list of identifiers, each of which may be either a
      * CRSid or an identifier from another identifier scheme, prefixed with
-     * that scheme's name and a slash. For example "mug99" or "usn/123456789".
+     * that scheme's name and a slash. For example {@code "mug99"} or
+     * {@code "usn/123456789"}.
      *
      * Any people in the list of identifiers specified by {@code removeIds}
      * will be removed from the group, except if they are also in the list
-     * {@code addIds}. The special identifier "all-members" may be used to
-     * remove all existing group members, replacing them with the list
-     * specified by {@code newIds}.
+     * {@code addIds}. The special identifier {@code "all-members"} may be
+     * used to remove all existing group members, replacing them with the
+     * list specified by {@code newIds}.
      *
      * Examples:
      *
-     * updateDirectMembers("test-group", "mug99,crsid/yyy99,usn/123456789", "xxx99",
+     * updateDirectMembers("test-group",
+     *                     "mug99,crsid/yyy99,usn/123456789",
+     *                     "xxx99",
      *                     "Remove xxx99 and add mug99, yyy99 and usn/123456789 to test-group");
      *
-     * updateDirectMembers("test-group", "xxx99,yyy99", "all-members",
+     * updateDirectMembers("test-group",
+     *                     "xxx99,yyy99",
+     *                     "all-members",
      *                     "Set the membership of test-group to include only xxx99 and yyy99");
      *
      * [ HTTP: PUT /api/v1/group/{groupid}/direct-members ]

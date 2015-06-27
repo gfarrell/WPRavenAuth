@@ -23,7 +23,7 @@ require_once "IbisGroup.php";
 require_once "IbisInstitution.php";
 
 /**
- * Class representing a person returned by the web services API. Note that
+ * Class representing a person returned by the web service API. Note that
  * the identifier is the person's primary identifier (typically their CRSid),
  * regardless of which identifier was used to query for the person.
  *
@@ -67,27 +67,32 @@ class IbisPerson extends IbisDto
      */
     public $visibleName;
 
-    /** The person's MIS status ("staff", "student", "staff,student" or ""). */
+    /**
+     * The person's MIS status ({@code "staff"}, {@code "student"},
+     * {@code "staff,student"} or {@code ""}).
+     */
     public $misAffiliation;
 
     /**
      * A list of the person's identifiers. This will only be populated if
-     * the <code>fetch</code> parameter included the "all_identifiers" option.
+     * the <code>fetch</code> parameter included the
+     * {@code "all_identifiers"} option.
      */
     public $identifiers;
 
     /**
      * A list of the person's attributes. This will only be populated if the
-     * <code>fetch</code> parameter includes the "all_attrs" option, or any
-     * specific attribute schemes such as "email" or "title", or the special
-     * pseudo-attribute scheme "phone_numbers".
+     * <code>fetch</code> parameter includes the {@code "all_attrs"} option,
+     * or any specific attribute schemes such as {@code "email"} or
+     * {@code "title"}, or the special pseudo-attribute scheme
+     * {@code "phone_numbers"}.
      */
     public $attributes;
 
     /**
      * A list of all the institution's to which the person belongs. This
      * will only be populated if the <code>fetch</code> parameter includes
-     * the "all_insts" option.
+     * the {@code "all_insts"} option.
      */
     public $institutions;
 
@@ -95,7 +100,7 @@ class IbisPerson extends IbisDto
      * A list of all the groups to which the person belongs, including
      * indirect group memberships, via groups that include other groups.
      * This will only be populated if the <code>fetch</code> parameter
-     * includes the "all_groups" option.
+     * includes the {@code "all_groups"} option.
      */
     public $groups;
 
@@ -103,7 +108,8 @@ class IbisPerson extends IbisDto
      * A list of all the groups that the person directly belongs to. This
      * does not include indirect group memberships - i.e., groups that
      * include these groups. This will only be populated if the
-     * <code>fetch</code> parameter includes the "direct_groups" option.
+     * <code>fetch</code> parameter includes the {@code "direct_groups"}
+     * option.
      */
     public $directGroups;
 
@@ -138,11 +144,11 @@ class IbisPerson extends IbisDto
     }
 
     /**
-     * Returns true if the person is a member of staff.
+     * Returns {@code true} if the person is a member of staff.
      *
-     * Note that this tests for an misAffiliation of "", "staff" or
-     * "staff,student" since some members of staff will have a blank
-     * misAffiliation.
+     * Note that this tests for an misAffiliation of {@code ""},
+     * {@code "staff"} or {@code "staff,student"} since some members of staff
+     * will have a blank misAffiliation.
      */
     public function isStaff()
     {
@@ -150,10 +156,11 @@ class IbisPerson extends IbisDto
                $this->misAffiliation !== "student";
     }
 
-    /*
-     * Returns true if the person is a student.
+    /**
+     * Returns {@code true} if the person is a student.
      *
-     * This tests for an misAffiliation of "student" or "staff,student".
+     * This tests for an misAffiliation of {@code "student"} or
+     * {@code "staff,student"}.
      */
     public function isStudent()
     {
