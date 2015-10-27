@@ -109,7 +109,11 @@ function login_init()
     }
     
     header_remove();
-    Raven::getInstance()->login();
+    try {
+        Raven::getInstance()->login();
+    } catch (Exception $e)
+        $wp_error->add('error', $e->getMessage());
+    }
 }
     
 // Add the super-admin param to the login post url on the default login form

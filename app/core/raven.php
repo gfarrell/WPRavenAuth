@@ -28,6 +28,8 @@ require_once(WPRavenAuth_dir . '/app/lib/ucam_webauth.php');
 require_once(WPRavenAuth_dir . '/app/lib/ibis-client/ibisclient/client/IbisClientConnection.php');
 require_once(WPRavenAuth_dir . '/app/lib/ibis-client/ibisclient/methods/PersonMethods.php');
 
+require_once(WPRavenAuth_dir . '/app/core/ibis.php');
+    
 class Raven {
     /**
      * $webauth
@@ -106,6 +108,8 @@ class Raven {
 				
 				if ( !$user_id )
 					throw new AuthException('Could not create user');
+                
+                update_user_meta($user_id, 'display_name', (Ibis::getPerson($crsid))->visibleName);
 			}
             
             $user = $this->getWpUser($username);
