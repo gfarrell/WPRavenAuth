@@ -109,7 +109,8 @@ class Raven {
 				if ( !$user_id )
 					throw new AuthException('Could not create user');
                 
-                update_user_meta($user_id, 'display_name', (Ibis::getPerson($crsid))->visibleName);
+                $person = Ibis::getPerson($username);
+                update_user_meta($user_id, 'display_name', $person->visibleName);
 			}
             
             $user = $this->getWpUser($username);

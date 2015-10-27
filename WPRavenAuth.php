@@ -108,11 +108,13 @@ function login_init()
         return;
     }
     
-    header_remove();
+    //header_remove();
     try {
         Raven::getInstance()->login();
-    } catch (Exception $e)
-        $wp_error->add('error', $e->getMessage());
+    } catch (\Exception $e) {
+        global $error;
+        $error = $e->getMessage() . " <a href=\"" . wp_login_url() . "\">Try again.</a>";
+        Raven::getInstance()->logout();
     }
 }
     
