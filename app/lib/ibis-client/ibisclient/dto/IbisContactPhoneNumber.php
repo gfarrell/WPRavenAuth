@@ -22,7 +22,7 @@ require_once "IbisDto.php";
 
 /**
  * Class representing a phone number held on an institution contact row, for
- * use by the web services API.
+ * use by the web service API.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */

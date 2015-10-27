@@ -22,7 +22,7 @@ require_once "IbisDto.php";
 
 /**
  * Class representing an attribute of a person or institution returned by
- * the web services API. Note that for institution attributes, the instid,
+ * the web service API. Note that for institution attributes, the instid,
  * visibility and owningGroupid fields will be null.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
@@ -59,9 +59,9 @@ class IbisAttribute extends IbisDto
     public $instid;
 
     /**
-     * For a person attribute, it's visibility ("private", "institution",
-     * "university" or "world"). This will not be set for institution
-     * attributes.
+     * For a person attribute, it's visibility ({@code "private"},
+     * {@code "institution"}, {@code "university"} or {@code "world"}). This
+     * will not be set for institution attributes.
      */
     public $visibility;
 

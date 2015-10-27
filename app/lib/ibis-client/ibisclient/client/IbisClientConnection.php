@@ -108,8 +108,9 @@ class IbisClientConnection implements ClientConnection
      *
      * @param string $urlBase The base URL to the Lookup/Ibis web service
      * API.
-     * @param boolean $checkCertificates True to check the server's
-     * certificates.
+     * @param boolean $checkCertificates If this is {@code true} the server's
+     * certificates will be checked. Otherwise, the they will not, and the
+     * connection may be insecure.
      * @see #createConnection()
      * @see #createTestConnection()
      */
@@ -148,6 +149,21 @@ class IbisClientConnection implements ClientConnection
         $this->updateAuthorization();
     }
 
+    /*
+     * Convert an arbitrary value to a string for use as a parameter to be
+     * sent to the server.
+     */
+    private function valueToString($value)
+    {
+        if (is_bool($value))
+            return $value ? "true" : "false";
+        if ($value instanceof DateTime)
+            return $value->format("d M Y");
+        if ($value instanceof IbisAttribute)
+            return $value->encodedString();
+        return (string )$value;
+    }
+
     /**
      * Build the full URL needed to invoke a method in the web service API.
      *
@@ -159,7 +175,7 @@ class IbisClientConnection implements ClientConnection
      *  * pathParams = ["crsid", "dar17"]
      *  * queryParams = ["fetch" => "email,title"]
      *
-     * This method will create a URL like
+     * this method will create a URL like
      * https://www.lookup.cam.ac.uk/api/v1/person/crsid/dar17?fetch=email%2Ctitle.
      *
      * Note that all parameter values are automatically URL-encoded.
@@ -211,11 +227,7 @@ class IbisClientConnection implements ClientConnection
                 if (isset($queryParam) && isset($value))
                 {
                     $name = (string )$queryParam;
-                    $val = $value instanceof DateTime ?
-                           $value->format("d M Y") :
-                           $value instanceof IbisAttribute ?
-                           $value->encodedString() :
-                           (string )$value;
+                    $val = $this->valueToString($value);
 
                     $url .= $haveQueryParams ? "&" : "?";
                     $url .= urlencode($name);
@@ -261,21 +273,52 @@ class IbisClientConnection implements ClientConnection
             foreach ($formParams as $formParam => $value)
             {
                 $name = (string )$formParam;
-                $val = $value instanceof DateTime ?
-                       $value->format("d M Y") :
-                       $value instanceof IbisAttribute ?
-                       $value->encodedString() :
-                       (string )$value;
+                $val = $this->valueToString($value);
                 $strFormParams[$name] = $val;
             }
             $content = http_build_query($strFormParams);
             $headers[] = "Content-type: application/x-www-form-urlencoded";
         }
 
+        // ---------------------------------------------------------------
+        // Experimental code using Curl to talk to the server. This has
+        // the advantage of being able to force the use of the TLSv1
+        // protocol, but suffers from not having a mechanism for decent
+        // error checking, so this is disabled for now.
+        //
+        // Use Curl for the request
+        //$ch = curl_init();
+        //
+        //curl_setopt($ch, CURLOPT_URL, $url);
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        //
+        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        //curl_setopt($ch, CURLOPT_SSLVERSION, 1 /*CURL_SSLVERSION_TLSv1*/);
+        //curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . "/cacerts.txt");
+        //
+        //if ($content)
+        //{
+        //    curl_setopt($ch, CURLOPT_POST, true);
+        //    curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+        //}
+        //
+        //curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //
+        // TODO: Proper error checking of result status, etc...
+        //$xml = curl_exec($ch);
+        //curl_close($ch);
+        //
+        // Parse the XML result into an IbisResult object
+        //$parser = new IbisResultParser();
+        //$result = $parser->parseXml($xml);
+        //
+        // ---------------------------------------------------------------
+
         // Set up the HTTPS request headers
         $http_options = array("method" => $method,
                               "header" => $headers,
-                              "content" => $content);
+                              "content" => $content,
+                              "ignore_errors" => true);
 
         $ssl_options = array("verify_peer" => true,
                              "cafile" => dirname(__FILE__) . "/cacerts.txt",
@@ -310,7 +353,7 @@ class IbisClientConnection implements ClientConnection
             $error = new IbisError(array("status" => $status,
                                          "code" => $code));
             $error->message = "Unexpected result from server";
-            $error->details = fread(1000000);
+            $error->details = fread($file, 1000000);
             fclose($file);
 
             $result = new IbisResult();

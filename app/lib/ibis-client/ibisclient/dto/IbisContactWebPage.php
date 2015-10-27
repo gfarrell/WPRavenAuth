@@ -22,7 +22,7 @@ require_once "IbisDto.php";
 
 /**
  * Class representing a web page referred to by an institution contact row,
- * for use by the web services API.
+ * for use by the web service API.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */

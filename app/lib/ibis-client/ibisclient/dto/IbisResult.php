@@ -128,7 +128,8 @@ class IbisResult extends IbisDto
      * In the flattened XML/JSON representation, all the unique entities
      * returned by the method.
      *
-     * NOTE: This will be null unless the "flatten" parameter is true.
+     * NOTE: This will be {@code null} unless the "flatten" parameter is
+     * true.
      */
     public $entities;
 
