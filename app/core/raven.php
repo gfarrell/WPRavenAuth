@@ -78,7 +78,7 @@ class Raven {
      * @return void
      */
     public function login() {
-        if(is_null($this->webauth)) {
+        if (is_null($this->webauth)) {
             $this->webauth = new Ucam_Webauth(array(
                 'key_dir'       => WPRavenAuth_keys,
                 'cookie_key'    => Config::get('cookie_key'),
@@ -87,9 +87,13 @@ class Raven {
             ));
         }
         $auth = $this->webauth->authenticate();
-        if(!$auth) throw new AuthException($this->webauth->status() . " " . $this->webauth->msg());
+        if (!$auth) {
+            // This isn't an error, it just means the authentication process isn't yet complete
+            // and there's about to be another redirect, so we need to return.
+            return;
+        }
 
-        if(!($this->webauth->success())) {
+        if (!($this->webauth->success())) {
             throw new AuthException("Raven Authentication not completed.");
         }
         

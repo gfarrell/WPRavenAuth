@@ -107,8 +107,7 @@ function login_init()
         wp_safe_redirect($url);
         return;
     }
-    
-    //header_remove();
+
     try {
         Raven::getInstance()->login();
     } catch (\Exception $e) {
