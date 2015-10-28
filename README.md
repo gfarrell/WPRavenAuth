@@ -40,14 +40,16 @@ Note that the `php_override.ini` file included in the root of the plugin directo
 Usage
 -----
 
-The plugin will replace the login system with a Raven login page - if a user who has never used your site before logs in with their Raven account, a new Wordpress account will be automatically created for them (with their CRSID as the name of the account).
+The plugin will replace the login system with a Raven login page - if a user who has never used your site before logs in with their Raven account, a new Wordpress account will be automatically created for them (with their CRSID as the username of the account and their lookup visible name as their display name).
 
 NB: You can access the original Wordpress Login by adding `?super-admin=1` to your login url (e.g. `http://www.mywebsite.com/wp-login.php?super-admin=1`).
 
 If any existing users are set up with their univeristy email addresses *@cam.ac.uk* for the email field, they will never be able to log in with the new system (unless their username is also their crsid in lower case). If such users exist, they should be deleted, or if their username is NOT their crsid, they can change the email associated with their user to an external (i.e. non *@cam.ac.uk*) address. This should be done before activating this plugin.
 
-By default, these new users will have *Subscriber* permissions. To promote a user to another permission level, find their account in the normal Wordpress *Users* section and modify it in the normal manner.
+By default, the newly created users will have *Subscriber* permissions. To promote a user to another permission level, find their account in the normal Wordpress *Users* section and modify it in the normal manner.
 
 To use the visibility settings, you can select the desired levels of visibility for any page or post individually. These options should appear as custom fields on every post or page. You can also configure the error message which is displayed to users with insufficient privilidges to view the content.
+
+The plugin can also be used in combination with other visibility plugins, such as for menu item visibility, with something like the following as the visibility criterion:
 
     ((is_user_logged_in()) && (WPRavenAuth\Ibis::isMemberOfCollege(WPRavenAuth\Ibis::getPerson(wp_get_current_user()->user_login), 'KINGS')))
