@@ -381,13 +381,7 @@ class Ucam_Webauth {
   }
 
   function iso2time($t) {
-    return gmmktime(substr($t, 9, 2),
-		    substr($t, 11, 2),
-		    substr($t, 13, 2),
-		    substr($t, 4, 2),
-		    substr($t, 6, 2),
-		    substr($t, 0, 4),
-		    -1);
+    return strtotime($t);
   }
 
   function wls_encode($str) {
