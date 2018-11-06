@@ -21,7 +21,6 @@ namespace WPRavenAuth {
 if(!defined('DS')) {
     define('DS', '/');
 }
-define('WPRavenAuth_parent', end(explode(DS, dirname(__FILE__))));
 define('WPRavenAuth_dir', dirname(__file__));
 define('WPRavenAuth_keys', WPRavenAuth_dir . DS . 'keys');
 
