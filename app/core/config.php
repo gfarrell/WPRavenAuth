@@ -100,7 +100,7 @@ class Config {
      * @param  string|array $what the option name(s)
      * @return mixed              the option value
      */
-    public function get($what = null) {
+    public static function get($what = null) {
         $_this =& Config::getInstance();
 
         if(is_null($what)) {
@@ -124,7 +124,7 @@ class Config {
      * @param  mixed  $value the option value
      * @return void
      */
-    public function set($what, $value) {
+    public static function set($what, $value) {
         $_this =& Config::getInstance();
 
         Set::set($_this->cfg, $what, $value);
@@ -151,8 +151,7 @@ class Config {
      * @return void
      */
     private function update() {
-        $_this =& Config::getInstance();
-        update_option($_this::key(), $_this->cfg);
+        update_option(self::key(), $this->cfg);
     }
 }
 ?>

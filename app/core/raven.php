@@ -58,7 +58,7 @@ class Raven {
      *
      * @return Raven instance
      */
-    public function &getInstance() {
+    public static function &getInstance() {
         static $instance;
 
         if(is_null($instance)) {
