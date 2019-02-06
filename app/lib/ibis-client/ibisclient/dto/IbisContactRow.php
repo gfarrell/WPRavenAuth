@@ -39,48 +39,48 @@ class IbisContactRow extends IbisDto
     protected static $xmlArrays = array("addresses", "emails", "people",
                                         "phoneNumbers", "webPages");
 
-    /** The contact row's text. */
+    /** @var string The contact row's text. */
     public $description;
 
     /**
-     * Flag indicating if the contact row's text is normally displayed in
-     * bold.
+     * @var boolean Flag indicating if the contact row's text is normally
+     * displayed in bold.
      */
     public $bold;
 
     /**
-     * Flag indicating if the contact row's text is normally displayed in
-     * italics.
+     * @var boolean Flag indicating if the contact row's text is normally
+     * displayed in italics.
      */
     public $italic;
 
     /**
-     * A list of the contact row's addresses. This will always be non-null,
-     * but may be an empty list.
+     * @var string[] A list of the contact row's addresses. This will always
+     * be non-null, but may be an empty list.
      */
     public $addresses;
 
     /**
-     * A list of the contact row's email addresses. This will always be
-     * non-null, but may be an empty list.
+     * @var string[] A list of the contact row's email addresses. This will
+     * always be non-null, but may be an empty list.
      */
     public $emails;
 
     /**
-     * A list of the people referred to by the contact row. This will always
-     * be non-null, but may be an empty list.
+     * @var IbisPerson[] A list of the people referred to by the contact row.
+     * This will always be non-null, but may be an empty list.
      */
     public $people;
 
     /**
-     * A list of the contact row's phone numbers. This will always be
-     * non-null, but may be an empty list.
+     * @var IbisContactPhoneNumber[] A list of the contact row's phone
+     * numbers. This will always be non-null, but may be an empty list.
      */
     public $phoneNumbers;
 
     /**
-     * A list of the contact row's web pages. This will always be non-null,
-     * but may be an empty list.
+     * @var IbisContactWebPage[] A list of the contact row's web pages. This
+     * will always be non-null, but may be an empty list.
      */
     public $webPages;
 
@@ -88,6 +88,7 @@ class IbisContactRow extends IbisDto
     private $unflattened;
 
     /**
+     * @ignore
      * Create an IbisContactRow from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.
@@ -102,7 +103,12 @@ class IbisContactRow extends IbisDto
         $this->unflattened = false;
     }
 
-    /** Unflatten a single IbisContactRow. */
+    /**
+     * @ignore
+     * Unflatten a single IbisContactRow.
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     */
     public function unflatten($em)
     {
         if (!$this->unflattened)
@@ -113,7 +119,13 @@ class IbisContactRow extends IbisDto
         return $this;
     }
 
-    /** Unflatten a list of IbisContactRow objects (done in place). */
+    /**
+     * @ignore
+     * Unflatten a list of IbisContactRow objects (done in place).
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     * @param IbisContactRow[] $contactRows The contact rows to unflatten. 
+     */
     public static function unflattencontactRows($em, &$contactRows)
     {
         if (isset($contactRows))

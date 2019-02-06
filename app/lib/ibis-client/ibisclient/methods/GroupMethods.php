@@ -25,60 +25,60 @@ require_once dirname(__FILE__) . "/../client/IbisException.php";
 /**
  * Methods for querying and manipulating groups.
  *
- * The fetch parameter for groups
+ * **The fetch parameter for groups**
  *
- * All methods that return groups also accept an optional fetch
+ * All methods that return groups also accept an optional ``fetch``
  * parameter that may be used to request additional information about the
  * groups returned. For more details about the general rules that apply to
- * the fetch parameter, refer to the {@link PersonMethods}
+ * the ``fetch`` parameter, refer to the {@link PersonMethods}
  * documentation.
  *
- * For groups the fetch parameter may be used to fetch references
+ * For groups the ``fetch`` parameter may be used to fetch references
  * to people, institutions or other groups. In each case, only non-cancelled
  * people, institutions and groups will be included when fetching references.
  * The following references are supported:
  *
- * * {@code "all_members"} - fetches all the people who are members of the
+ * * ``"all_members"`` - fetches all the people who are members of the
  *   group, including members of groups included by the group, and groups
  *   included by those groups, and so on.
  *
- * * {@code "direct_members"} - fetches all the poeple who are direct
+ * * ``"direct_members"`` - fetches all the poeple who are direct
  *   members of the group, not taking into account any included groups.
  *
- * * {@code "members_of_inst"} - if the group is a membership group for an
+ * * ``"members_of_inst"`` - if the group is a membership group for an
  *   institution, this fetches that institution.
  *
- * * {@code "owning_insts"} - fetches all the institutions to which the
+ * * ``"owning_insts"`` - fetches all the institutions to which the
  *   group belongs.
  *
- * * {@code "manages_insts"} - fetches all the institutions that the group
+ * * ``"manages_insts"`` - fetches all the institutions that the group
  *   manages. Typically this only applies to "Editor" groups.
  *
- * * {@code "manages_groups"} - fetches all the groups that this group
+ * * ``"manages_groups"`` - fetches all the groups that this group
  *   manages. Note that some groups are self-managed, so this may be a
  *   self-reference.
  *
- * * {@code "managed_by_groups"} - fetches all the groups that manage this
+ * * ``"managed_by_groups"`` - fetches all the groups that manage this
  *   group.
  *
- * * {@code "reads_groups"} - fetches all the groups that this group has
+ * * ``"reads_groups"`` - fetches all the groups that this group has
  *   privileged access to. This means that members of this group can see the
  *   members of the referenced groups regardless of the membership visibility
  *   settings.
  *
- * * {@code "read_by_groups"} - fetches all the groups that have privileged
+ * * ``"read_by_groups"`` - fetches all the groups that have privileged
  *   access to this group.
  *
- * * {@code "includes_groups"} - fetches all the groups included by this
+ * * ``"includes_groups"`` - fetches all the groups included by this
  *   group.
  *
- * * {@code "included_by_groups"} - fetches all the groups that include
+ * * ``"included_by_groups"`` - fetches all the groups that include
  *   this group.
  *
- * As with person fetch parameters, the references may be used
+ * As with person ``fetch`` parameters, the references may be used
  * in a chain by using the "dot" notation to fetch additional information
  * about referenced people, institutions or groups. For example
- * {@code "all_members.email"} will fetch the email addresses of all members
+ * ``"all_members.email"`` will fetch the email addresses of all members
  * of the group. For more information about what can be fetched from
  * referenced people and institutions, refer to the documentation for
  * {@link PersonMethods} and {@link InstitutionMethods}.
@@ -105,10 +105,10 @@ class GroupMethods
      * Return a list of all groups.
      *
      * By default, only a few basic details about each group are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
-     * [ HTTP: GET /api/v1/group/all-groups ]
+     * ``[ HTTP: GET /api/v1/group/all-groups ]``
      *
      * @param boolean $includeCancelled [optional] Whether or not to include cancelled
      * groups. By default, only live groups are returned.
@@ -138,7 +138,7 @@ class GroupMethods
      * Get the groups with the specified IDs or names.
      *
      * By default, only a few basic details about each group are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
      * The results are sorted by groupid.
@@ -152,7 +152,7 @@ class GroupMethods
      * NOTE: The groups returned may include cancelled groups. It is the
      * caller's repsonsibility to check their cancelled flags.
      *
-     * [ HTTP: GET /api/v1/group/list?groupids=... ]
+     * ``[ HTTP: GET /api/v1/group/list?groupids=... ]``
      *
      * @param string $groupids [required] A comma-separated list of group IDs or
      * group names (may be a mix of both).
@@ -183,24 +183,24 @@ class GroupMethods
      * search function that is used in the Lookup web application.
      *
      * By default, only a few basic details about each group are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
-     * [ HTTP: GET /api/v1/group/search?query=... ]
+     * ``[ HTTP: GET /api/v1/group/search?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to ``false``.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled groups to
-     * be included. Defaults to {@code false}.
+     * be included. Defaults to ``false``.
      * @param int $offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
-     * This may be {@code "groupid"}, {@code "name"} (the default) or
-     * {@code "title"}.
+     * This may be ``"groupid"``, ``"name"`` (the default) or
+     * ``"title"``.
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -237,14 +237,14 @@ class GroupMethods
      * Count the number of groups that would be returned by a search using
      * a free text query string.
      *
-     * [ HTTP: GET /api/v1/group/search-count?query=... ]
+     * ``[ HTTP: GET /api/v1/group/search-count?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to ``false``.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled groups to
-     * be included. Defaults to {@code false}.
+     * be included. Defaults to ``false``.
      *
      * @return int The number of matching groups.
      */
@@ -271,21 +271,21 @@ class GroupMethods
      * Get the group with the specified ID or name.
      *
      * By default, only a few basic details about the group are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of the group.
      *
      * NOTE: The group returned may be a cancelled group. It is the caller's
      * repsonsibility to check its cancelled flag.
      *
-     * [ HTTP: GET /api/v1/group/{groupid} ]
+     * ``[ HTTP: GET /api/v1/group/{groupid} ]``
      *
      * @param string $groupid [required] The ID or name of the group to fetch. This
      * may be either the numeric ID or the short hyphenated group name (for
-     * example {@code "100656"} or {@code "cs-editors"}).
+     * example ``"100656"`` or ``"cs-editors"``).
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return IbisGroup The requested group or {@code null} if it was not found.
+     * @return IbisGroup The requested group or ``null`` if it was not found.
      */
     public function getGroup($groupid,
                              $fetch=null)
@@ -309,7 +309,7 @@ class GroupMethods
      * by those groups, and so on.
      *
      * By default, only a few basic details about each member are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each person.
      *
      * NOTE: This method returns only cancelled people. It does not include
@@ -320,7 +320,7 @@ class GroupMethods
      * were cancelled, and so is out-of-date data that should be used with
      * caution.
      *
-     * [ HTTP: GET /api/v1/group/{groupid}/cancelled-members ]
+     * ``[ HTTP: GET /api/v1/group/{groupid}/cancelled-members ]``
      *
      * @param string $groupid [required] The ID or name of the group.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -349,12 +349,12 @@ class GroupMethods
      * included via groups included by the group.
      *
      * By default, only a few basic details about each member are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each person.
      *
      * NOTE: This method will not include cancelled people.
      *
-     * [ HTTP: GET /api/v1/group/{groupid}/direct-members ]
+     * ``[ HTTP: GET /api/v1/group/{groupid}/direct-members ]``
      *
      * @param string $groupid [required] The ID or name of the group.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -384,31 +384,33 @@ class GroupMethods
      * inclusion of other groups.
      *
      * Any non-cancelled people in the list of identifiers specified by
-     * {@code addIds} will be added to the group. This list should be a
+     * ``addIds`` will be added to the group. This list should be a
      * comma-separated list of identifiers, each of which may be either a
      * CRSid or an identifier from another identifier scheme, prefixed with
-     * that scheme's name and a slash. For example {@code "mug99"} or
-     * {@code "usn/123456789"}.
+     * that scheme's name and a slash. For example ``"mug99"`` or
+     * ``"usn/123456789"``.
      *
-     * Any people in the list of identifiers specified by {@code removeIds}
+     * Any people in the list of identifiers specified by ``removeIds``
      * will be removed from the group, except if they are also in the list
-     * {@code addIds}. The special identifier {@code "all-members"} may be
+     * ``addIds``. The special identifier ``"all-members"`` may be
      * used to remove all existing group members, replacing them with the
-     * list specified by {@code newIds}.
+     * list specified by ``newIds``.
      *
-     * Examples:
-     *
+     * **Examples:**
+     * <pre>
      * updateDirectMembers("test-group",
      *                     "mug99,crsid/yyy99,usn/123456789",
      *                     "xxx99",
      *                     "Remove xxx99 and add mug99, yyy99 and usn/123456789 to test-group");
-     *
+     * </pre>
+     * <pre>
      * updateDirectMembers("test-group",
      *                     "xxx99,yyy99",
      *                     "all-members",
      *                     "Set the membership of test-group to include only xxx99 and yyy99");
+     * </pre>
      *
-     * [ HTTP: PUT /api/v1/group/{groupid}/direct-members ]
+     * ``[ HTTP: PUT /api/v1/group/{groupid}/direct-members ]``
      *
      * @param string $groupid [required] The ID or name of the group.
      * @param string $addIds [optional] The identifiers of people to add to the group.
@@ -447,12 +449,12 @@ class GroupMethods
      * and so on.
      *
      * By default, only a few basic details about each member are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each person.
      *
      * NOTE: This method will not include cancelled people.
      *
-     * [ HTTP: GET /api/v1/group/{groupid}/members ]
+     * ``[ HTTP: GET /api/v1/group/{groupid}/members ]``
      *
      * @param string $groupid [required] The ID or name of the group.
      * @param string $fetch [optional] A comma-separated list of any additional

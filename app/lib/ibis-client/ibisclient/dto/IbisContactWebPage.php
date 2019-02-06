@@ -31,9 +31,9 @@ class IbisContactWebPage extends IbisDto
     /* Properties marked as @XmlElement in the JAXB class */
     protected static $xmlElems = array("url", "label");
 
-    /** The web page's URL. */
+    /** @var string The web page's URL. */
     public $url;
 
-    /** The web page's label (link text) if set. */
+    /** @var string The web page's label (link text) if set. */
     public $label;
 }

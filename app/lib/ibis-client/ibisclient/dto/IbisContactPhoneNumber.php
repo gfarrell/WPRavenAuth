@@ -34,12 +34,12 @@ class IbisContactPhoneNumber extends IbisDto
     /* Properties marked as @XmlElement in the JAXB class */
     protected static $xmlElems = array("number", "comment");
 
-    /** The phone number's type. */
+    /** @var string The phone number's type. */
     public $phoneType;
 
-    /** The phone number. */
+    /** @var string The phone number. */
     public $number;
 
-    /** Any comment associated with the phone number. */
+    /** @var string Any comment associated with the phone number. */
     public $comment;
 }

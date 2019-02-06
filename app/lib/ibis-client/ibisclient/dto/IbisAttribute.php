@@ -22,8 +22,9 @@ require_once "IbisDto.php";
 
 /**
  * Class representing an attribute of a person or institution returned by
- * the web service API. Note that for institution attributes, the instid,
- * visibility and owningGroupid fields will be null.
+ * the web service API. Note that for institution attributes, the
+ * {@link instid}, {@link visibility} and {@link owningGroupid} fields will
+ * be ``null``.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */
@@ -37,47 +38,58 @@ class IbisAttribute extends IbisDto
      /* Properties marked as @XmlElement in the JAXB class */
     protected static $xmlElems = array("value", "binaryData", "comment");
 
-    /** The unique internal identifier of the attribute. */
+    /** @var int The unique internal identifier of the attribute. */
     public $attrid;
 
-    /** The attribute's scheme. */
+    /** @var string The attribute's scheme. */
     public $scheme;
 
-    /** The attribute's value (except for binary attributes). */
+    /** @var string The attribute's value (except for binary attributes). */
     public $value;
 
-    /** The binary data held in the attribute (e.g., a JPEG photo). */
+    /**
+     * @var string The binary data held in the attribute (e.g., a JPEG
+     * photo).
+     */
     public $binaryData;
 
-    /** Any comment associated with the attribute. */
+    /** @var string Any comment associated with the attribute. */
     public $comment;
 
     /**
-     * For a person attribute, the optional institution that the attribute
-     * is associated with. This will not be set for institution attributes.
+     * @var string For a person attribute, the optional institution that the
+     * attribute is associated with. This will not be set for institution
+     * attributes.
      */
     public $instid;
 
     /**
-     * For a person attribute, it's visibility ({@code "private"},
-     * {@code "institution"}, {@code "university"} or {@code "world"}). This
+     * @var string For a person attribute, it's visibility (``"private"``,
+     * ``"institution"``, ``"university"`` or ``"world"``). This
      * will not be set for institution attributes.
      */
     public $visibility;
 
-    /** For time-limited attributes, the date from which it takes effect. */
+    /**
+     * @var DateTime For time-limited attributes, the date from which it
+     * takes effect.
+     */
     public $effectiveFrom;
 
-    /** For time-limited attributes, the date after which it is no longer effective. */
+    /**
+     * @var DateTime For time-limited attributes, the date after which it is
+     * no longer effective.
+     */
     public $effectiveTo;
 
     /**
-     * For a person attribute, the ID of the group that owns it (typically
-     * the user agent group that created it).
+     * @var string For a person attribute, the ID of the group that owns it
+     * (typically the user agent group that created it).
      */
     public $owningGroupid;
 
     /**
+     * @ignore
      * Create an IbisAttribute from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.
@@ -94,6 +106,7 @@ class IbisAttribute extends IbisDto
     }
 
     /**
+     * @ignore
      * Overridden end element callback to decode binary data.
      *
      * @param string $tagname The name of the XML element.
@@ -110,11 +123,11 @@ class IbisAttribute extends IbisDto
     /**
      * Encode this attribute as an ASCII string suitable for passing as a
      * parameter to a web service API method. This string is compatible with
-     * {@link #valueOf(java.lang.String)} on the corresponding Java class,
+     * ``valueOf(java.lang.String)`` on the corresponding Java class,
      * used on the server to decode the attribute parameter.
      *
-     * NOTE: This requires that the attribute's {@link #scheme} field be
-     * set, and typically the {@link #value} or {@link #binaryData} should
+     * NOTE: This requires that the attribute's {@link scheme} field be
+     * set, and typically the {@link value} or {@link binaryData} should
      * also be set.
      *
      * @return string The string encoding of this attribute.

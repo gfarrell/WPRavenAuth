@@ -18,7 +18,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Autoload.php';
 
 require_once dirname(__FILE__) . "/../ibisclient/client/IbisClientConnection.php";
 require_once dirname(__FILE__) . "/../ibisclient/client/IbisException.php";
@@ -106,28 +106,28 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $this->assertEquals("Database administrator and developer", $attrs[0]->value);
         $this->assertEquals("email", $attrs[1]->scheme);
 
-        $attr = UnitTests::$pm->getAttribute("crsid", "dar17", $attrs[0]->attrid);
-        $this->assertEquals($attrs[0]->scheme, $attr->scheme);
-        $this->assertEquals($attrs[0]->value, $attr->value);
+        $attr = UnitTests::$pm->getAttribute("crsid", "dar17", $attrs[1]->attrid);
+        $this->assertEquals($attrs[1]->scheme, $attr->scheme);
+        $this->assertEquals($attrs[1]->value, $attr->value);
     }
 
     public function testGetPersonInstsAndGroups()
     {
-        $person = UnitTests::$pm->getPerson("crsid", "dar17", "all_insts,all_groups");
-        $this->assertEquals("UCS", $person->institutions[0]->acronym);
-        $this->assertEquals("cs-members", $person->groups[0]->name);
+        $person = UnitTests::$pm->getPerson("crsid", "mug99", "all_insts,all_groups");
+        $this->assertEquals("UISTEST", $person->institutions[0]->instid);
+        $this->assertEquals("uistest-members", $person->groups[0]->name);
     }
 
     public function testGetPersonInstManagers()
     {
-        $person = UnitTests::$pm->getPerson("crsid", "dar17", "all_insts.managed_by_groups.all_members");
+        $person = UnitTests::$pm->getPerson("crsid", "mug99", "all_insts.managed_by_groups.all_members");
 
         $inst = $person->institutions[0];
-        $this->assertEquals("CS", $inst->instid);
+        $this->assertEquals("UISTEST", $inst->instid);
 
         $mgrGroup = $inst->managedByGroups[0];
-        $this->assertEquals("cs-editors", $mgrGroup->name);
-        $this->assertEquals("A. Kitching", $mgrGroup->members[0]->registeredName);
+        $this->assertEquals("uistest-editors", $mgrGroup->name);
+        $this->assertEquals("Dr D.A. Rasheed", $mgrGroup->members[0]->registeredName);
     }
 
     public function testListPeople()
@@ -148,12 +148,16 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, sizeof($people));
         $this->assertEquals("ijl20", $people[0]->identifier->value);
 
-        $people = UnitTests::$pm->search("phoenix 23 database administrator", false, false,
-                                         "staff", "address,title", 0, 100, null, "address,title");
-        $this->assertEquals(1, sizeof($people));
+        $people = UnitTests::$pm->search("rasheed UIS", false, false,
+                                         "staff", "surname,jdInstid", 0, 100, null, "address,title");
+        $this->assertEquals(2, sizeof($people));
         $this->assertEquals("dar17", $people[0]->identifier->value);
         $this->assertEquals("Database administrator and developer", $people[0]->attributes[0]->value);
-        $this->assertEquals("Phoenix 23", $people[0]->attributes[1]->value);
+        $this->assertTrue(strpos($people[0]->attributes[1]->value, "Roger Needham") !== false);
+
+        $people = UnitTests::$pm->search("dar54", false, true);
+        $this->assertEquals(1, sizeof($people));
+        $this->assertEquals("dar54", $people[0]->identifier->value);
     }
 
     public function testPersonSearchCount()
@@ -164,7 +168,7 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testIsPersonMemberOfInst()
     {
-        $this->assertTrue(UnitTests::$pm->isMemberOfInst("crsid", "dar17", "CS"));
+        $this->assertTrue(UnitTests::$pm->isMemberOfInst("crsid", "dar17", "UIS"));
         $this->assertFalse(UnitTests::$pm->isMemberOfInst("crsid", "dar17", "ENG"));
         $this->assertFalse(UnitTests::$pm->isMemberOfInst("crs", "dar1734-sdfr", "CS"));
     }
@@ -197,8 +201,8 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGetPersonsManagedInsts()
     {
-        $person = UnitTests::$pm->getPerson("crsid", "ijl20", "all_groups.manages_insts");
-        $insts = UnitTests::$pm->getManagedInsts("crsid", "ijl20");
+        $person = UnitTests::$pm->getPerson("crsid", "dar99", "all_groups.manages_insts");
+        $insts = UnitTests::$pm->getManagedInsts("crsid", "dar99");
 
         $managedInsts = array();
         foreach ($person->groups as $group)
@@ -218,10 +222,10 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGetPersonsGroups()
     {
-        $person = UnitTests::$pm->getPerson("crsid", "ijl20", "all_groups");
-        $groups = UnitTests::$pm->getGroups("crsid", "ijl20");
+        $person = UnitTests::$pm->getPerson("crsid", "dar99", "all_groups");
+        $groups = UnitTests::$pm->getGroups("crsid", "dar99");
 
-        $this->assertTrue(sizeof($person->groups) > 10);
+        $this->assertTrue(sizeof($person->groups) > 2);
         $this->assertTrue(sizeof($person->groups) == sizeof($groups));
         for ($i=0; $i<sizeof($groups); $i++)
         {
@@ -234,8 +238,8 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGetPersonsManagedGroups()
     {
-        $person = UnitTests::$pm->getPerson("crsid", "ijl20", "all_groups.manages_groups");
-        $groups = UnitTests::$pm->getManagedGroups("crsid", "ijl20");
+        $person = UnitTests::$pm->getPerson("crsid", "dar99", "all_groups.manages_groups");
+        $groups = UnitTests::$pm->getManagedGroups("crsid", "dar99");
 
         $managedGroups = array();
         foreach ($person->groups as $group)
@@ -248,7 +252,6 @@ class UnitTests extends PHPUnit_Framework_TestCase
         }
         usort($managedGroups, "cmp");
 
-        $this->assertTrue(sizeof($managedGroups) > 10);
         $this->assertTrue(sizeof($managedGroups) == sizeof($groups));
         for ($i=0; $i<sizeof($groups); $i++)
         {
@@ -507,8 +510,8 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGetInstMembers()
     {
-        $inst = UnitTests::$im->getInst("CS", "all_members");
-        $people = UnitTests::$im->getMembers("CS");
+        $inst = UnitTests::$im->getInst("UIS", "all_members");
+        $people = UnitTests::$im->getMembers("UIS");
 
         $this->assertTrue(sizeof($people) > 100);
         $this->assertTrue(sizeof($inst->members) == sizeof($people));
@@ -524,8 +527,8 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGetInstMembersJdInstid()
     {
-        $inst = UnitTests::$im->getInst("CS", "all_members.jdInstid");
-        $people = UnitTests::$im->getMembers("CS", "jdInstid");
+        $inst = UnitTests::$im->getInst("UIS", "all_members.jdInstid");
+        $people = UnitTests::$im->getMembers("UIS", "jdInstid");
 
         $this->assertTrue(sizeof($inst->members) == sizeof($people));
         for ($i=0; $i<sizeof($people); $i++)
@@ -534,12 +537,7 @@ class UnitTests extends PHPUnit_Framework_TestCase
             $p2 = $people[$i];
             $this->assertEquals($p1->identifier->scheme, $p2->identifier->scheme);
             $this->assertEquals($p1->identifier->value, $p2->identifier->value);
-            if ($p1->attributes[0]->value !== "DOWN" &&
-                $p1->attributes[0]->value !== "TES")
-            {
-                $this->assertEquals("CS", $p1->attributes[0]->value);
-                $this->assertEquals("CS", $p2->attributes[0]->value);
-            }
+            $this->assertEquals($p1->attributes[0]->value, $p2->attributes[0]->value);
         }
     }
 
@@ -602,23 +600,23 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $fok = substr($f.$f.$f.$f.$f, 1);
         $ferr = $fok . ".child_insts";
 
-        $inst = UnitTests::$im->getInst("CS", $fok);
+        $inst = UnitTests::$im->getInst("UIS", $fok);
         $cpInst = $inst->childInsts[0]->parentInsts[0];
-        $this->assertEquals("CS", $cpInst->instid);
+        $this->assertEquals("UIS", $cpInst->instid);
         $cpInst = $cpInst->childInsts[0]->parentInsts[0];
-        $this->assertEquals("CS", $cpInst->instid);
+        $this->assertEquals("UIS", $cpInst->instid);
         $cpInst = $cpInst->childInsts[0]->parentInsts[0];
-        $this->assertEquals("CS", $cpInst->instid);
+        $this->assertEquals("UIS", $cpInst->instid);
         $cpInst = $cpInst->childInsts[0]->parentInsts[0];
-        $this->assertEquals("CS", $cpInst->instid);
+        $this->assertEquals("UIS", $cpInst->instid);
         $cpInst = $cpInst->childInsts[0]->parentInsts[0];
-        $this->assertEquals("CS", $cpInst->instid);
+        $this->assertEquals("UIS", $cpInst->instid);
         $cpInst = $cpInst->childInsts[0]->parentInsts[0];
-        $this->assertEquals("CS", $cpInst->instid);
+        $this->assertEquals("UIS", $cpInst->instid);
 
         try
         {
-            $inst = UnitTests::$im->getInst("CS", $ferr);
+            $inst = UnitTests::$im->getInst("UIS", $ferr);
             throw new Exception("Should have failed due to fetch depth too large");
         }
         catch (Exception $e)
@@ -641,16 +639,15 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testInstSearch()
     {
-        $insts = UnitTests::$im->search("computing service", false, false,
+        $insts = UnitTests::$im->search("information services", false, false,
                                         null, 0, 100, "instid", null);
-        $this->assertEquals("CS", $insts[0]->instid);
+        $this->assertEquals("UIS", $insts[0]->instid);
 
-        $insts = UnitTests::$im->search("CB2 3QH", false, false,
-                                        "address", 0, 100, null, "email");
-        $this->assertEquals(2, sizeof($insts));
-        $this->assertEquals("SEC", $insts[0]->instid);
-        $this->assertEquals("CS", $insts[1]->instid);
-        $this->assertEquals("reception@ucs.cam.ac.uk", $insts[1]->attributes[0]->value);
+        $insts = UnitTests::$im->search("CB3 0RB", false, false,
+                                        "address", 0, 100, null, "phone_numbers");
+        $this->assertEquals(1, sizeof($insts));
+        $this->assertEquals("UIS", $insts[0]->instid);
+        $this->assertEquals("34600", $insts[0]->attributes[0]->value);
     }
 
     public function testInstSearchCount()
@@ -671,7 +668,7 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $this->assertEquals("34600", $contactRows[0]->phoneNumbers[0]->number);
         $this->assertEquals("Director", $contactRows[2]->description);
         $this->assertEquals("Ian Lewis", $contactRows[2]->people[0]->displayName);
-        $this->assertEquals("CS", $contactRows[2]->people[0]->attributes[0]->value);
+        $this->assertEquals("UIS", $contactRows[2]->people[0]->attributes[0]->value);
 
         $this->assertEquals(sizeof($inst->contactRows), sizeof($contactRows));
         for ($i=0; $i<sizeof($contactRows); $i++)
@@ -950,10 +947,17 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGetGroupInsts()
     {
-        $group = UnitTests::$gm->getGroup("cs-editors", "owning_insts,manages_insts");
-        $this->assertEquals("CS", $group->owningInsts[0]->instid);
-        $this->assertEquals("CS", $group->managesInsts[0]->instid);
+        $group = UnitTests::$gm->getGroup("uis-editors", "owning_insts,manages_insts");
+        $this->assertEquals("UIS", $group->owningInsts[0]->instid);
+        $this->assertEquals("UIS", $group->managesInsts[0]->instid);
         $this->assertTrue($group->owningInsts[0] == $group->managesInsts[0]);
+    }
+
+    public function testGetGroupMembersOfInst()
+    {
+        $group = UnitTests::$gm->getGroup("uis-members", "members_of_inst");
+        $this->assertEquals("UIS", $group->membersOfInst->instid);
+        $this->assertEquals("University Information Services", $group->membersOfInst->name);
     }
 
     public function testGetGroupMgrs()
@@ -975,15 +979,15 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testGroupSearch()
     {
-        $groups = UnitTests::$gm->search("computing service editors");
-        $this->assertEquals("csconslt-editors", $groups[0]->name);
+        $groups = UnitTests::$gm->search("Editors group for UIS");
+        $this->assertEquals("uis-editors", $groups[0]->name);
 
-        $groups = UnitTests::$gm->search("computing service testing members", false, false,
+        $groups = UnitTests::$gm->search("information services test accounts members", false, false,
                                          0, 1, null, "all_members");
         $this->assertEquals(1, sizeof($groups));
-        $this->assertEquals("cstest-members", $groups[0]->name);
-        $this->assertTrue(sizeof($groups[0]->members) > 50);
-        $this->assertEquals("ads99", $groups[0]->members[0]->identifier->value);
+        $this->assertEquals("uistest-members", $groups[0]->name);
+        $this->assertTrue(sizeof($groups[0]->members) > 10);
+        $this->assertEquals("abc123", $groups[0]->members[0]->identifier->value);
     }
 
     public function testGroupSearchCount()

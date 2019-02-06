@@ -36,51 +36,57 @@ class IbisAttributeScheme extends IbisDto
     protected static $xmlElems = array("ldapName", "displayName",
                                        "dataType", "regexp");
 
-    /** The unique identifier of the attribute scheme. */
+    /** @var string The unique identifier of the attribute scheme. */
     public $schemeid;
 
     /**
-     * The attribute scheme's precedence. Methods that return or display
-     * attributes sort the results primarily in order of increasing values
-     * of attribute scheme precedence.
+     * @var int The attribute scheme's precedence. Methods that return or
+     * display attributes sort the results primarily in order of increasing
+     * values of attribute scheme precedence.
      */
     public $precedence;
 
     /**
-     * The name of the attribute scheme in LDAP, if it is exported to LDAP.
-     * Note that many attributes are not exported to LDAP, in which case
-     * this name is typically just equal to the scheme's ID.
+     * @var string The name of the attribute scheme in LDAP, if it is
+     * exported to LDAP. Note that many attributes are not exported to LDAP,
+     * in which case this name is typically just equal to the scheme's ID.
      */
     public $ldapName;
 
-    /** The display name for labelling attributes in this scheme. */
+    /**
+     * @var string The display name for labelling attributes in this scheme.
+     */
     public $displayName;
 
-    /** The attribute scheme's datatype. */
+    /** @var string The attribute scheme's datatype. */
     public $dataType;
 
-    /** Flag indicating whether attributes in this scheme can be multi-valued. */
+    /**
+     * @var boolean Flag indicating whether attributes in this scheme can be
+     * multi-valued.
+     */
     public $multiValued;
 
     /**
-     * Flag for textual attributes schemes indicating whether they are
-     * multi-lined.
+     * @var boolean Flag for textual attributes schemes indicating whether
+     * they are multi-lined.
      */
     public $multiLined;
 
     /**
-     * Flag indicating whether attributes of this scheme are searched by
-     * the default search functionality.
+     * @var boolean Flag indicating whether attributes of this scheme are
+     * searched by the default search functionality.
      */
     public $searchable;
 
     /**
-     * For textual attributes, an optional regular expression that all
-     * attributes in this scheme match.
+     * @var string For textual attributes, an optional regular expression
+     * that all attributes in this scheme match.
      */
     public $regexp;
 
     /**
+     * @ignore
      * Create an IbisAttributeScheme from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.

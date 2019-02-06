@@ -33,19 +33,25 @@ class IbisError extends IbisDto
     /* Properties marked as @XmlElement in the JAXB class */
     protected static $xmlElems = array("code", "message", "details");
 
-    /** The HTTP error status code. */
+    /** @var int The HTTP error status code. */
     public $status;
 
-    /** A short textual description of the error status code. */
+    /** @var string A short textual description of the error status code. */
     public $code;
 
-    /** A short textual description of the error message (typically one line). */
+    /**
+     * @var string A short textual description of the error message
+     * (typically one line).
+     */
     public $message;
 
-    /** The full details of the error (e.g., a Java stack trace). */
+    /**
+     * @var string The full details of the error (e.g., a Java stack trace).
+     */
     public $details;
 
     /**
+     * @ignore
      * Create an IbisError from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.

@@ -41,45 +41,45 @@ class IbisInstitution extends IbisDto
                                         "parentInsts", "childInsts", "groups",
                                         "membersGroups", "managedByGroups");
 
-    /** Flag indicating if the institution is cancelled. */
+    /** @var boolean Flag indicating if the institution is cancelled. */
     public $cancelled;
 
-    /** The institution's unique ID (e.g., "CS"). */
+    /** @var string The institution's unique ID (e.g., "CS"). */
     public $instid;
 
-    /** The institution's name. */
+    /** @var string The institution's name. */
     public $name;
 
-    /** The institutions's acronym, if set (e.g., "UCS"). */
+    /** @var string The institution's acronym, if set (e.g., "UCS"). */
     public $acronym;
 
     /**
-     * A list of the institution's attributes. This will only be populated
-     * if the <code>fetch</code> parameter includes the {@code "all_attrs"}
-     * option, or any specific attribute schemes such as {@code "email"} or
-     * {@code "address"}, or the special pseudo-attribute scheme
-     * {@code "phone_numbers"}.
+     * @var IbisAttribute[] A list of the institution's attributes. This will
+     * only be populated if the ``fetch`` parameter includes the
+     * ``"all_attrs"`` option, or any specific attribute schemes such as
+     * ``"email"`` or ``"address"``, or the special pseudo-attribute scheme
+     * ``"phone_numbers"``.
      */
     public $attributes;
 
     /**
-     * A list of the institution's contact rows. This will only be populated
-     * if the <code>fetch</code> parameter includes the
-     * {@code "contact_rows"} option.
+     * @var IbisContactRow[] A list of the institution's contact rows. This
+     * will only be populated if the ``fetch`` parameter includes the
+     * ``"contact_rows"`` option.
      */
     public $contactRows;
 
     /**
-     * A list of the institution's members. This will only be populated if
-     * the <code>fetch</code> parameter includes the {@code "all_members"}
+     * @var IbisPerson[] A list of the institution's members. This will only
+     * be populated if the ``fetch`` parameter includes the ``"all_members"``
      * option.
      */
     public $members;
 
     /**
-     * A list of the institution's parent institutions. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "parent_insts"} option.
+     * @var IbisInstitution[] A list of the institution's parent
+     * institutions. This will only be populated if the ``fetch`` parameter
+     * includes the ``"parent_insts"`` option.
      *
      * NOTE: Currently all institutions have one parent, but in the future
      * institutions may have multiple parents.
@@ -87,44 +87,46 @@ class IbisInstitution extends IbisDto
     public $parentInsts;
 
     /**
-     * A list of the institution's child institutions. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "child_insts"} option.
+     * @var IbisInstitution[] A list of the institution's child institutions.
+     * This will only be populated if the ``fetch`` parameter includes the
+     * ``"child_insts"`` option.
      */
     public $childInsts;
 
     /**
-     * A list of all the groups that belong to the institution. This will
-     * only be populated if the <code>fetch</code> parameter includes the
-     * {@code "inst_groups"} option.
+     * @var IbisGroup[] A list of all the groups that belong to the
+     * institution. This will only be populated if the ``fetch`` parameter
+     * includes the ``"inst_groups"`` option.
      */
     public $groups;
 
     /**
-     * A list of the groups that form the institution's membership. This
-     * will only be populated if the <code>fetch</code> parameter includes
-     * the {@code "members_groups"} option.
+     * @var IbisGroup[] A list of the groups that form the institution's
+     * membership. This will only be populated if the ``fetch`` parameter
+     * includes the ``"members_groups"`` option.
      */
     public $membersGroups;
 
     /**
-     * A list of the groups that manage this institution. This will only
-     * be populated if the <code>fetch</code> parameter includes the
-     * {@code "managed_by_groups"} option.
+     * @var IbisGroup[] A list of the groups that manage this institution.
+     * This will only be populated if the ``fetch`` parameter includes the
+     * ``"managed_by_groups"`` option.
      */
     public $managedByGroups;
 
     /**
-     * An ID that can uniquely identify this institution within the
-     * returned XML/JSON document. This is only used in the flattened
+     * @ignore
+     * @var string An ID that can uniquely identify this institution within
+     * the returned XML/JSON document. This is only used in the flattened
      * XML/JSON representation (if the "flatten" parameter is specified).
      */
     public $id;
 
     /**
-     * A reference (by id) to an institution element in the XML/JSON
-     * document. This is only used in the flattened XML/JSON representation
-     * (if the "flatten" parameter is specified).
+     * @ignore
+     * @var string A reference (by id) to an institution element in the
+     * XML/JSON document. This is only used in the flattened XML/JSON
+     * representation (if the "flatten" parameter is specified).
      */
     public $ref;
 
@@ -132,6 +134,7 @@ class IbisInstitution extends IbisDto
     private $unflattened;
 
     /**
+     * @ignore
      * Create an IbisInstitution from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.
@@ -144,7 +147,12 @@ class IbisInstitution extends IbisDto
         $this->unflattened = false;
     }
 
-    /** Unflatten a single IbisInstitution. */
+    /**
+     * @ignore
+     * Unflatten a single IbisInstitution.
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     */
     public function unflatten($em)
     {
         if (isset($this->ref))
@@ -166,7 +174,13 @@ class IbisInstitution extends IbisDto
         return $this;
     }
 
-    /** Unflatten a list of IbisInstitution objects (done in place). */
+    /**
+     * @ignore
+     * Unflatten a list of IbisInstitution objects (done in place).
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     * @param IbisInstitution[] $insts The institutions to unflatten.
+     */
     public static function unflattenInsts($em, &$insts)
     {
         if (isset($insts))

@@ -36,6 +36,7 @@ abstract class IbisDto
     protected static $xmlArrays = array(); // Set in sub-classes
 
     /**
+     * @ignore
      * Create an IbisDto from the attributes of an XML node. This just sets
      * the properties marked as @XmlAttribute in the JAXB class.
      *
@@ -48,6 +49,7 @@ abstract class IbisDto
     }
 
     /**
+     * @ignore
      * Start element callback invoked during XML parsing when the opening
      * tag of a child element is encountered. This creates and returns any
      * properties marked as @XmlElementWrapper in the JAXB class, so that
@@ -71,6 +73,7 @@ abstract class IbisDto
     }
 
     /**
+     * @ignore
      * End element callback invoked during XML parsing when the end tag of
      * a child element is encountered, and the tag's data is available. This
      * sets the value of any properties marked as @XmlElement in the JAXB

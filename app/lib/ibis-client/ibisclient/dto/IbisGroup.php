@@ -43,123 +43,127 @@ class IbisGroup extends IbisDto
                                         "readsGroups", "readByGroups",
                                         "includesGroups", "includedByGroups");
 
-    /** Flag indicating if the group is cancelled. */
+    /** @var boolean Flag indicating if the group is cancelled. */
     public $cancelled;
 
-    /** The group's numeric ID (actually a string e.g., "100656"). */
+    /**
+     * @var string The group's numeric ID (actually a string e.g., "100656").
+     */
     public $groupid;
 
-    /** The group's unique name (e.g., "cs-editors"). */
+    /** @var string The group's unique name (e.g., "cs-editors"). */
     public $name;
 
-    /** The group's title. */
+    /** @var string The group's title. */
     public $title;
 
-    /** The more detailed description of the group. */
+    /** @var string The more detailed description of the group. */
     public $description;
 
-    /** The group's email address. */
+    /** @var string The group's email address. */
     public $email;
 
     /**
-     * The details of the institution for which this group forms all or
-     * part of the membership. This will only be set for groups that are
-     * membership groups of institutions if the <code>fetch</code> parameter
-     * includes the {@code "members_of_inst"} option.
+     * @var IbisInstitution The details of the institution for which this
+     * group forms all or part of the membership. This will only be set for
+     * groups that are membership groups of institutions if the ``fetch``
+     * parameter includes the ``"members_of_inst"`` option.
      */
     public $membersOfInst;
 
     /**
-     * A list of the group's members, including (recursively) any members of
-     * any included groups. This will only be populated if the
-     * <code>fetch</code> parameter includes the {@code "all_members"}
+     * @var IbisPerson[] A list of the group's members, including
+     * (recursively) any members of any included groups. This will only be
+     * populated if the ``fetch`` parameter includes the ``"all_members"``
      * option.
      */
     public $members;
 
     /**
-     * A list of the group's direct members, not including any members
-     * included via groups included by this group. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "direct_members"} option.
+     * @var IbisPerson[] A list of the group's direct members, not including
+     * any members included via groups included by this group. This will only
+     * be populated if the ``fetch`` parameter includes the
+     * ``"direct_members"`` option.
      */
     public $directMembers;
 
     /**
-     * A list of the institutions to which this group belongs. This will only
-     * be populated if the <code>fetch</code> parameter includes the
-     * {@code "owning_insts"} option.
+     * @var IbisInstitution[] A list of the institutions to which this group
+     * belongs. This will only be populated if the ``fetch`` parameter
+     * includes the ``"owning_insts"`` option.
      */
     public $owningInsts;
 
     /**
-     * A list of the institutions managed by this group. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "manages_insts"} option.
+     * @var IbisInstitution[] A list of the institutions managed by this
+     * group. This will only be populated if the ``fetch`` parameter includes
+     * the ``"manages_insts"`` option.
      */
     public $managesInsts;
 
     /**
-     * A list of the groups managed by this group. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "manages_groups"} option.
+     * @var IbisGroup[] A list of the groups managed by this group. This will
+     * only be populated if the ``fetch`` parameter includes the
+     * ``"manages_groups"`` option.
      */
     public $managesGroups;
 
     /**
-     * A list of the groups that manage this group. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "managed_by_groups"} option.
+     * @var IbisGroup[] A list of the groups that manage this group. This
+     * will only be populated if the ``fetch`` parameter includes the
+     * ``"managed_by_groups"`` option.
      */
     public $managedByGroups;
 
     /**
-     * A list of the groups that this group has privileged access to. Members
-     * of this group will be able to read the members of any of those groups,
-     * regardless of the membership visibilities. This will only be populated
-     * if the <code>fetch</code> parameter includes the
-     * {@code "reads_groups"} option.
+     * @var IbisGroup[] A list of the groups that this group has privileged
+     * access to. Members of this group will be able to read the members of
+     * any of those groups, regardless of the membership visibilities. This
+     * will only be populated if the ``fetch`` parameter includes the
+     * ``"reads_groups"`` option.
      */
     public $readsGroups;
 
     /**
-     * A list of the groups that have privileged access to this group.
-     * Members of those groups will be able to read the members of this
-     * group, regardless of the membership visibilities. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "read_by_groups"} option.
+     * @var IbisGroup[] A list of the groups that have privileged access to
+     * this group. Members of those groups will be able to read the members
+     * of this group, regardless of the membership visibilities. This will
+     * only be populated if the ``fetch`` parameter includes the
+     * ``"read_by_groups"`` option.
      */
     public $readByGroups;
 
     /**
-     * A list of the groups directly included in this group. Any members of
-     * the included groups (and recursively any groups that they include)
-     * will automatically be included in this group. This will only be
-     * populated if the <code>fetch</code> parameter includes the
-     * {@code "includes_groups"} option.
+     * @var IbisGroup[] A list of the groups directly included in this group.
+     * Any members of the included groups (and recursively any groups that
+     * they include) will automatically be included in this group. This will
+     * only be populated if the ``fetch`` parameter includes the
+     * ``"includes_groups"`` option.
      */
     public $includesGroups;
 
     /**
-     * A list of the groups that direcly include this group. Any members of
-     * this group will automatically be included in those groups (and
-     * recursively in any groups that include those groups). This will only
-     * be populated if the <code>fetch</code> parameter includes the
-     * {@code "included_by_groups"} option.
+     * @var IbisGroup[] A list of the groups that directly include this
+     * group. Any members of this group will automatically be included in
+     * those groups (and recursively in any groups that include those
+     * groups). This will only be populated if the ``fetch`` parameter
+     * includes the ``"included_by_groups"`` option.
      */
     public $includedByGroups;
 
     /**
-     * An ID that can uniquely identify this group within the returned
-     * XML/JSON document. This is only used in the flattened XML/JSON
-     * representation (if the "flatten" parameter is specified).
+     * @ignore
+     * @var string An ID that can uniquely identify this group within the
+     * returned XML/JSON document. This is only used in the flattened
+     * XML/JSON representation (if the ``"flatten"`` parameter is specified).
      */
     public $id;
 
     /**
-     * A reference (by id) to a group element in the XML/JSON document.
-     * This is only used in the flattened XML/JSON representation (if the
-     * "flatten" parameter is specified).
+     * @ignore
+     * @var string A reference (by id) to a group element in the XML/JSON
+     * document. This is only used in the flattened XML/JSON representation
+     * (if the ``"flatten"`` parameter is specified).
      */
     public $ref;
 
@@ -167,6 +171,7 @@ class IbisGroup extends IbisDto
     private $unflattened;
 
     /**
+     * @ignore
      * Create an IbisGroup from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.
@@ -179,7 +184,12 @@ class IbisGroup extends IbisDto
         $this->unflattened = false;
     }
 
-    /* Unflatten a single IbisGroup. */
+    /**
+     * @ignore
+     * Unflatten a single IbisGroup.
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     */
     public function unflatten($em)
     {
         if (isset($this->ref))
@@ -189,7 +199,7 @@ class IbisGroup extends IbisDto
             {
                 $group->unflattened = true;
                 if (isset($group->membersOfInst))
-                    $group->membersOfInst = $group->membersOfInst->unflatten(em);
+                    $group->membersOfInst = $group->membersOfInst->unflatten($em);
                 IbisPerson::unflattenPeople($em, $group->members);
                 IbisPerson::unflattenPeople($em, $group->directMembers);
                 IbisInstitution::unflattenInsts($em, $group->owningInsts);
@@ -206,7 +216,13 @@ class IbisGroup extends IbisDto
         return $this;
     }
 
-    /** Unflatten a list of IbisGroup objects (done in place). */
+    /**
+     * @ignore
+     * Unflatten a list of IbisGroup objects (done in place).
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     * @param IbisGroup[] $groups The groups to unflatten.
+     */
     public static function unflattenGroups($em, &$groups)
     {
         if (isset($groups))

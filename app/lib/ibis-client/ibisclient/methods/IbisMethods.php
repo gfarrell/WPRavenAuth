@@ -46,7 +46,7 @@ class IbisMethods
     /**
      * Get the current API version number.
      *
-     * [ HTTP: GET /api/v1/version ]
+     * ``[ HTTP: GET /api/v1/version ]``
      *
      * @return String The API version number string.
      */
