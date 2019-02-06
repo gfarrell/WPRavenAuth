@@ -350,29 +350,61 @@ def aligned_output(cols, indent, tab_size=4):
         result += cols[-1][row]
     return result
 
-def javadocs_to_text(docs, line_prefix=""):
+def list_items_to_text(docs):
     """
-    Convert some javadocs to plain text.
+    Convert HTML list items to plain text.
+
+    The result is in reST(reStructuredText) format, which is suitable for
+    Python's Sphinx documentation generator, and is also very human readable.
     """
     docs = docs.strip()
 
-    # Remove start and end javadoc comments
-    if docs.startswith("/**"): docs = docs[3:].strip()
-    if docs.endswith("*/"): docs = docs[:-2].strip()
+    # Remove any <ul> tags (the <li> tags are all we need)
+    docs = re.sub("</?ul[^>]*>", "", docs)
 
-    # Replace comment line prefixes with the specified line prefix
-    docs = re.sub("(?m)^\\s*[*][ ]?", line_prefix, docs)
+    # Iterate through all the <li> start and end tags, tracking the nested
+    # list depth (-1 => not in a list, 0 => in top-level list, ...)
+    result = ''
+    depth = -1
+    end_idx = 0
 
-    # Replace <li> with "*" for plain text bullet points
-    docs = re.sub("<li>\\s*", "* ", docs)
+    for li_match in re.finditer(re.compile("</?li[^>]*>"), docs):
+        li_start = li_match.start()
+        li_end = li_match.end()
+        li_text = li_match.group()
 
-    # Remove any other HTML tags
-    docs = re.sub("<[^>]+>", "", docs)
+        # Add on the next segment of text. If we're in a list, remove any
+        # other HTML tags it contains so list items are plain text.
+        segment = docs[end_idx:li_start].strip()
+        if depth >= 0: segment = re.sub("<[^>]+>", "", segment)
 
-    # Strip off end-of-line whitespace
-    docs = re.sub("(?m)\\s+$", "\n", docs)
+        if segment:
+            if depth >= 0:
+                # We're in a list, so add a bullet point marker to the first
+                # line and align any later lines with the first line's text
+                segment = re.sub("(?m)^\\s*", "  ", segment)
+                segment = "* " + segment[2:]
 
-    return docs
+                # Add more indentation according to the list nesting depth
+                if depth > 0: segment = re.sub("(?m)^", "  "*depth, segment)
+
+            # Add the segment, with a blank line before (and later, after)
+            # for compatibility with Sphinx
+            if result: result += "\n\n"
+            result += segment
+        end_idx = li_end
+
+        # Track the list nesting depth
+        if li_text.startswith("<li"): depth += 1
+        elif depth >= 0: depth -= 1
+
+    # Add the final segment (assumed to not be in a list)
+    segment = docs[end_idx:].strip()
+    if segment:
+        if result: result += "\n\n"
+        result += segment
+
+    return result
 
 def comment_out(text, comment="#"):
     """
@@ -496,8 +528,8 @@ def generate_java_method(method):
     # Method path - replace any placeholders with Java-style format specifiers
     path = method.path
     param_number = 1
-    while re.search("\{[^}]+\}", path):
-        path = re.sub("\{[^}]+\}", "%%%d$s" % param_number, path, 1)
+    while re.search("[{][^}]+[}]", path):
+        path = re.sub("[{][^}]+[}]", "%%%d$s" % param_number, path, 1)
         param_number += 1
 
     # Final method result (only int and boolean value fields need to be
@@ -583,7 +615,225 @@ PYTHON_METHOD_TEMPLATE = '''    def %(method_name)s(%(method_params)s):
         return %(result)s
 '''
 
-def generate_python_method(method):
+def get_python_param_type(param):
+    """
+    Returns the python type of a parameter (for documentation only).
+    """
+    if param.java_type == "boolean":           return "bool"
+    if param.java_type == "int":               return "int"
+    if param.java_type == "long":              return "long"
+    if param.java_type == "java.lang.Boolean": return "bool"
+    if param.java_type == "java.lang.Integer": return "int"
+    if param.java_type == "java.lang.Long":    return "long"
+    if param.java_type == "java.lang.String":  return "str"
+    if param.java_type == "java.util.Date":    return "date"
+    if param.java_type == "java.util.List":    return "str" # Special case
+
+    if param.java_type.startswith("uk.ac.cam.ucs.ibis.dto."):
+        return ":any:`" + param.java_type[23:] + "`"
+
+    error("Unsupported parameter type: '%s' (javaType: '%s')"\
+          %(param.kind, param.java_type))
+
+def get_python_return_type(method):
+    """
+    Returns the python return type of a method (for documentation only).
+    """
+    java_type = method.result_type
+    python_type = ""
+
+    if method.result_type.startswith("java.util.List<"):
+        java_type = java_type[15:-1]
+        python_type = "list of "
+
+    if java_type == "boolean":           return python_type + "bool"
+    if java_type == "int":               return python_type + "int"
+    if java_type == "long":              return python_type + "long"
+    if java_type == "Boolean":           return python_type + "bool"
+    if java_type == "Integer":           return python_type + "int"
+    if java_type == "Long":              return python_type + "long"
+    if java_type == "String":            return python_type + "str"
+    if java_type == "Date":              return python_type + "date"
+    if java_type == "java.lang.Boolean": return python_type + "bool"
+    if java_type == "java.lang.Integer": return python_type + "int"
+    if java_type == "java.lang.Long":    return python_type + "long"
+    if java_type == "java.lang.String":  return python_type + "str"
+    if java_type == "java.util.Date":    return python_type + "date"
+
+    return python_type + ":any:`" + java_type + "`"
+
+def javadocs_to_pydocs(docs, cls, line_prefix="", method=None):
+    """
+    Convert some javadocs to pydocs. This is plain text with some reST
+    (reStructuredText) markup.
+    """
+    docs = docs.strip()
+
+    # Remove start and end javadoc comments
+    if docs.startswith("/**"): docs = docs[3:].strip()
+    if docs.endswith("*/"): docs = docs[:-2].strip()
+
+    # Remove any comment line prefixes
+    docs = re.sub("(?m)^\\s*[*][ ]?", "", docs)
+
+    # == HTML tag processing ==
+
+    # Replace HTML headings with reST headings
+    docs = re.sub("(?s)<h[1-5][^>]*>(.+?)</h[1-5]>", "**\\1**", docs)
+
+    # Replace <b>XXX</b> with **XXX**
+    docs = re.sub("(?s)<b>(.+?)</b>", "**\\1**", docs)
+
+    # Replace simple <code>XXX</code> blocks with `XXX`, when XXX looks like
+    # a paramter or field name
+    docs = re.sub("<code[^>]*>([^\\s\"]+?)</code>", "`\\1`", docs)
+
+    # Replace other single-line <code>XXX</code> blocks with ``XXX``
+    docs = re.sub("<code[^>]*>(.+?)</code>", "``\\1``", docs)
+
+    # Replace all other <code> blocks with reST code-blocks
+    code_pattern = re.compile("(?s)<code[^>]*>(.+?)</code>")
+    code_match = code_pattern.search(docs)
+    while code_match:
+        code_text = code_match.group(1).strip()
+        code_text = re.sub("(?m)^", "  ", code_text)
+        code_text = "\n.. code-block:: python\n\n" + code_text
+        docs = docs[:code_match.start()] + code_text + docs[code_match.end():]
+        code_match = code_pattern.search(docs, code_match.start()+1)
+
+    # Similarly, replace <pre> blocks with reST code-blocks
+    pre_pattern = re.compile("(?s)<pre[^>]*>(.+?)</pre>")
+    pre_match = pre_pattern.search(docs)
+    while pre_match:
+        pre_text = pre_match.group(1).strip()
+        pre_text = re.sub("(?m)^", "  ", pre_text)
+        pre_text = "\n.. code-block:: python\n\n" + pre_text
+        docs = docs[:pre_match.start()] + pre_text + docs[pre_match.end():]
+        pre_match = pre_pattern.search(docs, pre_match.start()+1)
+
+    # Replace <li> with plain text "*" bullet points (reST format)
+    docs = list_items_to_text(docs)
+
+    # Remove any other HTML tags
+    docs = re.sub("<[^>]+>", "", docs)
+
+    # == End of HTML tag processing ==
+
+    # == Javadoc tag processing ==
+
+    # Replace named method links of the form  {@link #XXX YYY} with reST
+    # references of the form :any:`YYY <${cls.name}.XXX>`.
+    #
+    # Note that we must explicitly include the class name in the target reST
+    # reference, since the Sphinx does not correctly find the right method
+    # when there are multiple classes in the same module with methods of the
+    # same name.
+    docs = re.sub("[{]@link\\s+#([^}\\s]+)\\s+([^}]+)[}]",
+                  ":any:`\\2 <"+cls.name+".\\1>`", docs)
+
+    # Similiarly, replace method links of the form {@link #XXX} with reST
+    # references of the form :any:`${cls.name}.XXX()`.
+    #
+    # We explicitly add the parentheses, since Sphinx does not do this by
+    # default.
+    docs = re.sub("[{]@link\\s+#([^}]+)[}]", ":any:`"+cls.name+".\\1()`", docs)
+
+    # Replace any remaining named links of the form {@link XXX YYY} with reST
+    # references of the form :any:`YYY <XXX>`.
+    docs = re.sub("[{]@link\\s+([^}\\s]+)\\s+([^}]+)[}]", ":any:`\\2 <\\1>`", docs)
+
+    # Then replace any remaining links of the form {@link XXX} with reST
+    # references of the form :any:`XXX`.
+    docs = re.sub("[{]@link\\s+([^}]+)[}]", ":any:`\\1`", docs)
+
+    # Replace {@code null} with :any:`None`
+    docs = re.sub("[{]@code\\s+null[}]", ":any:`None`", docs)
+
+    # Replace {@code true} with :any:`True`
+    docs = re.sub("[{]@code\\s+true[}]", ":any:`True`", docs)
+
+    # Replace {@code false} with :any:`False`
+    docs = re.sub("[{]@code\\s+false[}]", ":any:`False`", docs)
+
+    # Replace simple {@code XXX} tags with `XXX`, when XXX looks like a
+    # paramter or field name
+    docs = re.sub("[{]@code\\s+([^}\\s\"]+)[}]", "`\\1`", docs)
+
+    # Replace all remaining {@code XXX} tags with ``XXX``
+    docs = re.sub("[{]@code\\s+([^}]+)[}]", "``\\1``", docs)
+
+    # Replace {@literal XXX} with XXX (no special handling)
+    docs = re.sub("[{]@literal\\s+([^}]+)[}]", "\\1", docs)
+
+    # Replace @author with a reST codeauthor directive
+    docs = re.sub("@author\\s+(.*)$", ".. codeauthor:: \\1", docs)
+
+    # Convert note paragraphs to reST format
+    note_pattern = re.compile("(?s)NOTE:\\s+(.*?)(?=(\n\n|$))")
+    note_match = note_pattern.search(docs)
+    while note_match:
+        note_text = note_match.group(1).strip()
+        note_text = re.sub("(?m)^", "  ", note_text)
+        note_text = ".. note::\n" + note_text
+        docs = docs[:note_match.start()] + note_text + docs[note_match.end():]
+        note_match = note_pattern.search(docs, note_match.start()+1)
+
+    # If this is a method's docs, deal with any parameters or returns docs
+    if method:
+        # Add a parameters section heading, if there are any parameters
+        docs = re.sub("(?s)(@param .*)", "**Parameters**\n\\1", docs)
+
+        # Convert each parameter to a format the can be handled by Sphinx
+        param_pattern = re.compile("""(?sx)
+            @param\\s+([^\\s]+)\\s+             # Parameter name
+            (.*?)(?=(@param|@return|@throw|$))  # Parameter docs
+            """)
+
+        param_match = param_pattern.search(docs)
+        while param_match:
+            # Get the parameter's name and type
+            param_name = param_match.group(1)
+            param_type = None
+            for param in method.all_params:
+                if param.name == param_name:
+                    param_type = get_python_param_type(param)
+                    break
+
+            # Construct the new parameter docs
+            param_docs = param_match.group(2).strip()
+            param_docs = re.sub("(?m)^", "    ", param_docs)
+            param_docs = "  `" + param_name + "` : " + param_type +\
+                         "\n" + param_docs + "\n\n"
+
+            # Replace the old parameter docs
+            docs = docs[:param_match.start()] +\
+                   param_docs + docs[param_match.end():]
+
+            # Move on to the next parameter
+            param_match = param_pattern.search(docs, param_match.start()+1)
+
+        # Convert the return documentation to a similar format
+        return_pattern = re.compile("(?s)@return\\s+(.*?)(?=(@throw|$))")
+
+        return_match = return_pattern.search(docs)
+        if return_match:
+            return_docs = return_match.group(1).strip()
+            return_docs = re.sub("(?m)^", "    ", return_docs)
+            return_docs = "**Returns**\n  " +\
+                          get_python_return_type(method) +\
+                          "\n" + return_docs
+            docs = docs[:return_match.start()] +\
+                   return_docs + docs[return_match.end():]
+
+    # Add the specified line prefix to each line
+    if line_prefix: docs = re.sub("(?m)^", line_prefix, docs)
+
+    # Strip off end-of-line whitespace
+    docs = re.sub("(?m)\\s+$", "\n", docs)
+
+    return docs
+
+def generate_python_method(cls, method):
     """
     Generate the Python code for a single web service API method, using the
     PYTHON_METHOD_TEMPLATE.
@@ -603,7 +853,7 @@ def generate_python_method(method):
     method_params = aligned_output([param_names], 9 + len(method.name))
 
     # Method docs in plain text
-    docs = javadocs_to_text(method.get_docs(), "        ")
+    docs = javadocs_to_pydocs(method.get_docs(), cls, "        ", method)
 
     # Path parameters
     param_pairs = [ '"'+x.name+'": '+x.name for x in method.path_params ]
@@ -618,7 +868,7 @@ def generate_python_method(method):
     form_params = aligned_output([param_pairs], 23)
 
     # Method path - replace any placeholders with Python format specifiers
-    path = re.sub("\{([^}]+)\}", "%(\\1)s", method.path)
+    path = re.sub("[{]([^}]+)[}]", "%(\\1)s", method.path)
 
     # Final method result (only int and boolean value fields need to be
     # coerced into the required type)
@@ -653,8 +903,8 @@ def generate_python_class(cls):
     Generate the Python code for a single XxxMethods class, using the
     PYTHON_CLASS_TEMPLATE.
     """
-    docs = javadocs_to_text(cls.docs, "    ")
-    methods = "\n".join(generate_python_method(x) for x in cls.methods)
+    docs = javadocs_to_pydocs(cls.docs, cls, "    ")
+    methods = "\n".join(generate_python_method(cls, x) for x in cls.methods)
 
     return PYTHON_CLASS_TEMPLATE % { "class_name": cls.name,
                                      "class_docs": docs,
@@ -668,7 +918,7 @@ PYTHON_MODULE_TEMPLATE = '''# === AUTO-GENERATED - DO NOT EDIT ===
 
 """
 Web service API methods. This module is fully auto-generated, and contains
-the Python equivalent of the XxxMethods Java classes for executing all API
+the Python equivalent of the `XxxMethods` Java classes for executing all API
 methods.
 """
 
@@ -702,7 +952,7 @@ PYTHON3_MODULE_TEMPLATE = '''# === AUTO-GENERATED - DO NOT EDIT ===
 
 """
 Web service API methods. This module is fully auto-generated, and contains
-the Python equivalent of the XxxMethods Java classes for executing all API
+the Python equivalent of the `XxxMethods` Java classes for executing all API
 methods.
 """
 
@@ -754,6 +1004,75 @@ def php_type(java_type):
     if java_type.startswith("uk.ac.cam.ucs.ibis.dto."): return java_type[23:]
     return java_type
 
+def javadocs_to_phpdocs(docs, line_prefix=""):
+    """
+    Convert some javadocs to PHP docs. This is more-or-less plain text, but
+    can contain some javadoc tags and reST (reStructuredText) markup.
+    """
+    docs = docs.strip()
+
+    # Remove start and end javadoc comments
+    if docs.startswith("/**"): docs = docs[3:].strip()
+    if docs.endswith("*/"): docs = docs[:-2].strip()
+
+    # Remove any comment line prefixes
+    docs = re.sub("(?m)^\\s*[*][ ]?", "", docs)
+
+    # == HTML tag processing ==
+
+    # Replace HTML headings with reST headings
+    docs = re.sub("(?s)<h[1-5][^>]*>(.+?)</h[1-5]>", "**\\1**", docs)
+
+    # Replace <b>XXX</b> with **XXX**
+    docs = re.sub("(?s)<b>(.+?)</b>", "**\\1**", docs)
+
+    # Replace single-line <code>XXX</code> blocks with ``XXX``
+    docs = re.sub("<code[^>]*>(.+?)</code>", "``\\1``", docs)
+
+    # Replace <li> with plain text "*" bullet points (reST format)
+    docs = list_items_to_text(docs)
+
+    # Remove any other HTML tags, except for <code> and <pre> blocks
+    docs = re.sub("<(?!code|/code|pre|/pre)[^>]+>", "", docs)
+
+    # == End of HTML tag processing ==
+
+    # == Javadoc tag processing ==
+
+    # Remove parameters from method links, since ApiGen doesn't support them.
+    # I.e., replace {@link xxx(yyy)} with {@link xxx()}. While we're at it,
+    # remove any link text from such links, since ApiGen doesn't support that
+    # either. I.e., replace {@link xxx(yyy) zzz} with {@link xxx()} too.
+    docs = re.sub("[{]@link\\s+([^(}]+)[(][^)}]*[)][^}]*[}]",
+                  "{@link \\1()}", docs)
+
+    # Remove any link text from links. I.e., replace {@link xxx yyy} with
+    # {@link xxx}.
+    docs = re.sub("[{]@link\\s+([^}\\s]+)\\s+[^}]*[}]", "{@link \\1}", docs)
+
+    # Remove any qualified methods from links, since ApiGen doesn't support
+    # them. This risks breaking the link entirely, but there isn't any other
+    # good solution. I.e., replace {@link xxx#yyy} with {@link yyy}.
+    docs = re.sub("[{]@link\\s+[^}\\s#]+#([^}]+)[}]", "{@link \\1}", docs)
+
+    # Finally, strip off any # prefixes from unqualified method links. I.e.,
+    # replace {@link #xxx} with {@link xxx}
+    docs = re.sub("[{]@link\\s+#([^}]+)[}]", "{@link \\1}", docs)
+
+    # Replace {@code XXX} tags with ``XXX``
+    docs = re.sub("[{]@code\\s+([^}]+)[}]", "``\\1``", docs)
+
+    # Replace {@literal XXX} with XXX (no special handling)
+    docs = re.sub("[{]@literal\\s+([^}]+)[}]", "\\1", docs)
+
+    # Add the specified line prefix to each line
+    if line_prefix: docs = re.sub("(?m)^", line_prefix, docs)
+
+    # Strip off end-of-line whitespace
+    docs = re.sub("(?m)\\s+$", "\n", docs)
+
+    return docs
+
 def generate_php_method(method):
     """
     Generate the PHP code for a single web service API method, using the
@@ -761,7 +1080,7 @@ def generate_php_method(method):
     """
     # PHP docs for the method - convert to plain text and back to Javadocs
     # to remove any HTML tags
-    docs = javadocs_to_text(method.get_docs())
+    docs = javadocs_to_phpdocs(method.get_docs())
     docs = "/**\n     %s\n     */" % comment_out(docs, "     *")
 
     # Add the parameter types to the PHP docs
@@ -807,8 +1126,8 @@ def generate_php_method(method):
     # specifiers
     path = method.path
     param_number = 1
-    while re.search("\{[^}]+\}", path):
-        path = re.sub("\{[^}]+\}", "%%%d$s" % param_number, path, 1)
+    while re.search("[{][^}]+[}]", path):
+        path = re.sub("[{][^}]+[}]", "%%%d$s" % param_number, path, 1)
         param_number += 1
 
     # Final method result
@@ -860,7 +1179,7 @@ def generate_php_class(cls):
     Generate the Java code for a single XxxMethods class, using the
     JAVA_CLASS_TEMPLATE.
     """
-    docs = javadocs_to_text(cls.docs)
+    docs = javadocs_to_phpdocs(cls.docs)
     docs = "/**\n %s\n */" % comment_out(docs, " *")
     methods = "".join(generate_php_method(x) for x in cls.methods)
 

@@ -30,9 +30,12 @@ class IbisIdentifier extends IbisDto
     /* Properties marked as @XmlAttribte in the JAXB class */
     protected static $xmlAttrs = array("scheme");
 
-    /** The identifier's scheme (e.g., "crsid"). */
+    /** @var string The identifier's scheme (e.g., "crsid"). */
     public $scheme;
 
-    /** The identifier's value in that scheme (e.g., a specific CRSid value). */
+    /**
+     * @var string The identifier's value in that scheme (e.g., a specific
+     * CRSid value).
+     */
     public $value;
 }

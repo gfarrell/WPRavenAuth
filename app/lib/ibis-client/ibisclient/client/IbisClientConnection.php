@@ -22,7 +22,7 @@ require_once "ClientConnection.php";
 require_once dirname(__FILE__) . "/../dto/IbisResult.php";
 
 /**
- * Default implementation of the ClientConnection interface, to allow
+ * Default implementation of the {@link ClientConnection} interface, to allow
  * methods in the Lookup/Ibis web service API to be invoked.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
@@ -49,10 +49,10 @@ class IbisClientConnection implements ClientConnection
 
     /**
      * Create an IbisClientConnection to the Lookup/Ibis web service API at
-     * https://www.lookup.cam.ac.uk/.
+     * {@link https://www.lookup.cam.ac.uk/}.
      *
      * The connection is initially anonymous, but this may be changed using
-     * {@link #setUsername(string)} and {@link #setPassword(string)}.
+     * {@link setUsername()} and {@link setPassword()}.
      *
      * @return IbisClientConnection the connection to the Lookup/Ibis server.
      */
@@ -63,10 +63,10 @@ class IbisClientConnection implements ClientConnection
 
     /**
      * Create an IbisClientConnection to the Lookup/Ibis test web service API
-     * at https://lookup-test.csx.cam.ac.uk/.
+     * at {@link https://lookup-test.csx.cam.ac.uk/}.
      *
      * The connection is initially anonymous, but this may be changed using
-     * {@link #setUsername(string)} and {@link #setPassword(string)}.
+     * {@link setUsername()} and {@link setPassword()}.
      *
      * NOTE: This test server is not guaranteed to always be available, and
      * the data in it may be out of sync with the data on the live system.
@@ -81,10 +81,10 @@ class IbisClientConnection implements ClientConnection
 
     /**
      * Create an IbisClientConnection to a Lookup/Ibis web service API
-     * running locally on https://localhost:8443/ibis/.
+     * running locally on {@link https://localhost:8443/ibis/}.
      *
      * The connection is initially anonymous, but this may be changed using
-     * {@link #setUsername(string)} and {@link #setPassword(string)}.
+     * {@link setUsername()} and {@link setPassword()}.
      *
      * This is intended for testing during development. The local server is
      * assumed to be using self-signed certificates, which will not be
@@ -100,19 +100,19 @@ class IbisClientConnection implements ClientConnection
 
     /**
      * Create a new IbisClientConnection using the specified URL base, which
-     * should be something like https://www.lookup.cam.ac.uk/.
+     * should be something like {@link https://www.lookup.cam.ac.uk/}.
      * It is strongly recommended that certificate checking be enabled.
      *
      * The connection is initially anonymous, but this may be changed using
-     * {@link #setUsername(string)} and {@link #setPassword(string)}.
+     * {@link setUsername()} and {@link setPassword()}.
      *
      * @param string $urlBase The base URL to the Lookup/Ibis web service
      * API.
-     * @param boolean $checkCertificates If this is {@code true} the server's
+     * @param boolean $checkCertificates If this is ``true`` the server's
      * certificates will be checked. Otherwise, the they will not, and the
      * connection may be insecure.
-     * @see #createConnection()
-     * @see #createTestConnection()
+     * @see createConnection()
+     * @see createTestConnection()
      */
     public function __construct($urlBase, $checkCertificates)
     {
@@ -135,14 +135,14 @@ class IbisClientConnection implements ClientConnection
         $this->authorization = "Authorization: Basic " . $auth;
     }
 
-    /** @see ClientConnection::setUsername(string) */
+    /* @see ClientConnection::setUsername(string) */
     public function setUsername($username)
     {
         $this->username = $username;
         $this->updateAuthorization();
     }
 
-    /** @see ClientConnection::setPassword(string) */
+    /* @see ClientConnection::setPassword(string) */
     public function setPassword($password)
     {
         $this->password = $password;
@@ -251,15 +251,15 @@ class IbisClientConnection implements ClientConnection
         return $url;
     }
 
-    /** @see ClientConnection::invokeGetMethod(string, string[], array) */
+    /* @see ClientConnection::invokeGetMethod(string, string[], array) */
     public function invokeGetMethod($path, $pathParams, $queryParams)
     {
         return $this->invokeMethod("GET", $path, $pathParams, $queryParams);
     }
 
-    /** @see ClientConnection::setUsername(string, string, string[], array, array) */
+    /* @see ClientConnection::setUsername(string, string, string[], array, array) */
     public function invokeMethod($method, $path, $pathParams,
-                                 $queryParams, $formParams=NULL)
+                                 $queryParams, $formParams=null)
     {
         // Build the URL
         $headers = array($this->authorization, "Accept: application/xml");

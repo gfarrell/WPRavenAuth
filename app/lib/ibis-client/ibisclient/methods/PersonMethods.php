@@ -25,85 +25,85 @@ require_once dirname(__FILE__) . "/../client/IbisException.php";
 /**
  * Methods for querying and manipulating people.
  *
- * Notes on the fetch parameter
+ * **Notes on the fetch parameter**
  *
  * All methods that return people, institutions or groups also accept an
- * optional fetch parameter that may be used to request
+ * optional ``fetch`` parameter that may be used to request
  * additional information about the entities returned. Without this
  * parameter, only a few basic details about each person, institution or
- * group are returned. The fetch parameter is quite flexible,
+ * group are returned. The ``fetch`` parameter is quite flexible,
  * and may be used in a number of different ways:
  *
- * * Attribute fetching. Attributes may be fetched by specifying the
- *   schemeid of an attribute scheme. For example to fetch a
- *   person's email addresses, use the value {@code "email"}. For people common
- *   attribute schemes include {@code "jpegPhoto"}, {@code "misAffiliation"},
- *   {@code "title"}, {@code "universityPhone"}, {@code "mobexPhone"},
- *   {@code "landlinePhone"}, {@code "mobilePhone"}, {@code "pager"},
- *   {@code "labeledURI"} and {@code "address"}. The full list of person
- *   attribute schemes may be obtained using {@link #allAttributeSchemes}.
+ * * **Attribute fetching**. Attributes may be fetched by specifying the
+ *   ``schemeid`` of an attribute scheme. For example to fetch a
+ *   person's email addresses, use the value ``"email"``. For people common
+ *   attribute schemes include ``"jpegPhoto"``, ``"misAffiliation"``,
+ *   ``"title"``, ``"universityPhone"``, ``"mobexPhone"``,
+ *   ``"landlinePhone"``, ``"mobilePhone"``, ``"pager"``,
+ *   ``"labeledURI"`` and ``"address"``. The full list of person
+ *   attribute schemes may be obtained using {@link allAttributeSchemes}.
  *
- * * Pseudo-attributes. Certain special pseudo-attributes are defined
+ * * **Pseudo-attributes**. Certain special pseudo-attributes are defined
  *   for convenience. For people, the following pseudo-attributes are supported:
  *
- *   * {@code "phone_numbers"} - fetches all phone numbers. This is
+ *   * ``"phone_numbers"`` - fetches all phone numbers. This is
  *     equivalent to
- *     {@code "universityPhone,instPhone,mobexPhone,landlinePhone,mobilePhone,pager"}.
+ *     ``"universityPhone,instPhone,mobexPhone,landlinePhone,mobilePhone,pager"``.
  *
- *   * {@code "all_identifiers"} - fetches all identifiers. Currently people
+ *   * ``"all_identifiers"`` - fetches all identifiers. Currently people
  *     only have CRSid identifiers, but in the future additional identifiers such
  *     as USN or staffNumber may be added.
  *
- *   * {@code "all_attrs"} - fetches all attributes from all person attribute
+ *   * ``"all_attrs"`` - fetches all attributes from all person attribute
  *     schemes. This does not include identifiers or references.
  *
- * * Reference fetching. For people, the following references are
+ * * **Reference fetching**. For people, the following references are
  *   supported (and will fetch only non-cancelled institutions and groups):
  *
- *   * {@code "all_insts"} - fetches all the institutions to which the person
+ *   * ``"all_insts"`` - fetches all the institutions to which the person
  *     belongs (sorted in name order).
  *
- *   * {@code "all_groups"} - fetches all the groups that the person is a
+ *   * ``"all_groups"`` - fetches all the groups that the person is a
  *     member of, including indirect group memberships, via groups that include
  *     other groups.
  *
- *   * {@code "direct_groups"} - fetches all the groups that the person is
+ *   * ``"direct_groups"`` - fetches all the groups that the person is
  *     directly a member of. This does not include indirect group memberships -
  *     i.e., groups that include these groups.
  *
- * * Chained reference fetching. To fetch properties of referenced
+ * * **Chained reference fetching**. To fetch properties of referenced
  *   objects, the "dot" notation may be used. For example, to fetch the email
  *   addresses of all the institutions to which a person belongs, use
- *   {@code "all_insts.email"}. Chains may include a number of reference
+ *   ``"all_insts.email"``. Chains may include a number of reference
  *   following steps, for example
- *   {@code "all_insts.managed_by_groups.all_members.email"} will fetch all the
+ *   ``"all_insts.managed_by_groups.all_members.email"`` will fetch all the
  *   institutions to which the person belongs, all the groups that manage those
  *   institutions, all the visible members of those groups and all the email
  *   addresses of those managing group members. For more information about what
  *   can be fetched from referenced institutions and groups, refer to the
  *   documentation for {@link InstitutionMethods} and {@link GroupMethods}.
  *
- * Multiple values of the fetch parameter should be separated
+ * Multiple values of the ``fetch`` parameter should be separated
  * by commas.
  *
- * Fetch parameter examples
+ * **Fetch parameter examples**
  *
- * fetch = "email"
+ * ``fetch = "email"``
  * This fetches all the person's email addresses.
  *
- * fetch = "title,address"
+ * ``fetch = "title,address"``
  * This fetches all the person's titles (roles) and addresses.
  *
- * fetch = "all_attrs"
+ * ``fetch = "all_attrs"``
  * This fetches all the person's attributes.
  *
- * fetch = "all_groups,all_insts"
+ * ``fetch = "all_groups,all_insts"``
  * This fetches all the groups and institutions to which the person belongs.
  *
- * fetch = "all_insts.parent_insts"
+ * ``fetch = "all_insts.parent_insts"``
  * This fetches all the person's institutions, and their parent institutions.
  *
- * fetch = "all_insts.email,all_insts.all_members.email"
+ * ``fetch = "all_insts.email,all_insts.all_members.email"``
  * This fetches all the person's institutions and their email addresses, and
  * all the members of those institutions, and the email addresses of all
  * those members.
@@ -128,14 +128,14 @@ class PersonMethods
 
     /**
      * Return a list of all the person attribute schemes available. The
-     * {@code schemeid} values of these schemes may be used in the
-     * fetch parameter of other methods that return people.
+     * ``schemeid`` values of these schemes may be used in the
+     * ``fetch`` parameter of other methods that return people.
      *
      * NOTE: Some of these attribute schemes are not currently used (no
      * people have attribute values in the scheme). These schemes are
      * reserved for possible future use.
      *
-     * [ HTTP: GET /api/v1/person/all-attr-schemes ]
+     * ``[ HTTP: GET /api/v1/person/all-attr-schemes ]``
      *
      * @return IbisAttributeScheme[] All the available person attribute schemes (in precedence
      * order).
@@ -160,10 +160,10 @@ class PersonMethods
      *
      * Each identifier may be either a CRSid, or an identifier from another
      * identifier scheme, prefixed with that scheme's name and a slash. For
-     * example {@code "mug99"} or {@code "usn/123456789"}.
+     * example ``"mug99"`` or ``"usn/123456789"``.
      *
      * By default, only a few basic details about each person are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
      * The results are sorted by identifier scheme and value.
@@ -178,7 +178,7 @@ class PersonMethods
      * NOTE: The people returned may include cancelled people. It is the
      * caller's repsonsibility to check their cancelled flags.
      *
-     * [ HTTP: GET /api/v1/person/list?crsids=... ]
+     * ``[ HTTP: GET /api/v1/person/list?crsids=... ]``
      *
      * @param string $crsids [required] A comma-separated list of identifiers.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -208,40 +208,40 @@ class PersonMethods
      * search function that is used in the Lookup web application.
      *
      * By default, only a few basic details about each person are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
-     * [ HTTP: GET /api/v1/person/search?query=... ]
+     * ``[ HTTP: GET /api/v1/person/search?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to ``false``.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
-     * Defaults to {@code false}.
+     * Defaults to ``false``.
      * @param string $misStatus [optional] The type of people to search for. This may
      * be
      *
-     * * {@code "staff"} - only include people whose MIS status is
-     *   {@code ""} (empty string), {@code "staff"}, or
-     *   {@code "staff,student"}.
+     * * ``"staff"`` - only include people whose MIS status is
+     *   ``""`` (empty string), ``"staff"``, or
+     *   ``"staff,student"``.
      *
-     * * {@code "student"} - only include people whose MIS status is set to
-     *   {@code "student"} or {@code "staff,student"}.
+     * * ``"student"`` - only include people whose MIS status is set to
+     *   ``"student"`` or ``"staff,student"``.
      *
      * Otherwise all matching people will be included (the default). Note
-     * that the {@code "staff"} and {@code "student"} options are not
+     * that the ``"staff"`` and ``"student"`` options are not
      * mutually exclusive.
      * @param string $attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is {@code null} (the default) then
+     * consider when searching. If this is ``null`` (the default) then
      * all attribute schemes marked as searchable will be included.
      * @param int $offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
-     * This may be either {@code "identifier"} or {@code "surname"} (the
+     * This may be either ``"identifier"`` or ``"surname"`` (the
      * default).
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
@@ -283,30 +283,30 @@ class PersonMethods
      * Count the number of people that would be returned by a search using
      * a free text query string.
      *
-     * [ HTTP: GET /api/v1/person/search-count?query=... ]
+     * ``[ HTTP: GET /api/v1/person/search-count?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to ``false``.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
-     * Defaults to {@code false}.
+     * Defaults to ``false``.
      * @param string $misStatus [optional] The type of people to search for. This may
      * be
      *
-     * * {@code "staff"} - only include people whose MIS status is
-     *   {@code ""} (empty string), {@code "staff"}, or
-     *   {@code "staff,student"}.
+     * * ``"staff"`` - only include people whose MIS status is
+     *   ``""`` (empty string), ``"staff"``, or
+     *   ``"staff,student"``.
      *
-     * * {@code "student"} - only include people whose MIS status is set to
-     *   {@code "student"} or {@code "staff,student"}.
+     * * ``"student"`` - only include people whose MIS status is set to
+     *   ``"student"`` or ``"staff,student"``.
      *
      * Otherwise all matching people will be included (the default). Note
-     * that the {@code "staff"} and {@code "student"} options are not
+     * that the ``"staff"`` and ``"student"`` options are not
      * mutually exclusive.
      * @param string $attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is {@code null} (the default) then
+     * consider when searching. If this is ``null`` (the default) then
      * all attribute schemes marked as searchable will be included.
      *
      * @return int The number of matching people.
@@ -338,24 +338,24 @@ class PersonMethods
      * Get the person with the specified identifier.
      *
      * By default, only a few basic details about the person are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of the person.
      *
      * NOTE: The person returned may be a cancelled person. It is the
      * caller's repsonsibility to check its cancelled flag.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier} ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier} ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person to fetch
      * (typically their CRSid).
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return IbisPerson The requested person or {@code null} if they were not found.
+     * @return IbisPerson The requested person or ``null`` if they were not found.
      */
     public function getPerson($scheme,
                               $identifier,
@@ -383,12 +383,12 @@ class PersonMethods
      * In addition, either its value or its binaryData field should be set.
      * All the remaining fields of the attribute are optional.
      *
-     * [ HTTP: POST /api/v1/person/{scheme}/{identifier}/add-attribute ]
+     * ``[ HTTP: POST /api/v1/person/{scheme}/{identifier}/add-attribute ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person to udpate
      * (typically their CRSid).
      * @param IbisAttribute $attr [required] The new attribute to add.
@@ -396,9 +396,9 @@ class PersonMethods
      * list of attributes of the same attribute scheme (1, 2, 3,...). A value
      * of 0 (the default) will cause the new attribute to be added to the end
      * of the list of existing attributes for the scheme.
-     * @param boolean $allowDuplicates [optional] If {@code true}, the new attribute
+     * @param boolean $allowDuplicates [optional] If ``true``, the new attribute
      * will always be added, even if another identical attribute already
-     * exists. If {@code false} (the default), the new attribute will only be
+     * exists. If ``false`` (the default), the new attribute will only be
      * added if it doesn't already exist.
      * @param string $commitComment [recommended] A short textual description of
      * the change made (will be visible on the history tab in the web
@@ -435,18 +435,18 @@ class PersonMethods
      * returned attributes are sorted by attribute scheme precedence and
      * then attribute precedence.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/get-attributes?attrs=... ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/get-attributes?attrs=... ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $attrs [required] The attribute scheme(s) to fetch. This may
      * include any number of the attributes or pseudo-attributes, but it
      * may not include references or attribute chains (see the documentation
-     * for the {@code fetch} parameter in this class).
+     * for the ``fetch`` parameter in this class).
      *
      * @return IbisAttribute[] The requested attributes.
      */
@@ -478,17 +478,17 @@ class PersonMethods
      * permission to see.
      *
      * By default, only a few basic details about each group are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each group.
      *
      * NOTE: This method will not include cancelled groups.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/groups ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/groups ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -519,17 +519,17 @@ class PersonMethods
      * returned list of institutions is sorted by name.
      *
      * By default, only a few basic details about each institution are
-     * returned, but the optional fetch parameter may be used
+     * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references of each institution.
      *
      * NOTE: This method will not include cancelled institutions.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/insts ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/insts ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -560,18 +560,18 @@ class PersonMethods
      *
      * NOTE: This may be used with cancelled people and groups.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/is-member-of-group/{groupid} ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/is-member-of-group/{groupid} ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $groupid [required] The ID or name of the group.
      *
-     * @return boolean {@code true} if the specified person is in the specified
-     * group, {@code false} otherwise (or if the person or group does not
+     * @return boolean ``true`` if the specified person is in the specified
+     * group, ``false`` otherwise (or if the person or group does not
      * exist).
      */
     public function isMemberOfGroup($scheme,
@@ -599,18 +599,18 @@ class PersonMethods
      * NOTE: This may be used with cancelled people and institutions, but
      * it will not include cancelled membership groups.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/is-member-of-inst/{instid} ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/is-member-of-inst/{instid} ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $instid [required] The ID of the institution.
      *
-     * @return boolean {@code true} if the specified person is in the specified
-     * institution, {@code false} otherwise (or if the person or institution
+     * @return boolean ``true`` if the specified person is in the specified
+     * institution, ``false`` otherwise (or if the person or institution
      * does not exist).
      */
     public function isMemberOfInst($scheme,
@@ -641,17 +641,17 @@ class PersonMethods
      * see the applicable manager group memberships.
      *
      * By default, only a few basic details about each group are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each group.
      *
      * NOTE: This method will not include cancelled groups.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/manages-groups ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/manages-groups ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -686,17 +686,17 @@ class PersonMethods
      * to see the applicable editor group memberships.
      *
      * By default, only a few basic details about each institution are
-     * returned, but the optional fetch parameter may be used
+     * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references of each institution.
      *
      * NOTE: This method will not include cancelled institutions.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/manages-insts ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/manages-insts ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -726,16 +726,16 @@ class PersonMethods
      * Delete an attribute of a person. It is not an error if the attribute
      * does not exist.
      *
-     * Note that in this method, the commitComment is passed
+     * Note that in this method, the ``commitComment`` is passed
      * as a query parameter, rather than as a form parameter, for greater
      * client compatibility.
      *
-     * [ HTTP: DELETE /api/v1/person/{scheme}/{identifier}/{attrid} ]
+     * ``[ HTTP: DELETE /api/v1/person/{scheme}/{identifier}/{attrid} ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person to udpate
      * (typically their CRSid).
      * @param int $attrid [required] The ID of the attribute to delete.
@@ -743,8 +743,8 @@ class PersonMethods
      * the change made (will be visible on the history tab in the web
      * application).
      *
-     * @return boolean {@code true} if the attribute was deleted by this method, or
-     * {@code false} if it did not exist.
+     * @return boolean ``true`` if the attribute was deleted by this method, or
+     * ``false`` if it did not exist.
      */
     public function deleteAttribute($scheme,
                                     $identifier,
@@ -769,12 +769,12 @@ class PersonMethods
     /**
      * Get a specific attribute of a person.
      *
-     * [ HTTP: GET /api/v1/person/{scheme}/{identifier}/{attrid} ]
+     * ``[ HTTP: GET /api/v1/person/{scheme}/{identifier}/{attrid} ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param int $attrid [required] The ID of the attribute to fetch.
@@ -808,16 +808,16 @@ class PersonMethods
      * will be left unchanged.
      *
      * To avoid inadvertently changing fields of the attribute, it is
-     * recommended that {@link #getAttribute getAttribute()} be used to
+     * recommended that {@link getAttribute} be used to
      * retrieve the current value of the attribute, before calling this
      * method with the required changes.
      *
-     * [ HTTP: PUT /api/v1/person/{scheme}/{identifier}/{attrid} ]
+     * ``[ HTTP: PUT /api/v1/person/{scheme}/{identifier}/{attrid} ]``
      *
      * @param string $scheme [required] The person identifier scheme. Typically this
-     * should be {@code "crsid"}, but other identifier schemes may be
-     * available in the future, such as {@code "usn"} or
-     * {@code "staffNumber"}.
+     * should be ``"crsid"``, but other identifier schemes may be
+     * available in the future, such as ``"usn"`` or
+     * ``"staffNumber"``.
      * @param string $identifier [required] The identifier of the person to udpate
      * (typically their CRSid).
      * @param int $attrid [required] The ID of the attribute to update.

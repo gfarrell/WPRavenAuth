@@ -42,6 +42,8 @@ class IbisException extends Exception
 
     /**
      * Returns the underlying error from the server.
+     *
+     * @return IbisError The underlying error from the server.
      */
     public function getError()
     {

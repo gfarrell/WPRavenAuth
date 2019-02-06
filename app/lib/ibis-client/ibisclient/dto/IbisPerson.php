@@ -44,86 +44,90 @@ class IbisPerson extends IbisDto
                                         "institutions", "groups",
                                         "directGroups");
 
-    /** Flag indicating if the person is cancelled. */
+    /** @var boolean Flag indicating if the person is cancelled. */
     public $cancelled;
 
-    /** The person's primary identifier (typically their CRSid). */
+    /**
+     * @var IbisIdentifier The person's primary identifier (typically their
+     * CRSid).
+     */
     public $identifier;
 
-    /** The person's display name (if visible). */
+    /** @var string The person's display name (if visible). */
     public $displayName;
 
-    /** The person's registered name (if visible). */
+    /** @var string The person's registered name (if visible). */
     public $registeredName;
 
-    /** The person's surname (if visible). */
+    /** @var string The person's surname (if visible). */
     public $surname;
 
     /**
-     * The person's display name if that is visible, otherwise their
-     * registered name if that is visible, otherwise their surname if
+     * @var string The person's display name if that is visible, otherwise
+     * their registered name if that is visible, otherwise their surname if
      * that is visible, otherwise the value of their primary identifier
      * (typically their CRSid) which is always visible.
      */
     public $visibleName;
 
     /**
-     * The person's MIS status ({@code "staff"}, {@code "student"},
-     * {@code "staff,student"} or {@code ""}).
+     * @var string The person's MIS status (``"staff"``, ``"student"``,
+     * ``"staff,student"`` or ``""``).
      */
     public $misAffiliation;
 
     /**
-     * A list of the person's identifiers. This will only be populated if
-     * the <code>fetch</code> parameter included the
-     * {@code "all_identifiers"} option.
+     * @var IbisIdentifier[] A list of the person's identifiers. This will
+     * only be populated if the ``fetch`` parameter includes the
+     * ``"all_identifiers"`` option.
      */
     public $identifiers;
 
     /**
-     * A list of the person's attributes. This will only be populated if the
-     * <code>fetch</code> parameter includes the {@code "all_attrs"} option,
-     * or any specific attribute schemes such as {@code "email"} or
-     * {@code "title"}, or the special pseudo-attribute scheme
-     * {@code "phone_numbers"}.
+     * @var IbisAttribute[] A list of the person's attributes. This will only
+     * be populated if the ``fetch`` parameter includes the ``"all_attrs"``
+     * option, or any specific attribute schemes such as ``"email"`` or
+     * ``"title"``, or the special pseudo-attribute scheme
+     * ``"phone_numbers"``.
      */
     public $attributes;
 
     /**
-     * A list of all the institution's to which the person belongs. This
-     * will only be populated if the <code>fetch</code> parameter includes
-     * the {@code "all_insts"} option.
+     * @var IbisInstitution[] A list of all the institution's to which the
+     * person belongs. This will only be populated if the ``fetch`` parameter
+     * includes the ``"all_insts"`` option.
      */
     public $institutions;
 
     /**
-     * A list of all the groups to which the person belongs, including
-     * indirect group memberships, via groups that include other groups.
-     * This will only be populated if the <code>fetch</code> parameter
-     * includes the {@code "all_groups"} option.
+     * @var IbisGroup[] A list of all the groups to which the person belongs,
+     * including indirect group memberships, via groups that include other
+     * groups. This will only be populated if the ``fetch`` parameter
+     * includes the ``"all_groups"`` option.
      */
     public $groups;
 
     /**
-     * A list of all the groups that the person directly belongs to. This
-     * does not include indirect group memberships - i.e., groups that
-     * include these groups. This will only be populated if the
-     * <code>fetch</code> parameter includes the {@code "direct_groups"}
-     * option.
+     * @var IbisGroup[] A list of all the groups that the person directly
+     * belongs to. This does not include indirect group memberships - i.e.,
+     * groups that include these groups. This will only be populated if the
+     * ``fetch`` parameter includes the ``"direct_groups"`` option.
      */
     public $directGroups;
 
     /**
-     * An ID that can uniquely identify this person within the returned
-     * XML/JSON document. This is only used in the flattened XML/JSON
-     * representation (if the "flatten" parameter is specified).
+     * @ignore
+     * @var string An ID that can uniquely identify this person within the
+     * returned XML/JSON document. This is only used in the flattened
+     * XML/JSON representation (if the "flatten" parameter is specified).
      */
     public $id;
 
     /**
-     * A reference (by id) to a person element in the XML/JSON document.
-     * This is only used in the flattened XML/JSON representation (if the
-     * "flatten" parameter is specified).
+     * @ignore
+     * @var string A reference (by id) to a person element in the XML/JSON
+     * document. This is only used in the flattened XML/JSON representation
+     * (if the "flatten" parameter is specified).
      */
     public $ref;
 
@@ -131,6 +135,7 @@ class IbisPerson extends IbisDto
     private $unflattened;
 
     /**
+     * @ignore
      * Create an IbisPerson from the attributes of an XML node.
      *
      * @param array $attrs The attributes on the XML node.
@@ -144,11 +149,13 @@ class IbisPerson extends IbisDto
     }
 
     /**
-     * Returns {@code true} if the person is a member of staff.
+     * Returns ``true`` if the person is a member of staff.
      *
-     * Note that this tests for an misAffiliation of {@code ""},
-     * {@code "staff"} or {@code "staff,student"} since some members of staff
-     * will have a blank misAffiliation.
+     * Note that this tests for an misAffiliation of ``""``, ``"staff"`` or
+     * ``"staff,student"`` since some members of staff will have a blank
+     * misAffiliation.
+     *
+     * @return boolean ``true`` if the person is a member of staff.
      */
     public function isStaff()
     {
@@ -157,10 +164,12 @@ class IbisPerson extends IbisDto
     }
 
     /**
-     * Returns {@code true} if the person is a student.
+     * Returns ``true`` if the person is a student.
      *
-     * This tests for an misAffiliation of {@code "student"} or
-     * {@code "staff,student"}.
+     * This tests for an misAffiliation of ``"student"`` or
+     * ``"staff,student"``.
+     *
+     * @return boolean ``true`` if the person is a student.
      */
     public function isStudent()
     {
@@ -168,7 +177,12 @@ class IbisPerson extends IbisDto
                strpos($this->misAffiliation, "student") !== false;
     }
 
-    /* Unflatten a single IbisPerson. */
+    /**
+     * @ignore
+     * Unflatten a single IbisPerson.
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     */
     public function unflatten($em)
     {
         if (isset($this->ref))
@@ -186,7 +200,13 @@ class IbisPerson extends IbisDto
         return $this;
     }
 
-    /* Unflatten a list of IbisPerson objects (done in place). */
+    /**
+     * @ignore
+     * Unflatten a list of IbisPerson objects (done in place).
+     *
+     * @param IbisResultEntityMap $em The mapping from IDs to entities.
+     * @param IbisPerson[] $people The people to unflatten.
+     */
     public static function unflattenPeople($em, &$people)
     {
         if (isset($people))

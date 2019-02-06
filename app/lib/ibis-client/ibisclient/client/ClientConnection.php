@@ -38,7 +38,7 @@ interface ClientConnection
      * ClientConnection objects.
      *
      * @param string $username The username to connect as. This should either
-     * be "anonymous" (the default) or the name of a group.
+     * be ``"anonymous"`` (the default) or the name of a group.
      * @return void
      */
     public function setUsername($username);
@@ -58,7 +58,7 @@ interface ClientConnection
      *
      * The path should be the relative path to the method with standard
      * Java/PHP format specifiers for any path parameters, for example
-     * {@code "api/v1/person/%1$s/%2$s"}. Any path parameters specified
+     * ``"api/v1/person/%1$s/%2$s"``. Any path parameters specified
      * are then substituted into the path according to the standard Java
      * formatting rules.
      *
@@ -76,11 +76,12 @@ interface ClientConnection
      *
      * The path should be the relative path to the method with standard
      * Java/PHP format specifiers for any path parameters, for example
-     * {@code "api/v1/person/%1$s/%2$s"}. Any path parameters specified
+     * ``"api/v1/person/%1$s/%2$s"``. Any path parameters specified
      * are then substituted into the path according to the standard Java
      * formatting rules.
      *
-     * @param string $method The method type (GET, POST, PUT or DELETE).
+     * @param string $method The method type (``"GET"``, ``"POST"``,
+     * ``"PUT"`` or ``"DELETE"``).
      * @param string $path The path to the method to invoke.
      * @param string[] $pathParams Any path parameters that should be inserted
      * into the path in place of any format specifiers.

@@ -25,62 +25,62 @@ require_once dirname(__FILE__) . "/../client/IbisException.php";
 /**
  * Methods for querying and manipulating institutions.
  *
- * The fetch parameter for institutions
+ * **The fetch parameter for institutions**
  *
  * All methods that return institutions also accept an optional
- * fetch parameter that may be used to request additional
+ * ``fetch`` parameter that may be used to request additional
  * information about the institutions returned. For more details about
- * the general rules that apply to the fetch parameter,
+ * the general rules that apply to the ``fetch`` parameter,
  * refer to the {@link PersonMethods} documentation.
  *
- * For institutions the fetch parameter may be used to fetch
- * any institution attribute by specifying the schemeid of an
- * institution attribute scheme. Examples include {@code "address"},
- * {@code "jpegPhoto"}, {@code "universityPhone"}, {@code "instPhone"},
- * {@code "landlinePhone"}, {@code "mobilePhone"}, {@code "faxNumber"},
- * {@code "email"} and {@code "labeledURI"}. The full list (which may be
- * extended over time) may be obtained using {@link #allAttributeSchemes}.
+ * For institutions the ``fetch`` parameter may be used to fetch
+ * any institution attribute by specifying the ``schemeid`` of an
+ * institution attribute scheme. Examples include ``"address"``,
+ * ``"jpegPhoto"``, ``"universityPhone"``, ``"instPhone"``,
+ * ``"landlinePhone"``, ``"mobilePhone"``, ``"faxNumber"``,
+ * ``"email"`` and ``"labeledURI"``. The full list (which may be
+ * extended over time) may be obtained using {@link allAttributeSchemes}.
  *
  * In addition the following pseudo-attributes are supported:
  *
- * * {@code "phone_numbers"} - fetches all phone numbers. This is
+ * * ``"phone_numbers"`` - fetches all phone numbers. This is
  *   equivalent to
- *   {@code "universityPhone,instPhone,landlinePhone,mobilePhone"}.
+ *   ``"universityPhone,instPhone,landlinePhone,mobilePhone"``.
  *
- * * {@code "all_attrs"} - fetches all attributes from all institution
+ * * ``"all_attrs"`` - fetches all attributes from all institution
  *   attribute schemes. This does not include references.
  *
- * * {@code "contact_rows"} - fetches all institution contact rows. Any
+ * * ``"contact_rows"`` - fetches all institution contact rows. Any
  *   chained fetches from contact rows are used to fetch attributes from any
  *   people referred to by the contact rows.
  *
- * The fetch parameter may also be used to fetch referenced
+ * The ``fetch`` parameter may also be used to fetch referenced
  * people, institutions or groups. This will only include references to
  * non-cancelled entities. The following references are supported:
  *
- * * {@code "all_members"} - fetches all the people who are members of the
+ * * ``"all_members"`` - fetches all the people who are members of the
  *   institution.
  *
- * * {@code "parent_insts"} - fetches all the parent institutions. Note
+ * * ``"parent_insts"`` - fetches all the parent institutions. Note
  *   that currently all institutions have only one parent, but this may change
  *   in the future, and client applications should be prepared to handle
  *   multiple parents.
  *
- * * {@code "child_insts"} - fetches all the child institutions.
+ * * ``"child_insts"`` - fetches all the child institutions.
  *
- * * {@code "inst_groups"} - fetches all the groups that belong to the
+ * * ``"inst_groups"`` - fetches all the groups that belong to the
  *   institution.
  *
- * * {@code "members_groups"} - fetches all the groups that form the
+ * * ``"members_groups"`` - fetches all the groups that form the
  *   institution's membership list.
  *
- * * {@code "managed_by_groups"} - fetches all the groups that manage the
+ * * ``"managed_by_groups"`` - fetches all the groups that manage the
  *   institution's data (commonly called "Editor" groups).
  *
- * As with person fetch parameters, the references may be used
+ * As with person ``fetch`` parameters, the references may be used
  * in a chain by using the "dot" notation to fetch additional information
  * about referenced people, institutions or groups. For example
- * {@code "all_members.email"} will fetch the email addresses of all members
+ * ``"all_members.email"`` will fetch the email addresses of all members
  * of the institution. For more information about what can be fetched from
  * referenced people and groups, refer to the documentation for
  * {@link PersonMethods} and {@link GroupMethods}.
@@ -105,10 +105,10 @@ class InstitutionMethods
 
     /**
      * Return a list of all the institution attribute schemes available.
-     * The {@code schemeid} values of these schemes may be used in the
-     * fetch parameter of other methods that return institutions.
+     * The ``schemeid`` values of these schemes may be used in the
+     * ``fetch`` parameter of other methods that return institutions.
      *
-     * [ HTTP: GET /api/v1/inst/all-attr-schemes ]
+     * ``[ HTTP: GET /api/v1/inst/all-attr-schemes ]``
      *
      * @return IbisAttributeScheme[] All the available institution attribute schemes (in precedence
      * order).
@@ -132,10 +132,10 @@ class InstitutionMethods
      * Return a list of all institutions.
      *
      * By default, only a few basic details about each institution are
-     * returned, but the optional fetch parameter may be used
+     * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references.
      *
-     * [ HTTP: GET /api/v1/inst/all-insts ]
+     * ``[ HTTP: GET /api/v1/inst/all-insts ]``
      *
      * @param boolean $includeCancelled [optional] Whether or not to include cancelled
      * institutions. By default, only live institutions are returned.
@@ -165,7 +165,7 @@ class InstitutionMethods
      * Get the institutions with the specified IDs.
      *
      * By default, only a few basic details about each institution are
-     * returned, but the optional fetch parameter may be used
+     * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references.
      *
      * The results are sorted by ID.
@@ -178,7 +178,7 @@ class InstitutionMethods
      * NOTE: The institutions returned may include cancelled institutions.
      * It is the caller's repsonsibility to check their cancelled flags.
      *
-     * [ HTTP: GET /api/v1/inst/list?instids=... ]
+     * ``[ HTTP: GET /api/v1/inst/list?instids=... ]``
      *
      * @param string $instids [required] A comma-separated list of instids.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -208,26 +208,26 @@ class InstitutionMethods
      * same search function that is used in the Lookup web application.
      *
      * By default, only a few basic details about each institution are
-     * returned, but the optional fetch parameter may be used
+     * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references.
      *
-     * [ HTTP: GET /api/v1/inst/search?query=... ]
+     * ``[ HTTP: GET /api/v1/inst/search?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to ``false``.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled institutions
-     * to be included. Defaults to {@code false}.
+     * to be included. Defaults to ``false``.
      * @param string $attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is {@code null} (the default) then
+     * consider when searching. If this is ``null`` (the default) then
      * all attribute schemes marked as searchable will be included.
      * @param int $offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
-     * This may be either {@code "instid"} or {@code "name"} (the default).
+     * This may be either ``"instid"`` or ``"name"`` (the default).
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -266,16 +266,16 @@ class InstitutionMethods
      * Count the number of institutions that would be returned by a search
      * using a free text query string.
      *
-     * [ HTTP: GET /api/v1/inst/search-count?query=... ]
+     * ``[ HTTP: GET /api/v1/inst/search-count?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to ``false``.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled institutions
-     * to be included. Defaults to {@code false}.
+     * to be included. Defaults to ``false``.
      * @param string $attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is {@code null} (the default) then
+     * consider when searching. If this is ``null`` (the default) then
      * all attribute schemes marked as searchable will be included.
      *
      * @return int The number of matching institutions.
@@ -305,19 +305,19 @@ class InstitutionMethods
      * Get the institution with the specified ID.
      *
      * By default, only a few basic details about the institution are
-     * returned, but the optional fetch parameter may be used
+     * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references of the institution.
      *
      * NOTE: The institution returned may be a cancelled institution. It is
      * the caller's repsonsibility to check its cancelled flag.
      *
-     * [ HTTP: GET /api/v1/inst/{instid} ]
+     * ``[ HTTP: GET /api/v1/inst/{instid} ]``
      *
      * @param string $instid [required] The ID of the institution to fetch.
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return IbisInstitution The requested institution or {@code null} if it was not found.
+     * @return IbisInstitution The requested institution or ``null`` if it was not found.
      */
     public function getInst($instid,
                             $fetch=null)
@@ -343,7 +343,7 @@ class InstitutionMethods
      * In addition, either its value or its binaryData field should be set.
      * All the remaining fields of the attribute are optional.
      *
-     * [ HTTP: POST /api/v1/inst/{instid}/add-attribute ]
+     * ``[ HTTP: POST /api/v1/inst/{instid}/add-attribute ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param IbisAttribute $attr [required] The new attribute to add.
@@ -351,9 +351,9 @@ class InstitutionMethods
      * list of attributes of the same attribute scheme (1, 2, 3,...). A value
      * of 0 (the default) will cause the new attribute to be added to the end
      * of the list of existing attributes for the scheme.
-     * @param boolean $allowDuplicates [optional] If {@code true}, the new attribute
+     * @param boolean $allowDuplicates [optional] If ``true``, the new attribute
      * will always be added, even if another identical attribute already
-     * exists. If {@code false} (the default), the new attribute will only be
+     * exists. If ``false`` (the default), the new attribute will only be
      * added if it doesn't already exist.
      * @param string $commitComment [recommended] A short textual description of
      * the change made (will be visible on the history tab in the web
@@ -387,7 +387,7 @@ class InstitutionMethods
      * Get all the cancelled members of the specified institution.
      *
      * By default, only a few basic details about each member are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each person.
      *
      * NOTE: This method returns only cancelled people. It does not include
@@ -398,7 +398,7 @@ class InstitutionMethods
      * before they were cancelled, and so is out-of-date data that should be
      * used with caution.
      *
-     * [ HTTP: GET /api/v1/inst/{instid}/cancelled-members ]
+     * ``[ HTTP: GET /api/v1/inst/{instid}/cancelled-members ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -431,12 +431,12 @@ class InstitutionMethods
      *
      * If any of the contact rows refer to people, then only a few basic
      * details about each person are returned, but the optional
-     * fetch parameter may be used to fetch additional
+     * ``fetch`` parameter may be used to fetch additional
      * attributes or references of each person.
      *
      * NOTE: This method will not include cancelled people.
      *
-     * [ HTTP: GET /api/v1/inst/{instid}/contact-rows ]
+     * ``[ HTTP: GET /api/v1/inst/{instid}/contact-rows ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -466,13 +466,13 @@ class InstitutionMethods
      * The returned attributes are sorted by attribute scheme precedence and
      * then attribute precedence.
      *
-     * [ HTTP: GET /api/v1/inst/{instid}/get-attributes?attrs=... ]
+     * ``[ HTTP: GET /api/v1/inst/{instid}/get-attributes?attrs=... ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param string $attrs [required] The attribute scheme(s) to fetch. This may
      * include any number of the attributes or pseudo-attributes, but it
      * may not include references or attribute chains (see the documentation
-     * for the {@code fetch} parameter in this class).
+     * for the ``fetch`` parameter in this class).
      *
      * @return IbisAttribute[] The requested attributes.
      */
@@ -496,12 +496,12 @@ class InstitutionMethods
      * Get all the members of the specified institution.
      *
      * By default, only a few basic details about each member are returned,
-     * but the optional fetch parameter may be used to fetch
+     * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references of each person.
      *
      * NOTE: This method will not include cancelled people.
      *
-     * [ HTTP: GET /api/v1/inst/{instid}/members ]
+     * ``[ HTTP: GET /api/v1/inst/{instid}/members ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param string $fetch [optional] A comma-separated list of any additional
@@ -529,11 +529,11 @@ class InstitutionMethods
      * Delete an attribute of an institution. It is not an error if the
      * attribute does not exist.
      *
-     * Note that in this method, the commitComment is passed
+     * Note that in this method, the ``commitComment`` is passed
      * as a query parameter, rather than as a form parameter, for greater
      * client compatibility.
      *
-     * [ HTTP: DELETE /api/v1/inst/{instid}/{attrid} ]
+     * ``[ HTTP: DELETE /api/v1/inst/{instid}/{attrid} ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param int $attrid [required] The ID of the attribute to delete.
@@ -541,8 +541,8 @@ class InstitutionMethods
      * the change made (will be visible on the history tab in the web
      * application).
      *
-     * @return boolean {@code true} if the attribute was deleted by this method, or
-     * {@code false} if it did not exist.
+     * @return boolean ``true`` if the attribute was deleted by this method, or
+     * ``false`` if it did not exist.
      */
     public function deleteAttribute($instid,
                                     $attrid,
@@ -565,7 +565,7 @@ class InstitutionMethods
     /**
      * Get a specific attribute of an institution.
      *
-     * [ HTTP: GET /api/v1/inst/{instid}/{attrid} ]
+     * ``[ HTTP: GET /api/v1/inst/{instid}/{attrid} ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param int $attrid [required] The ID of the attribute to fetch.
@@ -597,11 +597,11 @@ class InstitutionMethods
      * left unchanged.
      *
      * To avoid inadvertently changing fields of the attribute, it is
-     * recommended that {@link #getAttribute getAttribute()} be used to
+     * recommended that {@link getAttribute} be used to
      * retrieve the current value of the attribute, before calling this
      * method with the required changes.
      *
-     * [ HTTP: PUT /api/v1/inst/{instid}/{attrid} ]
+     * ``[ HTTP: PUT /api/v1/inst/{instid}/{attrid} ]``
      *
      * @param string $instid [required] The ID of the institution.
      * @param int $attrid [required] The ID of the attribute to update.

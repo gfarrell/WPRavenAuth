@@ -10,7 +10,7 @@
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */</doc>
             <resource path="version">
-                <method name="GET" id="getVersion" resultField="value:String">
+                <method id="getVersion" name="GET" resultField="value:String">
                     <doc>
     /**
      * Get the current API version number.
@@ -45,45 +45,46 @@
  * people, institutions and groups will be included when fetching references.
  * The following references are supported:
  * &lt;ul&gt;
- * &lt;li&gt;"all_members" - fetches all the people who are members of the group,
- * including members of groups included by the group, and groups included
- * by those groups, and so on.&lt;/li&gt;
- * &lt;li&gt;"direct_members" - fetches all the poeple who are direct members of
- * the group, not taking into account any included groups.&lt;/li&gt;
- * &lt;li&gt;"members_of_inst" - if the group is a membership group for an
+ * &lt;li&gt;{@code "all_members"} - fetches all the people who are members of the
+ * group, including members of groups included by the group, and groups
+ * included by those groups, and so on.&lt;/li&gt;
+ * &lt;li&gt;{@code "direct_members"} - fetches all the poeple who are direct
+ * members of the group, not taking into account any included groups.&lt;/li&gt;
+ * &lt;li&gt;{@code "members_of_inst"} - if the group is a membership group for an
  * institution, this fetches that institution.&lt;/li&gt;
- * &lt;li&gt;"owning_insts" - fetches all the institutions to which the group
- * belongs.&lt;/li&gt;
- * &lt;li&gt;"manages_insts" - fetches all the institutions that the group
+ * &lt;li&gt;{@code "owning_insts"} - fetches all the institutions to which the
+ * group belongs.&lt;/li&gt;
+ * &lt;li&gt;{@code "manages_insts"} - fetches all the institutions that the group
  * manages. Typically this only applies to "Editor" groups.&lt;/li&gt;
- * &lt;li&gt;"manages_groups" - fetches all the groups that this group manages.
- * Note that some groups are self-managed, so this may be a
+ * &lt;li&gt;{@code "manages_groups"} - fetches all the groups that this group
+ * manages. Note that some groups are self-managed, so this may be a
  * self-reference.&lt;/li&gt;
- * &lt;li&gt;"managed_by_groups" - fetches all the groups that manage this
+ * &lt;li&gt;{@code "managed_by_groups"} - fetches all the groups that manage this
  * group.&lt;/li&gt;
- * &lt;li&gt;"reads_groups" - fetches all the groups that this group has
+ * &lt;li&gt;{@code "reads_groups"} - fetches all the groups that this group has
  * privileged access to. This means that members of this group can see the
  * members of the referenced groups regardless of the membership visibility
  * settings.&lt;/li&gt;
- * &lt;li&gt;"read_by_groups" - fetches all the groups that have privileged
+ * &lt;li&gt;{@code "read_by_groups"} - fetches all the groups that have privileged
  * access to this group.&lt;/li&gt;
- * &lt;li&gt;"includes_groups" - fetches all the groups included by this group.&lt;/li&gt;
- * &lt;li&gt;"included_by_groups" - fetches all the groups that include this
+ * &lt;li&gt;{@code "includes_groups"} - fetches all the groups included by this
  * group.&lt;/li&gt;
+ * &lt;li&gt;{@code "included_by_groups"} - fetches all the groups that include
+ * this group.&lt;/li&gt;
  * &lt;/ul&gt;
  * &lt;p&gt;
  * As with person &lt;code&gt;fetch&lt;/code&gt; parameters, the references may be used
  * in a chain by using the "dot" notation to fetch additional information
  * about referenced people, institutions or groups. For example
- * "all_members.email" will fetch the email addresses of all members of the
- * group. For more information about what can be fetched from referenced
- * people and institutions, refer to the documentation for
+ * {@code "all_members.email"} will fetch the email addresses of all members
+ * of the group. For more information about what can be fetched from
+ * referenced people and institutions, refer to the documentation for
  * {@link PersonMethods} and {@link InstitutionMethods}.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */</doc>
             <resource path="all-groups">
-                <method name="GET" id="allGroups" resultField="groups:java.util.List&lt;IbisGroup&gt;">
+                <method id="allGroups" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
                     <doc>
     /**
      * Return a list of all groups.
@@ -100,8 +101,8 @@
      * @return The requested groups (in groupid order).
      */</doc>
                     <request>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -112,7 +113,7 @@
                 </method>
             </resource>
             <resource path="list">
-                <method name="GET" id="listGroups" resultField="groups:java.util.List&lt;IbisGroup&gt;">
+                <method id="listGroups" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
                     <doc>
     /**
      * Get the groups with the specified IDs or names.
@@ -140,8 +141,8 @@
      * @return The requested groups (in groupid order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="groupids" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="groupids" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -152,7 +153,7 @@
                 </method>
             </resource>
             <resource path="search">
-                <method name="GET" id="search" resultField="groups:java.util.List&lt;IbisGroup&gt;">
+                <method id="search" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
                     <doc>
     /**
      * Search for groups using a free text query string. This is the same
@@ -165,28 +166,29 @@
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param includeCancelled [optional] Flag to allow cancelled groups to
-     * be included. Defaults to false.
+     * be included. Defaults to {@code false}.
      * @param offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param orderBy [optional] The order in which to list the results.
-     * This may be "groupid", "name" (the default) or "title".
+     * This may be {@code "groupid"}, {@code "name"} (the default) or
+     * {@code "title"}.
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
      * @return The matching groups.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="query" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="approxMatches" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:int" style="query" name="offset" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:int" style="query" name="limit" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="orderBy" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="query" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="approxMatches" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="offset" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="limit" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="orderBy" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -197,7 +199,7 @@
                 </method>
             </resource>
             <resource path="search-count">
-                <method name="GET" id="searchCount" resultField="value:int">
+                <method id="searchCount" name="GET" resultField="value:int">
                     <doc>
     /**
      * Count the number of groups that would be returned by a search using
@@ -206,16 +208,16 @@
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param includeCancelled [optional] Flag to allow cancelled groups to
-     * be included. Defaults to false.
+     * be included. Defaults to {@code false}.
      *
      * @return The number of matching groups.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="query" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="approxMatches" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="query" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="approxMatches" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="text/plain"/>
@@ -227,8 +229,8 @@
                 </method>
             </resource>
             <resource path="{groupid}">
-                <param type="xs:string" style="template" name="groupid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getGroup" resultField="group:IbisGroup">
+                <param name="groupid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getGroup" name="GET" resultField="group:IbisGroup">
                     <doc>
     /**
      * Get the group with the specified ID or name.
@@ -242,14 +244,14 @@
      *
      * @param groupid [required] The ID or name of the group to fetch. This
      * may be either the numeric ID or the short hyphenated group name (for
-     * example "100656" or "cs-editors").
+     * example {@code "100656"} or {@code "cs-editors"}).
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return The requested group or null if it was not found.
+     * @return The requested group or {@code null} if it was not found.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -260,8 +262,8 @@
                 </method>
             </resource>
             <resource path="{groupid}/cancelled-members">
-                <param type="xs:string" style="template" name="groupid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getCancelledMembers" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <param name="groupid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getCancelledMembers" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Get all the cancelled members of the specified group, including
@@ -287,7 +289,7 @@
      * @return The group's cancelled members (in identifier order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -298,8 +300,8 @@
                 </method>
             </resource>
             <resource path="{groupid}/direct-members">
-                <param type="xs:string" style="template" name="groupid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getDirectMembers" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <param name="groupid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getDirectMembers" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Get the direct members of the specified group, not including members
@@ -318,7 +320,7 @@
      * @return The group's direct members (in identifier order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -327,7 +329,7 @@
                         <representation mediaType="text/x-json"/>
                     </response>
                 </method>
-                <method name="PUT" id="updateDirectMembers" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <method id="updateDirectMembers" name="PUT" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Update the list of people who are direct members of the group. This
@@ -338,21 +340,26 @@
      * {@code addIds} will be added to the group. This list should be a
      * comma-separated list of identifiers, each of which may be either a
      * CRSid or an identifier from another identifier scheme, prefixed with
-     * that scheme's name and a slash. For example "mug99" or "usn/123456789".
+     * that scheme's name and a slash. For example {@code "mug99"} or
+     * {@code "usn/123456789"}.
      * &lt;p&gt;
      * Any people in the list of identifiers specified by {@code removeIds}
      * will be removed from the group, except if they are also in the list
-     * {@code addIds}. The special identifier "all-members" may be used to
-     * remove all existing group members, replacing them with the list
-     * specified by {@code newIds}.
+     * {@code addIds}. The special identifier {@code "all-members"} may be
+     * used to remove all existing group members, replacing them with the
+     * list specified by {@code newIds}.
      * &lt;p&gt;
-     * &lt;h4&gt;Examples:&lt;/h4&gt;
+     * &lt;h5&gt;Examples:&lt;/h5&gt;
      * &lt;pre&gt;
-     * updateDirectMembers("test-group", "mug99,crsid/yyy99,usn/123456789", "xxx99",
+     * updateDirectMembers("test-group",
+     *                     "mug99,crsid/yyy99,usn/123456789",
+     *                     "xxx99",
      *                     "Remove xxx99 and add mug99, yyy99 and usn/123456789 to test-group");
      * &lt;/pre&gt;
      * &lt;pre&gt;
-     * updateDirectMembers("test-group", "xxx99,yyy99", "all-members",
+     * updateDirectMembers("test-group",
+     *                     "xxx99,yyy99",
+     *                     "all-members",
      *                     "Set the membership of test-group to include only xxx99 and yyy99");
      * &lt;/pre&gt;
      *
@@ -369,9 +376,9 @@
      */</doc>
                     <request>
                         <representation mediaType="application/x-www-form-urlencoded">
-                            <param type="xs:string" style="query" name="addIds" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:string" style="query" name="removeIds" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="addIds" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="removeIds" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                         </representation>
                     </request>
                     <response>
@@ -383,8 +390,8 @@
                 </method>
             </resource>
             <resource path="{groupid}/members">
-                <param type="xs:string" style="template" name="groupid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getMembers" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <param name="groupid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getMembers" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Get all the members of the specified group, including members of
@@ -404,7 +411,7 @@
      * @return The group's members (in identifier order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -430,57 +437,59 @@
  * &lt;p&gt;
  * For institutions the &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
  * any institution attribute by specifying the &lt;code&gt;schemeid&lt;/code&gt; of an
- * institution attribute scheme. Examples include "address", "jpegPhoto",
- * "universityPhone", "instPhone", "landlinePhone", "mobilePhone",
- * "faxNumber", "email" and "labeledURI". The full list (which may be
+ * institution attribute scheme. Examples include {@code "address"},
+ * {@code "jpegPhoto"}, {@code "universityPhone"}, {@code "instPhone"},
+ * {@code "landlinePhone"}, {@code "mobilePhone"}, {@code "faxNumber"},
+ * {@code "email"} and {@code "labeledURI"}. The full list (which may be
  * extended over time) may be obtained using {@link #allAttributeSchemes}.
  * &lt;p&gt;
  * In addition the following pseudo-attributes are supported:
  * &lt;ul&gt;
- * &lt;li&gt;"phone_numbers" - fetches all phone numbers. This is equivalent to
- * "universityPhone,instPhone,landlinePhone,mobilePhone".&lt;/li&gt;
- * &lt;li&gt;"all_attrs" - fetches all attributes from all institution attribute
- * schemes. This does not include references.&lt;/li&gt;
- * &lt;li&gt;"contact_rows" - fetches all institution contact rows. Any chained
- * fetches from contact rows are used to fetch attributes from any people
- * referred to by the contact rows.&lt;/li&gt;
+ * &lt;li&gt;{@code "phone_numbers"} - fetches all phone numbers. This is
+ * equivalent to
+ * {@code "universityPhone,instPhone,landlinePhone,mobilePhone"}.&lt;/li&gt;
+ * &lt;li&gt;{@code "all_attrs"} - fetches all attributes from all institution
+ * attribute schemes. This does not include references.&lt;/li&gt;
+ * &lt;li&gt;{@code "contact_rows"} - fetches all institution contact rows. Any
+ * chained fetches from contact rows are used to fetch attributes from any
+ * people referred to by the contact rows.&lt;/li&gt;
  * &lt;/ul&gt;
  * &lt;p&gt;
  * The &lt;code&gt;fetch&lt;/code&gt; parameter may also be used to fetch referenced
  * people, institutions or groups. This will only include references to
  * non-cancelled entities. The following references are supported:
  * &lt;ul&gt;
- * &lt;li&gt;"all_members" - fetches all the people who are members of the
+ * &lt;li&gt;{@code "all_members"} - fetches all the people who are members of the
  * institution.&lt;/li&gt;
- * &lt;li&gt;"parent_insts" - fetches all the parent institutions. Note that
- * currently all institutions have only one parent, but this may change in
- * the future, and client applications should be prepared to handle multiple
- * parents.&lt;/li&gt;
- * &lt;li&gt;"child_insts" - fetches all the child institutions.&lt;/li&gt;
- * &lt;li&gt;"inst_groups" - fetches all the groups that belong to the
+ * &lt;li&gt;{@code "parent_insts"} - fetches all the parent institutions. Note
+ * that currently all institutions have only one parent, but this may change
+ * in the future, and client applications should be prepared to handle
+ * multiple parents.&lt;/li&gt;
+ * &lt;li&gt;{@code "child_insts"} - fetches all the child institutions.&lt;/li&gt;
+ * &lt;li&gt;{@code "inst_groups"} - fetches all the groups that belong to the
  * institution.&lt;/li&gt;
- * &lt;li&gt;"members_groups" - fetches all the groups that form the institution's
- * membership list.&lt;/li&gt;
- * &lt;li&gt;"managed_by_groups" - fetches all the groups that manage the
+ * &lt;li&gt;{@code "members_groups"} - fetches all the groups that form the
+ * institution's membership list.&lt;/li&gt;
+ * &lt;li&gt;{@code "managed_by_groups"} - fetches all the groups that manage the
  * institution's data (commonly called "Editor" groups).&lt;/li&gt;
  * &lt;/ul&gt;
  * &lt;p&gt;
  * As with person &lt;code&gt;fetch&lt;/code&gt; parameters, the references may be used
  * in a chain by using the "dot" notation to fetch additional information
  * about referenced people, institutions or groups. For example
- * "all_members.email" will fetch the email addresses of all members of the
- * institution. For more information about what can be fetched from
+ * {@code "all_members.email"} will fetch the email addresses of all members
+ * of the institution. For more information about what can be fetched from
  * referenced people and groups, refer to the documentation for
  * {@link PersonMethods} and {@link GroupMethods}.
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */</doc>
             <resource path="all-attr-schemes">
-                <method name="GET" id="allAttributeSchemes" resultField="attributeSchemes:java.util.List&lt;IbisAttributeScheme&gt;">
+                <method id="allAttributeSchemes" name="GET" resultField="attributeSchemes:java.util.List&lt;IbisAttributeScheme&gt;">
                     <doc>
     /**
      * Return a list of all the institution attribute schemes available.
-     * The "schemeid" values of these schemes may be used in the
+     * The {@code schemeid} values of these schemes may be used in the
      * &lt;code&gt;fetch&lt;/code&gt; parameter of other methods that return institutions.
      *
      * @return All the available institution attribute schemes (in precedence
@@ -495,7 +504,7 @@
                 </method>
             </resource>
             <resource path="all-insts">
-                <method name="GET" id="allInsts" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
+                <method id="allInsts" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
                     <doc>
     /**
      * Return a list of all institutions.
@@ -512,8 +521,8 @@
      * @return The requested institutions (in instid order).
      */</doc>
                     <request>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -524,7 +533,7 @@
                 </method>
             </resource>
             <resource path="list">
-                <method name="GET" id="listInsts" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
+                <method id="listInsts" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
                     <doc>
     /**
      * Get the institutions with the specified IDs.
@@ -550,8 +559,8 @@
      * @return The requested institutions (in instid order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="instids" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="instids" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -562,7 +571,7 @@
                 </method>
             </resource>
             <resource path="search">
-                <method name="GET" id="search" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
+                <method id="search" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
                     <doc>
     /**
      * Search for institutions using a free text query string. This is the
@@ -575,32 +584,32 @@
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param includeCancelled [optional] Flag to allow cancelled institutions
-     * to be included. Defaults to false.
+     * to be included. Defaults to {@code false}.
      * @param attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is NULL (the default) then all
-     * attribute schemes marked as searchable will be included.
+     * consider when searching. If this is {@code null} (the default) then
+     * all attribute schemes marked as searchable will be included.
      * @param offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param orderBy [optional] The order in which to list the results.
-     * This may be either "instid" or "name" (the default).
+     * This may be either {@code "instid"} or {@code "name"} (the default).
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
      * @return The matching institutions.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="query" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="approxMatches" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="attributes" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:int" style="query" name="offset" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:int" style="query" name="limit" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="orderBy" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="query" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="approxMatches" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="attributes" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="offset" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="limit" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="orderBy" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -611,7 +620,7 @@
                 </method>
             </resource>
             <resource path="search-count">
-                <method name="GET" id="searchCount" resultField="value:int">
+                <method id="searchCount" name="GET" resultField="value:int">
                     <doc>
     /**
      * Count the number of institutions that would be returned by a search
@@ -620,20 +629,20 @@
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param includeCancelled [optional] Flag to allow cancelled institutions
-     * to be included. Defaults to false.
+     * to be included. Defaults to {@code false}.
      * @param attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is NULL (the default) then all
-     * attribute schemes marked as searchable will be included.
+     * consider when searching. If this is {@code null} (the default) then
+     * all attribute schemes marked as searchable will be included.
      *
      * @return The number of matching institutions.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="query" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="approxMatches" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="attributes" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="query" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="approxMatches" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="attributes" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="text/plain"/>
@@ -645,8 +654,8 @@
                 </method>
             </resource>
             <resource path="{instid}">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getInst" resultField="institution:IbisInstitution">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getInst" name="GET" resultField="institution:IbisInstitution">
                     <doc>
     /**
      * Get the institution with the specified ID.
@@ -662,10 +671,10 @@
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return The requested institution or null if it was not found.
+     * @return The requested institution or {@code null} if it was not found.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -676,8 +685,8 @@
                 </method>
             </resource>
             <resource path="{instid}/add-attribute">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="POST" id="addAttribute" resultField="attribute:IbisAttribute">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="addAttribute" name="POST" resultField="attribute:IbisAttribute">
                     <doc>
     /**
      * Add an attribute to an institution. By default, this will not add the
@@ -693,10 +702,10 @@
      * list of attributes of the same attribute scheme (1, 2, 3,...). A value
      * of 0 (the default) will cause the new attribute to be added to the end
      * of the list of existing attributes for the scheme.
-     * @param allowDuplicates [optional] If true, the new attribute will
-     * always be added, even if another identical attribute already exists.
-     * If false (the default), the new attribute will only be added if it
-     * doesn't already exist.
+     * @param allowDuplicates [optional] If {@code true}, the new attribute
+     * will always be added, even if another identical attribute already
+     * exists. If {@code false} (the default), the new attribute will only be
+     * added if it doesn't already exist.
      * @param commitComment [recommended] A short textual description of
      * the change made (will be visible on the history tab in the web
      * application).
@@ -705,10 +714,10 @@
      */</doc>
                     <request>
                         <representation mediaType="application/x-www-form-urlencoded">
-                            <param type="xs:string" style="query" name="attr" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:int" style="query" name="position" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:boolean" style="query" name="allowDuplicates" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="attr" style="query" type="xs:string" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="position" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="allowDuplicates" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                         </representation>
                     </request>
                     <response>
@@ -720,8 +729,8 @@
                 </method>
             </resource>
             <resource path="{instid}/cancelled-members">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getCancelledMembers" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getCancelledMembers" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Get all the cancelled members of the specified institution.
@@ -745,7 +754,7 @@
      * @return The institution's cancelled members (in identifier order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -756,8 +765,8 @@
                 </method>
             </resource>
             <resource path="{instid}/contact-rows">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getContactRows" resultField="institution.contactRows:java.util.List&lt;IbisContactRow&gt;">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getContactRows" name="GET" resultField="institution.contactRows:java.util.List&lt;IbisContactRow&gt;">
                     <doc>
     /**
      * Get all the contact rows of the specified institution.
@@ -781,7 +790,7 @@
      * @return The institution's contact rows.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -792,8 +801,8 @@
                 </method>
             </resource>
             <resource path="{instid}/get-attributes">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getAttributes" resultField="attributes:java.util.List&lt;IbisAttribute&gt;">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getAttributes" name="GET" resultField="attributes:java.util.List&lt;IbisAttribute&gt;">
                     <doc>
     /**
      * Get one or more (possibly multi-valued) attributes of an institution.
@@ -804,12 +813,12 @@
      * @param attrs [required] The attribute scheme(s) to fetch. This may
      * include any number of the attributes or pseudo-attributes, but it
      * may not include references or attribute chains (see the documentation
-     * for the "fetch" parameter in this class).
+     * for the {@code fetch} parameter in this class).
      *
      * @return The requested attributes.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="attrs" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="attrs" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -820,8 +829,8 @@
                 </method>
             </resource>
             <resource path="{instid}/members">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getMembers" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getMembers" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Get all the members of the specified institution.
@@ -839,7 +848,7 @@
      * @return The institution's members (in identifier order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -850,9 +859,39 @@
                 </method>
             </resource>
             <resource path="{instid}/{attrid}">
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:long" style="template" name="attrid" javaType="java.lang.Long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getAttribute" resultField="attribute:IbisAttribute">
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="attrid" style="template" type="xs:long" javaType="java.lang.Long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="deleteAttribute" name="DELETE" resultField="value:boolean">
+                    <doc>
+    /**
+     * Delete an attribute of an institution. It is not an error if the
+     * attribute does not exist.
+     * &lt;p&gt;
+     * Note that in this method, the &lt;code&gt;commitComment&lt;/code&gt; is passed
+     * as a query parameter, rather than as a form parameter, for greater
+     * client compatibility.
+     *
+     * @param instid [required] The ID of the institution.
+     * @param attrid [required] The ID of the attribute to delete.
+     * @param commitComment [recommended] A short textual description of
+     * the change made (will be visible on the history tab in the web
+     * application).
+     *
+     * @return {@code true} if the attribute was deleted by this method, or
+     * {@code false} if it did not exist.
+     */</doc>
+                    <request>
+                        <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </request>
+                    <response>
+                        <representation mediaType="text/plain"/>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+                <method id="getAttribute" name="GET" resultField="attribute:IbisAttribute">
                     <doc>
     /**
      * Get a specific attribute of an institution.
@@ -869,7 +908,7 @@
                         <representation mediaType="text/x-json"/>
                     </response>
                 </method>
-                <method name="PUT" id="updateAttribute" resultField="attribute:IbisAttribute">
+                <method id="updateAttribute" name="PUT" resultField="attribute:IbisAttribute">
                     <doc>
     /**
      * Update an attribute of an institution.
@@ -894,41 +933,11 @@
      */</doc>
                     <request>
                         <representation mediaType="application/x-www-form-urlencoded">
-                            <param type="xs:string" style="query" name="attr" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="attr" style="query" type="xs:string" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                         </representation>
                     </request>
                     <response>
-                        <representation mediaType="application/xml"/>
-                        <representation mediaType="application/json"/>
-                        <representation mediaType="text/xml"/>
-                        <representation mediaType="text/x-json"/>
-                    </response>
-                </method>
-                <method name="DELETE" id="deleteAttribute" resultField="value:boolean">
-                    <doc>
-    /**
-     * Delete an attribute of an institution. It is not an error if the
-     * attribute does not exist.
-     * &lt;p&gt;
-     * Note that in this method, the &lt;code&gt;commitComment&lt;/code&gt; is passed
-     * as a query parameter, rather than as a form parameter, for greater
-     * client compatibility.
-     *
-     * @param instid [required] The ID of the institution.
-     * @param attrid [required] The ID of the attribute to delete.
-     * @param commitComment [recommended] A short textual description of
-     * the change made (will be visible on the history tab in the web
-     * application).
-     *
-     * @return True if the attribute was deleted by this method, or false
-     * if it did not exist.
-     */</doc>
-                    <request>
-                        <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                    </request>
-                    <response>
-                        <representation mediaType="text/plain"/>
                         <representation mediaType="application/xml"/>
                         <representation mediaType="application/json"/>
                         <representation mediaType="text/xml"/>
@@ -955,11 +964,12 @@
  * &lt;li&gt;
  * &lt;b&gt;Attribute fetching&lt;/b&gt;. Attributes may be fetched by specifying the
  * &lt;code&gt;schemeid&lt;/code&gt; of an attribute scheme. For example to fetch a
- * person's email addresses, use the value "email". For people common
- * attribute schemes include "jpegPhoto", "misAffiliation", "title",
- * "universityPhone", "mobexPhone", "landlinePhone", "mobilePhone", "pager",
- * "labeledURI" and "address". The full list of person attribute schemes may
- * be obtained using {@link #allAttributeSchemes}.
+ * person's email addresses, use the value {@code "email"}. For people common
+ * attribute schemes include {@code "jpegPhoto"}, {@code "misAffiliation"},
+ * {@code "title"}, {@code "universityPhone"}, {@code "mobexPhone"},
+ * {@code "landlinePhone"}, {@code "mobilePhone"}, {@code "pager"},
+ * {@code "labeledURI"} and {@code "address"}. The full list of person
+ * attribute schemes may be obtained using {@link #allAttributeSchemes}.
  * &lt;br/&gt;&lt;br/&gt;
  * &lt;/li&gt;
  *
@@ -967,12 +977,13 @@
  * &lt;b&gt;Pseudo-attributes&lt;/b&gt;. Certain special pseudo-attributes are defined
  * for convenience. For people, the following pseudo-attributes are supported:
  * &lt;ul&gt;
- * &lt;li&gt;"phone_numbers" - fetches all phone numbers. This is equivalent to
- * "universityPhone,instPhone,mobexPhone,landlinePhone,mobilePhone,pager".&lt;/li&gt;
- * &lt;li&gt;"all_identifiers" - fetches all identifiers. Currently people only
- * have CRSid identifiers, but in the future additional identifiers such
+ * &lt;li&gt;{@code "phone_numbers"} - fetches all phone numbers. This is
+ * equivalent to
+ * {@code "universityPhone,instPhone,mobexPhone,landlinePhone,mobilePhone,pager"}.&lt;/li&gt;
+ * &lt;li&gt;{@code "all_identifiers"} - fetches all identifiers. Currently people
+ * only have CRSid identifiers, but in the future additional identifiers such
  * as USN or staffNumber may be added.&lt;/li&gt;
- * &lt;li&gt;"all_attrs" - fetches all attributes from all person attribute
+ * &lt;li&gt;{@code "all_attrs"} - fetches all attributes from all person attribute
  * schemes. This does not include identifiers or references.&lt;/li&gt;
  * &lt;/ul&gt;
  * &lt;br/&gt;&lt;br/&gt;
@@ -982,14 +993,14 @@
  * &lt;b&gt;Reference fetching&lt;/b&gt;. For people, the following references are
  * supported (and will fetch only non-cancelled institutions and groups):
  * &lt;ul&gt;
- * &lt;li&gt;"all_insts" - fetches all the institutions to which the person
+ * &lt;li&gt;{@code "all_insts"} - fetches all the institutions to which the person
  * belongs (sorted in name order).&lt;/li&gt;
- * &lt;li&gt;"all_groups" - fetches all the groups that the person is a member
- * of, including indirect group memberships, via groups that include other
- * groups.&lt;/li&gt;
- * &lt;li&gt;"direct_groups" - fetches all the groups that the person is directly
- * a member of. This does not include indirect group memberships - i.e.,
- * groups that include these groups.&lt;/li&gt;
+ * &lt;li&gt;{@code "all_groups"} - fetches all the groups that the person is a
+ * member of, including indirect group memberships, via groups that include
+ * other groups.&lt;/li&gt;
+ * &lt;li&gt;{@code "direct_groups"} - fetches all the groups that the person is
+ * directly a member of. This does not include indirect group memberships -
+ * i.e., groups that include these groups.&lt;/li&gt;
  * &lt;/ul&gt;
  * &lt;br/&gt;&lt;br/&gt;
  * &lt;/li&gt;
@@ -998,14 +1009,14 @@
  * &lt;b&gt;Chained reference fetching&lt;/b&gt;. To fetch properties of referenced
  * objects, the "dot" notation may be used. For example, to fetch the email
  * addresses of all the institutions to which a person belongs, use
- * "all_insts.email". Chains may include a number of reference following
- * steps, for example "all_insts.managed_by_groups.all_members.email" will
- * fetch all the institutions to which the person belongs, all the groups
- * that manage those institutions, all the visible members of those groups
- * and all the email addresses of those managing group members. For more
- * information about what can be fetched from referenced institutions and
- * groups, refer to the documentation for {@link InstitutionMethods} and
- * {@link GroupMethods}.
+ * {@code "all_insts.email"}. Chains may include a number of reference
+ * following steps, for example
+ * {@code "all_insts.managed_by_groups.all_members.email"} will fetch all the
+ * institutions to which the person belongs, all the groups that manage those
+ * institutions, all the visible members of those groups and all the email
+ * addresses of those managing group members. For more information about what
+ * can be fetched from referenced institutions and groups, refer to the
+ * documentation for {@link InstitutionMethods} and {@link GroupMethods}.
  * &lt;/li&gt;
  * &lt;/ul&gt;
  *
@@ -1038,11 +1049,11 @@
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */</doc>
             <resource path="all-attr-schemes">
-                <method name="GET" id="allAttributeSchemes" resultField="attributeSchemes:java.util.List&lt;IbisAttributeScheme&gt;">
+                <method id="allAttributeSchemes" name="GET" resultField="attributeSchemes:java.util.List&lt;IbisAttributeScheme&gt;">
                     <doc>
     /**
      * Return a list of all the person attribute schemes available. The
-     * "schemeid" values of these schemes may be used in the
+     * {@code schemeid} values of these schemes may be used in the
      * &lt;code&gt;fetch&lt;/code&gt; parameter of other methods that return people.
      * &lt;p&gt;
      * NOTE: Some of these attribute schemes are not currently used (no
@@ -1061,14 +1072,14 @@
                 </method>
             </resource>
             <resource path="list">
-                <method name="GET" id="listPeople" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <method id="listPeople" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Get the people with the specified identifiers (typically CRSids).
      * &lt;p&gt;
      * Each identifier may be either a CRSid, or an identifier from another
      * identifier scheme, prefixed with that scheme's name and a slash. For
-     * example "mug99" or "usn/123456789".
+     * example {@code "mug99"} or {@code "usn/123456789"}.
      * &lt;p&gt;
      * By default, only a few basic details about each person are returned,
      * but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
@@ -1093,8 +1104,8 @@
      * @return The requested people (in identifier order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="crsids" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="crsids" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1105,7 +1116,7 @@
                 </method>
             </resource>
             <resource path="search">
-                <method name="GET" id="search" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                <method id="search" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
     /**
      * Search for people using a free text query string. This is the same
@@ -1118,44 +1129,47 @@
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
-     * Defaults to false.
+     * Defaults to {@code false}.
      * @param misStatus [optional] The type of people to search for. This may
      * be
      * &lt;ul&gt;
-     * &lt;li&gt;"staff" - only include people whose MIS status is "" (empty
-     * string), "staff", or "staff,student".&lt;/li&gt;
-     * &lt;li&gt;"student" - only include people whose MIS status is set to
-     * "student" or "staff,student".&lt;/li&gt;
+     * &lt;li&gt;{@code "staff"} - only include people whose MIS status is
+     * {@code ""} (empty string), {@code "staff"}, or
+     * {@code "staff,student"}.&lt;/li&gt;
+     * &lt;li&gt;{@code "student"} - only include people whose MIS status is set to
+     * {@code "student"} or {@code "staff,student"}.&lt;/li&gt;
      * &lt;/ul&gt;
      * Otherwise all matching people will be included (the default). Note
-     * that the "staff" and "student" options are not mutually exclusive.
+     * that the {@code "staff"} and {@code "student"} options are not
+     * mutually exclusive.
      * @param attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is NULL (the default) then all
-     * attribute schemes marked as searchable will be included.
+     * consider when searching. If this is {@code null} (the default) then
+     * all attribute schemes marked as searchable will be included.
      * @param offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param orderBy [optional] The order in which to list the results.
-     * This may be either "identifier" or "surname" (the default).
+     * This may be either {@code "identifier"} or {@code "surname"} (the
+     * default).
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
      * @return The matching people.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="query" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="approxMatches" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="misStatus" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="attributes" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:int" style="query" name="offset" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:int" style="query" name="limit" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="orderBy" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="query" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="approxMatches" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="misStatus" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="attributes" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="offset" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="limit" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="orderBy" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1166,7 +1180,7 @@
                 </method>
             </resource>
             <resource path="search-count">
-                <method name="GET" id="searchCount" resultField="value:int">
+                <method id="searchCount" name="GET" resultField="value:int">
                     <doc>
     /**
      * Count the number of people that would be returned by a search using
@@ -1175,32 +1189,34 @@
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to false.
+     * to {@code false}.
      * @param includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
-     * Defaults to false.
+     * Defaults to {@code false}.
      * @param misStatus [optional] The type of people to search for. This may
      * be
      * &lt;ul&gt;
-     * &lt;li&gt;"staff" - only include people whose MIS status is "" (empty
-     * string), "staff", or "staff,student".&lt;/li&gt;
-     * &lt;li&gt;"student" - only include people whose MIS status is set to
-     * "student" or "staff,student".&lt;/li&gt;
+     * &lt;li&gt;{@code "staff"} - only include people whose MIS status is
+     * {@code ""} (empty string), {@code "staff"}, or
+     * {@code "staff,student"}.&lt;/li&gt;
+     * &lt;li&gt;{@code "student"} - only include people whose MIS status is set to
+     * {@code "student"} or {@code "staff,student"}.&lt;/li&gt;
      * &lt;/ul&gt;
      * Otherwise all matching people will be included (the default). Note
-     * that the "staff" and "student" options are not mutually exclusive.
+     * that the {@code "staff"} and {@code "student"} options are not
+     * mutually exclusive.
      * @param attributes [optional] A comma-separated list of attributes to
-     * consider when searching. If this is NULL (the default) then all
-     * attribute schemes marked as searchable will be included.
+     * consider when searching. If this is {@code null} (the default) then
+     * all attribute schemes marked as searchable will be included.
      *
      * @return The number of matching people.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="query" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="approxMatches" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:boolean" style="query" name="includeCancelled" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="misStatus" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                        <param type="xs:string" style="query" name="attributes" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="query" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="approxMatches" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="misStatus" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="attributes" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="text/plain"/>
@@ -1212,9 +1228,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getPerson" resultField="person:IbisPerson">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getPerson" name="GET" resultField="person:IbisPerson">
                     <doc>
     /**
      * Get the person with the specified identifier.
@@ -1227,17 +1243,18 @@
      * caller's repsonsibility to check its cancelled flag.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person to fetch
      * (typically their CRSid).
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
-     * @return The requested person or null if they were not found.
+     * @return The requested person or {@code null} if they were not found.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1248,9 +1265,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/add-attribute">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="POST" id="addAttribute" resultField="attribute:IbisAttribute">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="addAttribute" name="POST" resultField="attribute:IbisAttribute">
                     <doc>
     /**
      * Add an attribute to a person. By default, this will not add the
@@ -1261,8 +1278,9 @@
      * All the remaining fields of the attribute are optional.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person to udpate
      * (typically their CRSid).
      * @param attr [required] The new attribute to add.
@@ -1270,10 +1288,10 @@
      * list of attributes of the same attribute scheme (1, 2, 3,...). A value
      * of 0 (the default) will cause the new attribute to be added to the end
      * of the list of existing attributes for the scheme.
-     * @param allowDuplicates [optional] If true, the new attribute will
-     * always be added, even if another identical attribute already exists.
-     * If false (the default), the new attribute will only be added if it
-     * doesn't already exist.
+     * @param allowDuplicates [optional] If {@code true}, the new attribute
+     * will always be added, even if another identical attribute already
+     * exists. If {@code false} (the default), the new attribute will only be
+     * added if it doesn't already exist.
      * @param commitComment [recommended] A short textual description of
      * the change made (will be visible on the history tab in the web
      * application).
@@ -1282,10 +1300,10 @@
      */</doc>
                     <request>
                         <representation mediaType="application/x-www-form-urlencoded">
-                            <param type="xs:string" style="query" name="attr" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:int" style="query" name="position" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:boolean" style="query" name="allowDuplicates" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="attr" style="query" type="xs:string" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="position" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="allowDuplicates" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                         </representation>
                     </request>
                     <response>
@@ -1297,9 +1315,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/get-attributes">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getAttributes" resultField="attributes:java.util.List&lt;IbisAttribute&gt;">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getAttributes" name="GET" resultField="attributes:java.util.List&lt;IbisAttribute&gt;">
                     <doc>
     /**
      * Get one or more (possibly multi-valued) attributes of a person. The
@@ -1307,19 +1325,20 @@
      * then attribute precedence.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param attrs [required] The attribute scheme(s) to fetch. This may
      * include any number of the attributes or pseudo-attributes, but it
      * may not include references or attribute chains (see the documentation
-     * for the "fetch" parameter in this class).
+     * for the {@code fetch} parameter in this class).
      *
      * @return The requested attributes.
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="attrs" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="attrs" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1330,9 +1349,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/groups">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getGroups" resultField="groups:java.util.List&lt;IbisGroup&gt;">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getGroups" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
                     <doc>
     /**
      * Get all the groups to which the specified person belongs, including
@@ -1350,8 +1369,9 @@
      * NOTE: This method will not include cancelled groups.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param fetch [optional] A comma-separated list of any additional
@@ -1360,7 +1380,7 @@
      * @return The person's groups (in groupid order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1371,9 +1391,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/insts">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getInsts" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getInsts" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
                     <doc>
     /**
      * Get all the institutions to which the specified person belongs. The
@@ -1386,8 +1406,9 @@
      * NOTE: This method will not include cancelled institutions.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param fetch [optional] A comma-separated list of any additional
@@ -1396,7 +1417,7 @@
      * @return The person's institutions (in name order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1407,10 +1428,10 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/is-member-of-group/{groupid}">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="groupid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="isMemberOfGroup" resultField="value:boolean">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="groupid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="isMemberOfGroup" name="GET" resultField="value:boolean">
                     <doc>
     /**
      * Test if the specified person is a member of the specified group.
@@ -1418,14 +1439,16 @@
      * NOTE: This may be used with cancelled people and groups.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param groupid [required] The ID or name of the group.
      *
-     * @return true if the specified person is in the specified group,
-     * false otherwise (or if the person or group does not exist).
+     * @return {@code true} if the specified person is in the specified
+     * group, {@code false} otherwise (or if the person or group does not
+     * exist).
      */</doc>
                     <response>
                         <representation mediaType="text/plain"/>
@@ -1437,10 +1460,10 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/is-member-of-inst/{instid}">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="instid" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="isMemberOfInst" resultField="value:boolean">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="instid" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="isMemberOfInst" name="GET" resultField="value:boolean">
                     <doc>
     /**
      * Test if the specified person is a member of the specified institution.
@@ -1449,14 +1472,16 @@
      * it will not include cancelled membership groups.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param instid [required] The ID of the institution.
      *
-     * @return true if the specified person is in the specified institution,
-     * false otherwise (or if the person or institution does not exist).
+     * @return {@code true} if the specified person is in the specified
+     * institution, {@code false} otherwise (or if the person or institution
+     * does not exist).
      */</doc>
                     <response>
                         <representation mediaType="text/plain"/>
@@ -1468,9 +1493,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/manages-groups">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getManagedGroups" resultField="groups:java.util.List&lt;IbisGroup&gt;">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getManagedGroups" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
                     <doc>
     /**
      * Get all the groups that the specified person has persmission to edit.
@@ -1487,8 +1512,9 @@
      * NOTE: This method will not include cancelled groups.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param fetch [optional] A comma-separated list of any additional
@@ -1497,7 +1523,7 @@
      * @return The groups that the person manages (in groupid order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1508,9 +1534,9 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/manages-insts">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getManagedInsts" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="getManagedInsts" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
                     <doc>
     /**
      * Get all the institutions that the specified person has permission to
@@ -1527,8 +1553,9 @@
      * NOTE: This method will not include cancelled institutions.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param fetch [optional] A comma-separated list of any additional
@@ -1537,7 +1564,7 @@
      * @return The institutions that the person manages (in name order).
      */</doc>
                     <request>
-                        <param type="xs:string" style="query" name="fetch" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                     </request>
                     <response>
                         <representation mediaType="application/xml"/>
@@ -1548,17 +1575,53 @@
                 </method>
             </resource>
             <resource path="{scheme}/{identifier}/{attrid}">
-                <param type="xs:string" style="template" name="scheme" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:string" style="template" name="identifier" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <param type="xs:long" style="template" name="attrid" javaType="java.lang.Long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                <method name="GET" id="getAttribute" resultField="attribute:IbisAttribute">
+                <param name="scheme" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="identifier" style="template" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <param name="attrid" style="template" type="xs:long" javaType="java.lang.Long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                <method id="deleteAttribute" name="DELETE" resultField="value:boolean">
+                    <doc>
+    /**
+     * Delete an attribute of a person. It is not an error if the attribute
+     * does not exist.
+     * &lt;p&gt;
+     * Note that in this method, the &lt;code&gt;commitComment&lt;/code&gt; is passed
+     * as a query parameter, rather than as a form parameter, for greater
+     * client compatibility.
+     *
+     * @param scheme [required] The person identifier scheme. Typically this
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
+     * @param identifier [required] The identifier of the person to udpate
+     * (typically their CRSid).
+     * @param attrid [required] The ID of the attribute to delete.
+     * @param commitComment [recommended] A short textual description of
+     * the change made (will be visible on the history tab in the web
+     * application).
+     *
+     * @return {@code true} if the attribute was deleted by this method, or
+     * {@code false} if it did not exist.
+     */</doc>
+                    <request>
+                        <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </request>
+                    <response>
+                        <representation mediaType="text/plain"/>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+                <method id="getAttribute" name="GET" resultField="attribute:IbisAttribute">
                     <doc>
     /**
      * Get a specific attribute of a person.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person (typically
      * their CRSid).
      * @param attrid [required] The ID of the attribute to fetch.
@@ -1572,7 +1635,7 @@
                         <representation mediaType="text/x-json"/>
                     </response>
                 </method>
-                <method name="PUT" id="updateAttribute" resultField="attribute:IbisAttribute">
+                <method id="updateAttribute" name="PUT" resultField="attribute:IbisAttribute">
                     <doc>
     /**
      * Update an attribute of a person.
@@ -1587,8 +1650,9 @@
      * method with the required changes.
      *
      * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
+     * should be {@code "crsid"}, but other identifier schemes may be
+     * available in the future, such as {@code "usn"} or
+     * {@code "staffNumber"}.
      * @param identifier [required] The identifier of the person to udpate
      * (typically their CRSid).
      * @param attrid [required] The ID of the attribute to update.
@@ -1601,45 +1665,11 @@
      */</doc>
                     <request>
                         <representation mediaType="application/x-www-form-urlencoded">
-                            <param type="xs:string" style="query" name="attr" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                            <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="attr" style="query" type="xs:string" javaType="uk.ac.cam.ucs.ibis.dto.IbisAttribute" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                            <param name="commitComment" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
                         </representation>
                     </request>
                     <response>
-                        <representation mediaType="application/xml"/>
-                        <representation mediaType="application/json"/>
-                        <representation mediaType="text/xml"/>
-                        <representation mediaType="text/x-json"/>
-                    </response>
-                </method>
-                <method name="DELETE" id="deleteAttribute" resultField="value:boolean">
-                    <doc>
-    /**
-     * Delete an attribute of a person. It is not an error if the attribute
-     * does not exist.
-     * &lt;p&gt;
-     * Note that in this method, the &lt;code&gt;commitComment&lt;/code&gt; is passed
-     * as a query parameter, rather than as a form parameter, for greater
-     * client compatibility.
-     *
-     * @param scheme [required] The person identifier scheme. Typically this
-     * should be "crsid", but other identifier schemes may be available
-     * in the future, such as "usn" or "staffNumber".
-     * @param identifier [required] The identifier of the person to udpate
-     * (typically their CRSid).
-     * @param attrid [required] The ID of the attribute to delete.
-     * @param commitComment [recommended] A short textual description of
-     * the change made (will be visible on the history tab in the web
-     * application).
-     *
-     * @return True if the attribute was deleted by this method, or false
-     * if it did not exist.
-     */</doc>
-                    <request>
-                        <param type="xs:string" style="query" name="commitComment" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
-                    </request>
-                    <response>
-                        <representation mediaType="text/plain"/>
                         <representation mediaType="application/xml"/>
                         <representation mediaType="application/json"/>
                         <representation mediaType="text/xml"/>

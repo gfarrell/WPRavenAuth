@@ -51,95 +51,109 @@ class IbisResult extends IbisDto
     protected static $xmlArrays = array("people", "institutions", "groups",
                                         "attributes", "attributeSchemes");
 
-    /** The web service API version number. */
+    /** @var string The web service API version number. */
     public $version;
 
-    /** The value returned by methods that return a simple textual value. */
+    /**
+     * @var string The value returned by methods that return a simple textual
+     * value.
+     */
     public $value;
 
     /**
-     * The person returned by methods that return a single person.
+     * @var IbisPerson The person returned by methods that return a single
+     * person.
      *
      * Note that methods that may return multiple people will always use
-     * the {@link #people} field, even if only one person was returned.
+     * the {@link people} field, even if only one person was returned.
      */
     public $person;
 
     /**
-     * The institution returned by methods that return a single institution.
+     * @var IbisInstitution The institution returned by methods that return a
+     * single institution.
      *
      * Note that methods that may return multiple institutions will always
-     * use the {@link #institutions} field, even if only one institution
+     * use the {@link institutions} field, even if only one institution
      * was returned.
      */
     public $institution;
 
     /**
-     * The group returned by methods that return a single group.
+     * @var IbisGroup The group returned by methods that return a single
+     * group.
      *
      * Note that methods that may return multiple groups will always use
-     * the {@link #groups} field, even if only one group was returned.
+     * the {@link groups} field, even if only one group was returned.
      */
     public $group;
 
-    /** The identifier returned by methods that return a single identifier. */
+    /**
+     * @var IbisIdentifier The identifier returned by methods that return a
+     * single identifier.
+     */
     public $identifier;
 
     /**
-     * The person or institution attribute returned by methods that return
-     * a single attribute.
+     * @var IbisAttribute The person or institution attribute returned by
+     * methods that return a single attribute.
      */
     public $attribute;
 
-    /** If the method failed, details of the error. */
+    /** @var IbisError If the method failed, details of the error. */
     public $error;
 
     /**
-     * The list of people returned by methods that may return multiple
-     * people. This may be empty, or contain one or more people.
+     * @var IbisPerson[] The list of people returned by methods that may
+     * return multiple people. This may be empty, or contain one or more
+     * people.
      */
     public $people;
 
     /**
-     * The list of institutions returned by methods that may return multiple
-     * institutions. This may be empty, or contain one or more institutions.
+     * @var IbisInstitution[] The list of institutions returned by methods
+     * that may return multiple institutions. This may be empty, or contain
+     * one or more institutions.
      */
     public $institutions;
 
     /**
-     * The list of groups returned by methods that may return multiple
-     * groups. This may be empty, or contain one or more groups.
+     * @var IbisGroup[] The list of groups returned by methods that may
+     * return multiple groups. This may be empty, or contain one or more
+     * groups.
      */
     public $groups;
 
     /**
-     * The list of attributes returned by methods that return lists of
-     * person/institution attributes.
+     * @var IbisAttribute[] The list of attributes returned by methods that
+     * return lists of person/institution attributes.
      */
     public $attributes;
 
     /**
-     * The list of attribute schemes returned by methods that return lists
-     * of person/institution attribute schemes.
+     * @var IbisAttributeScheme[] The list of attribute schemes returned by
+     * methods that return lists of person/institution attribute schemes.
      */
     public $attributeSchemes;
 
     /**
-     * In the flattened XML/JSON representation, all the unique entities
-     * returned by the method.
+     * @ignore
+     * @var IbisResultEntities In the flattened XML/JSON representation, all
+     * the unique entities returned by the method.
      *
-     * NOTE: This will be {@code null} unless the "flatten" parameter is
-     * true.
+     * NOTE: This will be ``null`` unless the "flatten" parameter is
+     * ``true``.
      */
     public $entities;
 
     /**
+     * @ignore
      * Unflatten this IbisResult object, resolving any internal ID refs
      * to build a fully fledged object tree.
      *
      * This is necessary if the IbisResult was constructed from XML/JSON in
      * its flattened representation (with the "flatten" parameter set to
-     * true).
+     * ``true``).
      *
      * On entry, the IbisResult object may have people, institutions or
      * groups in it with "ref" fields referring to objects held in the
@@ -172,6 +186,7 @@ class IbisResult extends IbisDto
 }
 
 /**
+ * @ignore
  * Class to hold the full details of all the entities returned in a result
  * (a nested class in Java and Python). This is used only in the flattened
  * result representation, where each of these entities will have a unique
@@ -188,31 +203,32 @@ class IbisResultEntities extends IbisDto
     protected static $xmlArrays = array("people", "institutions", "groups");
 
     /**
-     * A list of all the unique people returned by the method. This may
-     * include additional people returned as a result of the
-     * <code>fetch</code> parameter, so this list may contain more
-     * entries than the corresponding field on the enclosing class.
+     * @var IbisPerson[] A list of all the unique people returned by the
+     * method. This may include additional people returned as a result of the
+     * ``fetch`` parameter, so this list may contain more entries than the
+     * corresponding field on the enclosing class.
      */
     public $people;
 
     /**
-     * A list of all the unique institutions returned by the method.
-     * This may include additional institutions returned as a result
-     * of the <code>fetch</code> parameter, so this list may contain
-     * more entries than the corresponding field on the enclosing class.
+     * @var IbisInstitution[] A list of all the unique institutions returned
+     * by the method. This may include additional institutions returned as a
+     * result of the ``fetch`` parameter, so this list may contain more
+     * entries than the corresponding field on the enclosing class.
      */
     public $institutions;
 
     /**
-     * A list of all the unique groups returned by the method. This may
-     * include additional groups returned as a result of the
-     * <code>fetch</code> parameter, so this list may contain more
-     * entries than the corresponding field on the enclosing class.
+     * @var IbisGroup[] A list of all the unique groups returned by the
+     * method. This may include additional groups returned as a result of the
+     * ``fetch`` parameter, so this list may contain more entries than the
+     * corresponding field on the enclosing class.
      */
     public $groups;
 }
 
 /**
+ * @ignore
  * Class to assist during the unflattening process, maintaining efficient
  * maps from IDs to entities (people, institutions and groups). This is a
  * nested class of IbisResult in Java and Python.
@@ -252,6 +268,7 @@ class IbisResultEntityMap
 }
 
 /**
+ * @ignore
  * Class to hold a XML text node's value during XML parsing.
  */
 class XmlTextNode
@@ -271,7 +288,7 @@ class IbisResultParser
     /** Stack of nodes during XML parsing */
     private $nodeStack;
 
-    /** Start element callback function for XML parsing */
+    /** @ignore Start element callback function for XML parsing */
     public function startElement($parser, $tagname, $attrs)
     {
         $element = null;
@@ -280,6 +297,8 @@ class IbisResultParser
             if ($tagname === "person")
                 $element = new IbisPerson($attrs);
             elseif ($tagname === "institution")
+                $element = new IbisInstitution($attrs);
+            elseif ($tagname === "membersOfInst")
                 $element = new IbisInstitution($attrs);
             elseif ($tagname === "group")
                 $element = new IbisGroup($attrs);
@@ -327,7 +346,7 @@ class IbisResultParser
         else $this->nodeStack[] = $element;
     }
 
-    /** End element callback function for XML parsing */
+    /** @ignore End element callback function for XML parsing */
     public function endElement($parser, $tagname)
     {
         if (!empty($this->nodeStack))
@@ -356,7 +375,7 @@ class IbisResultParser
             throw new Exception("Unexpected closing tag: '" . $tagname . "'");
     }
 
-    /** Character data callback function for XML parsing */
+    /** @ignore Character data callback function for XML parsing */
     public function charData($parser, $data)
     {
         if (!empty($this->nodeStack))
@@ -375,7 +394,15 @@ class IbisResultParser
         }
     }
 
-    /* Parse XML data from the specified string and return an IbisResult */
+    /**
+     * Parse XML data from the specified string and return an IbisResult.
+     *
+     * @param string $data The XML string returned from the server.
+     *
+     * @return IbisResult The parsed results. This may contain lists or trees
+     * of objects representing people, institutions and groups returned from
+     * the server.
+     */
     public function parseXml($data)
     {
         $parser = xml_parser_create();
@@ -393,7 +420,16 @@ class IbisResultParser
         return $this->result->unflatten();
     }
 
-    /* Parse XML data from the specified string and return an IbisResult */
+    /**
+     * Parse XML data from the specified stream and return an IbisResult.
+     *
+     * @param resource $file A file pointer to a stream containing XML
+     * returned from the server.
+     *
+     * @return IbisResult The parsed results. This may contain lists or trees
+     * of objects representing people, institutions and groups returned from
+     * the server.
+     */
     public function parseXmlFile($file)
     {
         $parser = xml_parser_create();
