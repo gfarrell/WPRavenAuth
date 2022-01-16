@@ -179,6 +179,66 @@ class GroupMethods
     }
 
     /**
+     * Find all groups modified between the specified pair of transactions.
+     *
+     * The transaction IDs specified should be the IDs from two different
+     * requests for the last (most recent) transaction ID, made at different
+     * times, that returned different values, indicating that some Lookup
+     * data was modified in the period between the two requests. This method
+     * then determines which (if any) groups were affected.
+     *
+     * By default, only a few basic details about each group are returned,
+     * but the optional ``fetch`` parameter may be used to fetch
+     * additional attributes or references.
+     *
+     * NOTE: All data returned reflects the latest available data about each
+     * group. It is not possible to query for old data, or more detailed
+     * information about the specific changes made.
+     *
+     * ``[ HTTP: GET /api/v1/group/modified-groups?minTxId=...&maxTxId=... ]``
+     *
+     * @param long $minTxId [required] Include modifications made in transactions
+     * after (but not including) this one.
+     * @param long $maxTxId [required] Include modifications made in transactions
+     * up to and including this one.
+     * @param string $groupids [optional] Only include groups with IDs or names in
+     * this list. By default, all modified groups will be included.
+     * @param boolean $includeCancelled  [optional] Include cancelled groups. By
+     * default, cancelled groups are excluded.
+     * @param boolean $membershipChanges [optional] Include groups whose members have
+     * changed. By default, changes to group memberships are not taken into
+     * consideration.
+     * @param string $fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return IbisGroup[] The modified groups (in groupid order).
+     */
+    public function modifiedGroups($minTxId,
+                                   $maxTxId,
+                                   $groupids=null,
+                                   $includeCancelled=null,
+                                   $membershipChanges=null,
+                                   $fetch=null)
+    {
+        $pathParams = array();
+        $queryParams = array("minTxId"           => $minTxId,
+                             "maxTxId"           => $maxTxId,
+                             "groupids"          => $groupids,
+                             "includeCancelled"  => $includeCancelled,
+                             "membershipChanges" => $membershipChanges,
+                             "fetch"             => $fetch);
+        $formParams = array();
+        $result = $this->conn->invokeMethod("GET",
+                                            'api/v1/group/modified-groups',
+                                            $pathParams,
+                                            $queryParams,
+                                            $formParams);
+        if (isset($result->error))
+            throw new IbisException($result->error);
+        return $result->groups;
+    }
+
+    /**
      * Search for groups using a free text query string. This is the same
      * search function that is used in the Lookup web application.
      *
@@ -186,12 +246,20 @@ class GroupMethods
      * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
+     * NOTE: If the query string starts with the prefix ``"group:"``, it
+     * is treated as an <a href="/lql" target="_top">LQL query</a>, allowing
+     * more advanced searches. An LQL query will ignore the
+     * ``approxMatches`` parameter, but it will respect the value of
+     * ``includeCancelled``. In addition, an LQL query will ignore
+     * the ``orderBy`` parameter, since LQL queries always return
+     * results in ID order.
+     *
      * ``[ HTTP: GET /api/v1/group/search?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to ``false``.
+     * to ``false``. This is ignored for LQL queries.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled groups to
      * be included. Defaults to ``false``.
      * @param int $offset [optional] The number of results to skip at the start
@@ -199,8 +267,9 @@ class GroupMethods
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
-     * This may be ``"groupid"``, ``"name"`` (the default) or
-     * ``"title"``.
+     * This may be ``"groupid"``, ``"name"`` (the default for non-LQL
+     * queries) or ``"title"``. This is ignored for LQL queries, which
+     * always return results in groupid order.
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -237,12 +306,18 @@ class GroupMethods
      * Count the number of groups that would be returned by a search using
      * a free text query string.
      *
+     * NOTE: If the query string starts with the prefix ``"group:"``, it
+     * is treated as an <a href="/lql" target="_top">LQL query</a>, allowing
+     * more advanced searches. An LQL query will ignore the
+     * ``approxMatches`` parameter, but it will respect the value of
+     * ``includeCancelled``.
+     *
      * ``[ HTTP: GET /api/v1/group/search-count?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to ``false``.
+     * to ``false``. This is ignored for LQL queries.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled groups to
      * be included. Defaults to ``false``.
      *

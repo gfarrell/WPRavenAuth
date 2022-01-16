@@ -336,7 +336,7 @@ def aligned_output(cols, indent, tab_size=4):
     widths = []
     for col in range(1, ncols):
         width = max(len(x) for x in cols[col-1])
-        indents.append(((indents[col-1]+width+tab_size) / tab_size) * tab_size)
+        indents.append(((indents[col-1]+width+tab_size) // tab_size) * tab_size)
         widths.append(indents[col] - indents[col-1])
 
     # Now output the actual tabular values
@@ -442,14 +442,14 @@ def update_file_if_changed(filename, contents):
 
     # Write the file if it has changed (or didn't exist)
     if content != old_content:
-        f = open(filename, "wb")
+        f = open(filename, "w")
         try:
             f.write(content)
-            print "%s ... *** UPDATED ***" % filename
+            print("%s ... *** UPDATED ***" % filename)
         finally:
             f.close()
     else:
-        print "%s ... unchanged" % filename
+        print("%s ... unchanged" % filename)
 
 # ==========================================================================
 # Code to generate the Java client classes.
@@ -532,12 +532,14 @@ def generate_java_method(method):
         path = re.sub("[{][^}]+[}]", "%%%d$s" % param_number, path, 1)
         param_number += 1
 
-    # Final method result (only int and boolean value fields need to be
+    # Final method result (only boolean, int and long value fields need to be
     # coerced into the required type)
     if method.result_type == "boolean":
         result = "Boolean.parseBoolean(result.value)"
     elif method.result_type == "int":
         result = "Integer.parseInt(result.value)"
+    elif method.result_type == "long":
+        result = "Long.parseLong(result.value)"
     else:
         result = "result.%s" % method.result_field
 
@@ -714,8 +716,11 @@ def javadocs_to_pydocs(docs, cls, line_prefix="", method=None):
     # Replace <li> with plain text "*" bullet points (reST format)
     docs = list_items_to_text(docs)
 
-    # Remove any other HTML tags
-    docs = re.sub("<[^>]+>", "", docs)
+    # Remove any other HTML tags, except for <a> tags (links)
+    docs = re.sub("<(?!a|/a)[^>]+>", "", docs)
+
+    # Replace <a href="url">text</a> links with `text <url>`_ reST links
+    docs = re.sub("(?s)<a href=\"([^\"]*)\"[^>]*>([^<]*)</a>", "`\\2 <\\1>`_", docs)
 
     # == End of HTML tag processing ==
 
@@ -870,12 +875,14 @@ def generate_python_method(cls, method):
     # Method path - replace any placeholders with Python format specifiers
     path = re.sub("[{]([^}]+)[}]", "%(\\1)s", method.path)
 
-    # Final method result (only int and boolean value fields need to be
-    # coerced into the required type)
+    # Final method result (only boolean, int and long value fields need to
+    # be coerced into the required type)
     if method.result_type == "boolean":
         result = "result.value and result.value.lower() == \"true\""
     elif method.result_type == "int":
         result = "int(result.value)"
+    elif method.result_type == "long":
+        result = "int(result.value)" # int works in Python 2 and 3
     else:
         result = "result.%s" % method.result_field
 
@@ -1032,8 +1039,8 @@ def javadocs_to_phpdocs(docs, line_prefix=""):
     # Replace <li> with plain text "*" bullet points (reST format)
     docs = list_items_to_text(docs)
 
-    # Remove any other HTML tags, except for <code> and <pre> blocks
-    docs = re.sub("<(?!code|/code|pre|/pre)[^>]+>", "", docs)
+    # Remove any other HTML tags, except for <a>, <code> and <pre> blocks
+    docs = re.sub("<(?!a|/a|code|/code|pre|/pre)[^>]+>", "", docs)
 
     # == End of HTML tag processing ==
 
@@ -1135,6 +1142,8 @@ def generate_php_method(method):
         result = 'strcasecmp($result->value, "true") == 0'
     elif method.result_type == "int":
         result = "intval($result->value)"
+    elif method.result_type == "long":
+        result = "intval($result->value)" # PHP doesn't have longval()
     else:
         result = "$result->%s" % method.result_field.replace(".", "->")
 

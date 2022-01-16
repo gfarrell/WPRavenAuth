@@ -1,7 +1,9 @@
 Lookup/Ibis web service API PHP client code
 ===========================================
 
-This code requires PHP version 5.3 or later.
+This code requires PHP version 5.6 or later, though from 7 December 2021
+version 7.4 is the earliest officially supported version of PHP, see:
+https://www.php.net/supported-versions.php
 
 Usage
 -----

@@ -18,31 +18,34 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-require_once 'PHPUnit/Autoload.php';
-
 require_once dirname(__FILE__) . "/../ibisclient/client/IbisClientConnection.php";
 require_once dirname(__FILE__) . "/../ibisclient/client/IbisException.php";
 require_once dirname(__FILE__) . "/../ibisclient/methods/GroupMethods.php";
+require_once dirname(__FILE__) . "/../ibisclient/methods/IbisMethods.php";
 require_once dirname(__FILE__) . "/../ibisclient/methods/InstitutionMethods.php";
 require_once dirname(__FILE__) . "/../ibisclient/methods/PersonMethods.php";
 
-class UnitTests extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class UnitTests extends TestCase
 {
     private static $localConnection = false;
     private static $runEditTests = false;
     private static $initialised = false;
     private static $conn = null;
+    private static $m = null;
     private static $pm = null;
     private static $im = null;
     private static $gm = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!UnitTests::$initialised)
         {
             UnitTests::$conn = UnitTests::$localConnection ?
                                IbisClientConnection::createLocalConnection() :
                                IbisClientConnection::createTestConnection();
+            UnitTests::$m = new IbisMethods(UnitTests::$conn);
             UnitTests::$pm = new PersonMethods(UnitTests::$conn);
             UnitTests::$im = new InstitutionMethods(UnitTests::$conn);
             UnitTests::$gm = new GroupMethods(UnitTests::$conn);
@@ -50,6 +53,23 @@ class UnitTests extends PHPUnit_Framework_TestCase
         }
 
         print(" " . $this->getName() . "()\n");
+    }
+
+    // --------------------------------------------------------------------
+    // Ibis tests.
+    // --------------------------------------------------------------------
+
+    public function testGetVersion()
+    {
+        $version = UnitTests::$m->getVersion();
+        $this->assertNotNull($version);
+        $this->assertEquals(1, preg_match("/^[0-9]+[.][0-9]+\$/", $version));
+    }
+
+    public function testGetLastTransactionId()
+    {
+        $lastTransactionId = UnitTests::$m->getLastTransactionId();
+        $this->assertTrue($lastTransactionId > 900000);
     }
 
     // --------------------------------------------------------------------
@@ -62,6 +82,24 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(sizeof($schemes) > 10);
         $this->assertEquals("displayName", $schemes[0]->schemeid);
+    }
+
+    public function testAllPeople()
+    {
+        $people = UnitTests::$pm->allPeople(false, null, 10, null);
+
+        $this->assertEquals(10, sizeof($people));
+        $this->assertEquals("aa", substr($people[0]->identifier->value, 0, 2));
+
+        $people = UnitTests::$pm->allPeople(false, "dar17", 10, null);
+        $this->assertEquals(10, sizeof($people));
+        $this->assertTrue(strcmp($people[0]->identifier->value, "dar17") > 0);
+
+        $id8 = $people[8]->identifier->value;
+        $id9 = $people[9]->identifier->value;
+        $people = UnitTests::$pm->allPeople(false, $id8, 10, null);
+        $this->assertEquals(10, sizeof($people));
+        $this->assertEquals($id9, $people[0]->identifier->value);
     }
 
     public function testNoSuchPerson()
@@ -166,6 +204,36 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $this->assertTrue($count > 10);
     }
 
+    public function testPersonLqlSearch()
+    {
+        $people = UnitTests::$pm->search("person: in inst(uis) and surname=Rasheed", false, false,
+                                         null, null, 0, 100, null, "title");
+        $this->assertEquals(1, sizeof($people));
+        $this->assertEquals("dar17", $people[0]->identifier->value);
+        $this->assertEquals("Database administrator and developer", $people[0]->attributes[0]->value);
+
+        $people = UnitTests::$pm->search("person: dar54", false, false,
+                                         null, null, 0, 100, null, null);
+        $this->assertEquals(0, sizeof($people));
+
+        $people = UnitTests::$pm->search("person: dar54", false, true,
+                                         null, null, 0, 100, null, null);
+        $this->assertEquals(1, sizeof($people));
+        $this->assertEquals("dar54", $people[0]->identifier->value);
+    }
+
+    public function testPersonLqlSearchCount()
+    {
+        $count = UnitTests::$pm->searchCount("person: dar17", false, false, null, null);
+        $this->assertEquals(1, $count);
+
+        $count = UnitTests::$pm->searchCount("person: dar54", false, false, null, null);
+        $this->assertEquals(0, $count);
+
+        $count = UnitTests::$pm->searchCount("person: dar54", false, true, null, null);
+        $this->assertEquals(1, $count);
+    }
+
     public function testIsPersonMemberOfInst()
     {
         $this->assertTrue(UnitTests::$pm->isMemberOfInst("crsid", "dar17", "UIS"));
@@ -264,7 +332,12 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testPersonEdit()
     {
-        if (!UnitTests::$runEditTests) return;
+        if (!UnitTests::$runEditTests)
+        {
+            $this->assertTrue(true); // Keep PHPUnit happy
+            return;
+        }
+
         $ex = null;
         try
         {
@@ -377,7 +450,12 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testPersonEditImage()
     {
-        if (!UnitTests::$runEditTests) return;
+        if (!UnitTests::$runEditTests) 
+        {
+            $this->assertTrue(true); // Keep PHPUnit happy
+            return;
+        }
+
         $ex = null;
         try
         {
@@ -451,6 +529,32 @@ class UnitTests extends PHPUnit_Framework_TestCase
         UnitTests::$conn->setPassword("");
 
         if ($ex) throw $ex;
+    }
+
+    public function testModifiedPeople()
+    {
+        // Note: transactions 2..1047 are the same on Lookup and lookup-test
+        $people = UnitTests::$pm->modifiedPeople(937, 938, null, false, false, false, null);
+        $this->assertEquals(1, sizeof($people));
+        $this->assertEquals("v4500", $people[0]->identifier->value);
+
+        $people = UnitTests::$pm->modifiedPeople(752, 753, null, false, false, false, null);
+        $this->assertEquals(0, sizeof($people));
+
+        $people = UnitTests::$pm->modifiedPeople(752, 753, null, true, false, false, null);
+        $this->assertEquals(2, sizeof($people));
+        $this->assertEquals("cr10001", $people[0]->identifier->value);
+        $this->assertEquals("gar34", $people[1]->identifier->value);
+
+        $people = UnitTests::$pm->modifiedPeople(752, 753, "cr10001", false, false, false, null);
+        $this->assertEquals(0, sizeof($people));
+
+        $people = UnitTests::$pm->modifiedPeople(752, 753, "cr10001", true, false, false, null);
+        $this->assertEquals(1, sizeof($people));
+        $this->assertEquals("cr10001", $people[0]->identifier->value);
+
+        $people = UnitTests::$pm->modifiedPeople(752, 753, "cr10002", true, false, false, null);
+        $this->assertEquals(0, sizeof($people));
     }
 
     // --------------------------------------------------------------------
@@ -643,17 +747,42 @@ class UnitTests extends PHPUnit_Framework_TestCase
                                         null, 0, 100, "instid", null);
         $this->assertEquals("UIS", $insts[0]->instid);
 
-        $insts = UnitTests::$im->search("CB3 0RB", false, false,
+        $insts = UnitTests::$im->search("CB3 0JG", false, false,
                                         "address", 0, 100, null, "phone_numbers");
         $this->assertEquals(1, sizeof($insts));
-        $this->assertEquals("UIS", $insts[0]->instid);
-        $this->assertEquals("34600", $insts[0]->attributes[0]->value);
+        $this->assertEquals("GIRTON", $insts[0]->instid);
+        $this->assertEquals("38999", $insts[0]->attributes[0]->value);
     }
 
     public function testInstSearchCount()
     {
         $count = UnitTests::$im->searchCount("computing");
         $this->assertTrue($count > 5);
+    }
+
+    public function testInstLqlSearch()
+    {
+        $insts = UnitTests::$im->search("inst: parent of (uistest)", false, false,
+                                        null, 0, 100, null, null);
+        $this->assertEquals("UIS", $insts[0]->instid);
+
+        $insts = UnitTests::$im->search("inst: address ~ CB3 0JG", false, false,
+                                        null, 0, 100, null, "phone_numbers");
+        $this->assertEquals(1, sizeof($insts));
+        $this->assertEquals("GIRTON", $insts[0]->instid);
+        $this->assertEquals("38999", $insts[0]->attributes[0]->value);
+    }
+
+    public function testInstLqlSearchCount()
+    {
+        $count = UnitTests::$im->searchCount("inst: UIS", false, false, null);
+        $this->assertEquals(1, $count);
+
+        $count = UnitTests::$im->searchCount("inst: CS", false, false, null);
+        $this->assertEquals(0, $count);
+
+        $count = UnitTests::$im->searchCount("inst: CS", false, true, null);
+        $this->assertEquals(1, $count);
     }
 
     public function testGetInstContactRows()
@@ -714,7 +843,12 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testInstEdit()
     {
-        if (!UnitTests::$runEditTests) return;
+        if (!UnitTests::$runEditTests) 
+        {
+            $this->assertTrue(true); // Keep PHPUnit happy
+            return;
+        }
+
         $ex = null;
         try
         {
@@ -805,7 +939,12 @@ class UnitTests extends PHPUnit_Framework_TestCase
 
     public function testInstEditImage()
     {
-        if (!UnitTests::$runEditTests) return;
+        if (!UnitTests::$runEditTests) 
+        {
+            $this->assertTrue(true); // Keep PHPUnit happy
+            return;
+        }
+
         $ex = null;
         try
         {
@@ -869,6 +1008,36 @@ class UnitTests extends PHPUnit_Framework_TestCase
         if ($ex) throw $ex;
     }
 
+    public function testModifiedInsts()
+    {
+        // Note: transactions 2..1047 are the same on Lookup and lookup-test
+        $insts = UnitTests::$im->modifiedInsts(491, 492, null, false, false, false, null);
+
+        $this->assertEquals(1, sizeof($insts));
+        $this->assertEquals("AUT", $insts[0]->instid);
+
+        $insts = UnitTests::$im->modifiedInsts(438, 439, null, false, false, false, null);
+        $this->assertEquals(0, sizeof($insts));
+
+        $insts = UnitTests::$im->modifiedInsts(438, 439, null, true, false, false, null);
+        $this->assertEquals(1, sizeof($insts));
+        $this->assertEquals("SPVSR04", $insts[0]->instid);
+
+        $insts = UnitTests::$im->modifiedInsts(764, 765, "IUSCMED", false, false, false, null);
+        $this->assertEquals(1, sizeof($insts));
+        $this->assertEquals("IUSCMED", $insts[0]->instid);
+
+        $insts = UnitTests::$im->modifiedInsts(764, 765, "IUSCMED2", false, false, false, null);
+        $this->assertEquals(0, sizeof($insts));
+
+        $insts = UnitTests::$im->modifiedInsts(45, 46, null, false, false, false, null);
+        $this->assertEquals(0, sizeof($insts));
+
+        $insts = UnitTests::$im->modifiedInsts(45, 46, null, false, true, false, null);
+        $this->assertEquals(1, sizeof($insts));
+        $this->assertEquals("Clare Hall", $insts[0]->name);
+    }
+
     // --------------------------------------------------------------------
     // Group tests.
     // --------------------------------------------------------------------
@@ -899,7 +1068,7 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $people = UnitTests::$gm->getMembers("cs-editors");
         $directPeople = UnitTests::$gm->getDirectMembers("cs-editors");
 
-        $this->assertTrue(sizeof($people) > 10);
+        $this->assertTrue(sizeof($people) > 5);
         $this->assertTrue(sizeof($group->members) == sizeof($people));
         $this->assertTrue(sizeof($directPeople) <= sizeof($people));
         for ($i=0; $i<sizeof($people); $i++)
@@ -996,9 +1165,45 @@ class UnitTests extends PHPUnit_Framework_TestCase
         $this->assertEquals(6, $count);
     }
 
+    public function testGroupLqlSearch()
+    {
+        $groups = UnitTests::$gm->search("group: title='Editors group for \"UIS\"'",
+                                         false, false, 0, 100, null, null);
+        $this->assertEquals("uis-editors", $groups[0]->name);
+
+        $groups = UnitTests::$gm->search("group: uistest-members", false, false,
+                                         0, 1, null, "all_members");
+        $this->assertEquals(1, sizeof($groups));
+        $this->assertEquals("uistest-members", $groups[0]->name);
+        $this->assertTrue(sizeof($groups[0]->members) > 10);
+        $this->assertEquals("abc123", $groups[0]->members[0]->identifier->value);
+
+        $groups = UnitTests::$gm->search("group: biotec-editors", false, false,
+                                         0, 1, null, null);
+        $this->assertEquals(0, sizeof($groups));
+
+        $groups = UnitTests::$gm->search("group: biotec-editors", false, true,
+                                         0, 1, null, null);
+        $this->assertEquals(1, sizeof($groups));
+    }
+
+    public function testGroupLqlSearchCount()
+    {
+        $count = UnitTests::$gm->searchCount("group: biotec-editors", false, false);
+        $this->assertEquals(0, $count);
+
+        $count = UnitTests::$gm->searchCount("group: biotec-editors", false, true);
+        $this->assertEquals(1, $count);
+    }
+
     public function testEditGroupMembers()
     {
-        if (!UnitTests::$runEditTests) return;
+        if (!UnitTests::$runEditTests) 
+        {
+            $this->assertTrue(true); // Keep PHPUnit happy
+            return;
+        }
+
         $ex = null;
         try
         {
@@ -1060,5 +1265,38 @@ class UnitTests extends PHPUnit_Framework_TestCase
         UnitTests::$conn->setPassword("");
 
         if ($ex) throw $ex;
+    }
+
+    public function testModifiedGroups()
+    {
+        // Note: transactions 2..1047 are the same on Lookup and lookup-test
+        $groups = UnitTests::$gm->modifiedGroups(492, 493, null, false, false, null);
+
+        $this->assertEquals(1, sizeof($groups));
+        $this->assertEquals("100426", $groups[0]->groupid);
+        $this->assertEquals("maths-intakes-editors", $groups[0]->name);
+
+        $groups = UnitTests::$gm->modifiedGroups(487, 488, null, false, false, null);
+        $this->assertEquals(0, sizeof($groups));
+
+        $groups = UnitTests::$gm->modifiedGroups(487, 488, null, true, false, null);
+        $this->assertEquals(1, sizeof($groups));
+        $this->assertEquals("100855", $groups[0]->groupid);
+        $this->assertEquals("cstest-foofoo", $groups[0]->name);
+
+        $groups = UnitTests::$gm->modifiedGroups(743, 744, "100259", false, false, null);
+        $this->assertEquals(1, sizeof($groups));
+        $this->assertEquals("100259", $groups[0]->groupid);
+        $this->assertEquals("biol-managers", $groups[0]->name);
+
+        $groups = UnitTests::$gm->modifiedGroups(743, 744, "biol-managers", false, false, null);
+        $this->assertEquals(1, sizeof($groups));
+        $this->assertEquals("100259", $groups[0]->groupid);
+        $this->assertEquals("biol-managers", $groups[0]->name);
+
+        $groups = UnitTests::$gm->modifiedGroups(743, 744, "100260", false, false, null);
+        $this->assertEquals(0, sizeof($groups));
+        $groups = UnitTests::$gm->modifiedGroups(743, 744, "biol-editors", false, false, null);
+        $this->assertEquals(0, sizeof($groups));
     }
 }

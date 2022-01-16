@@ -156,6 +156,54 @@ class PersonMethods
     }
 
     /**
+     * Return a list of all people (in batches).
+     *
+     * The results are sorted by identifier, starting with the first person
+     * after the person with the specified identifier. Thus, to iterate over
+     * all people, pass a ``null`` identifier to get the first batch of
+     * people, then pass the last identifier from the previous batch to get
+     * the next batch, and repeat until no more people are returned.
+     *
+     * By default, only a few basic details about each person are returned,
+     * but the optional ``fetch`` parameter may be used to fetch
+     * additional attributes or references.
+     *
+     * ``[ HTTP: GET /api/v1/person/all-people ]``
+     *
+     * @param boolean $includeCancelled [optional] Flag to allow cancelled people to
+     * be included (people who are no longer members of the University).
+     * Defaults to ``false``.
+     * @param string $identifier [optional] The identifier (CRSid) of the person to
+     * start after, or ``null`` to start from the first person.
+     * @param int $limit [optional] The maximum number of people to return.
+     * Defaults to 100.
+     * @param string $fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return IbisPerson[] The requested people (in identifier order).
+     */
+    public function allPeople($includeCancelled,
+                              $identifier=null,
+                              $limit=null,
+                              $fetch=null)
+    {
+        $pathParams = array();
+        $queryParams = array("includeCancelled" => $includeCancelled,
+                             "identifier"       => $identifier,
+                             "limit"            => $limit,
+                             "fetch"            => $fetch);
+        $formParams = array();
+        $result = $this->conn->invokeMethod("GET",
+                                            'api/v1/person/all-people',
+                                            $pathParams,
+                                            $queryParams,
+                                            $formParams);
+        if (isset($result->error))
+            throw new IbisException($result->error);
+        return $result->people;
+    }
+
+    /**
      * Get the people with the specified identifiers (typically CRSids).
      *
      * Each identifier may be either a CRSid, or an identifier from another
@@ -204,6 +252,73 @@ class PersonMethods
     }
 
     /**
+     * Find all people modified between the specified pair of transactions.
+     *
+     * The transaction IDs specified should be the IDs from two different
+     * requests for the last (most recent) transaction ID, made at different
+     * times, that returned different values, indicating that some Lookup
+     * data was modified in the period between the two requests. This method
+     * then determines which (if any) people were affected.
+     *
+     * By default, only a few basic details about each person are returned,
+     * but the optional ``fetch`` parameter may be used to fetch
+     * additional attributes or references.
+     *
+     * NOTE: All data returned reflects the latest available data about each
+     * person. It is not possible to query for old data, or more detailed
+     * information about the specific changes made.
+     *
+     * ``[ HTTP: GET /api/v1/person/modified-people?minTxId=...&maxTxId=... ]``
+     *
+     * @param long $minTxId [required] Include modifications made in transactions
+     * after (but not including) this one.
+     * @param long $maxTxId [required] Include modifications made in transactions
+     * up to and including this one.
+     * @param string $crsids [optional] Only include people with identifiers in this
+     * list. By default, all modified people will be included.
+     * @param boolean $includeCancelled  [optional] Include cancelled people (people
+     * who are no longer members of the University). By default, cancelled
+     * people are excluded.
+     * @param boolean $membershipChanges [optional] Include people whose group or
+     * institutional memberships have changed. By default, only people whose
+     * attributes have been directly modified are included.
+     * @param boolean $instNameChanges [optional] Include people who are members of
+     * instituions whose names have changed. This will also cause people
+     * whose group or institutional memberships have changed to be included.
+     * By default, changes to institution names do not propagate to people.
+     * @param string $fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return IbisPerson[] The modified people (in identifier order).
+     */
+    public function modifiedPeople($minTxId,
+                                   $maxTxId,
+                                   $crsids=null,
+                                   $includeCancelled=null,
+                                   $membershipChanges=null,
+                                   $instNameChanges=null,
+                                   $fetch=null)
+    {
+        $pathParams = array();
+        $queryParams = array("minTxId"           => $minTxId,
+                             "maxTxId"           => $maxTxId,
+                             "crsids"            => $crsids,
+                             "includeCancelled"  => $includeCancelled,
+                             "membershipChanges" => $membershipChanges,
+                             "instNameChanges"   => $instNameChanges,
+                             "fetch"             => $fetch);
+        $formParams = array();
+        $result = $this->conn->invokeMethod("GET",
+                                            'api/v1/person/modified-people',
+                                            $pathParams,
+                                            $queryParams,
+                                            $formParams);
+        if (isset($result->error))
+            throw new IbisException($result->error);
+        return $result->people;
+    }
+
+    /**
      * Search for people using a free text query string. This is the same
      * search function that is used in the Lookup web application.
      *
@@ -211,12 +326,21 @@ class PersonMethods
      * but the optional ``fetch`` parameter may be used to fetch
      * additional attributes or references.
      *
+     * NOTE: If the query string starts with the prefix ``"person:"``, it
+     * is treated as an <a href="/lql" target="_top">LQL query</a>, allowing
+     * more advanced searches. An LQL query will ignore the
+     * ``approxMatches`` and ``attributes`` parameters, but
+     * it will respect the values of ``includeCancelled`` and
+     * ``misStatus``. In addition, an LQL query will ignore the
+     * ``orderBy`` parameter, since LQL queries always return
+     * results in ID order.
+     *
      * ``[ HTTP: GET /api/v1/person/search?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to ``false``.
+     * to ``false``. This is ignored for LQL queries.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
      * Defaults to ``false``.
@@ -235,14 +359,16 @@ class PersonMethods
      * mutually exclusive.
      * @param string $attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is ``null`` (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      * @param int $offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
      * This may be either ``"identifier"`` or ``"surname"`` (the
-     * default).
+     * default for non-LQL queries). This is ignored for LQL queries, which
+     * always return results in identifier order.
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -283,12 +409,19 @@ class PersonMethods
      * Count the number of people that would be returned by a search using
      * a free text query string.
      *
+     * NOTE: If the query string starts with the prefix ``"person:"``, it
+     * is treated as an <a href="/lql" target="_top">LQL query</a>, allowing
+     * more advanced searches. An LQL query will ignore the
+     * ``approxMatches`` and ``attributes`` parameters, but
+     * it will respect the values of ``includeCancelled`` and
+     * ``misStatus``.
+     *
      * ``[ HTTP: GET /api/v1/person/search-count?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to ``false``.
+     * to ``false``. This is ignored for LQL queries.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
      * Defaults to ``false``.
@@ -307,7 +440,8 @@ class PersonMethods
      * mutually exclusive.
      * @param string $attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is ``null`` (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      *
      * @return int The number of matching people.
      */
