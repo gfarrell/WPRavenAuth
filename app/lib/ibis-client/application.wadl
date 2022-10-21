@@ -9,6 +9,28 @@
  *
  * @author Dean Rasheed (dev-group@ucs.cam.ac.uk)
  */</doc>
+            <resource path="last-transaction">
+                <method id="getLastTransactionId" name="GET" resultField="value:long">
+                    <doc>
+    /**
+     * Get the ID of the last (most recent) transaction.
+     * &lt;p&gt;
+     * A transaction represents an edit made to data in Lookup. Each
+     * transaction is assigned a unique, sequential, numeric ID. Thus
+     * this last transaction ID will increase each time some data in
+     * Lookup is changed.
+     *
+     * @return The ID of the latest transaction.
+     */</doc>
+                    <response>
+                        <representation mediaType="text/plain"/>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+            </resource>
             <resource path="version">
                 <method id="getVersion" name="GET" resultField="value:String">
                     <doc>
@@ -152,6 +174,58 @@
                     </response>
                 </method>
             </resource>
+            <resource path="modified-groups">
+                <method id="modifiedGroups" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
+                    <doc>
+    /**
+     * Find all groups modified between the specified pair of transactions.
+     * &lt;p&gt;
+     * The transaction IDs specified should be the IDs from two different
+     * requests for the last (most recent) transaction ID, made at different
+     * times, that returned different values, indicating that some Lookup
+     * data was modified in the period between the two requests. This method
+     * then determines which (if any) groups were affected.
+     * &lt;p&gt;
+     * By default, only a few basic details about each group are returned,
+     * but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
+     * additional attributes or references.
+     * &lt;p&gt;
+     * NOTE: All data returned reflects the latest available data about each
+     * group. It is not possible to query for old data, or more detailed
+     * information about the specific changes made.
+     *
+     * @param minTxId [required] Include modifications made in transactions
+     * after (but not including) this one.
+     * @param maxTxId [required] Include modifications made in transactions
+     * up to and including this one.
+     * @param groupids [optional] Only include groups with IDs or names in
+     * this list. By default, all modified groups will be included.
+     * @param includeCancelled  [optional] Include cancelled groups. By
+     * default, cancelled groups are excluded.
+     * @param membershipChanges [optional] Include groups whose members have
+     * changed. By default, changes to group memberships are not taken into
+     * consideration.
+     * @param fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return The modified groups (in groupid order).
+     */</doc>
+                    <request>
+                        <param name="minTxId" style="query" type="xs:long" javaType="long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="maxTxId" style="query" type="xs:long" javaType="long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="groupids" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="membershipChanges" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </request>
+                    <response>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+            </resource>
             <resource path="search">
                 <method id="search" name="GET" resultField="groups:java.util.List&lt;IbisGroup&gt;">
                     <doc>
@@ -162,11 +236,19 @@
      * By default, only a few basic details about each group are returned,
      * but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
      * additional attributes or references.
+     * &lt;p&gt;
+     * NOTE: If the query string starts with the prefix {@code "group:"}, it
+     * is treated as an &lt;a href="/lql" target="_top"&gt;LQL query&lt;/a&gt;, allowing
+     * more advanced searches. An LQL query will ignore the
+     * &lt;code&gt;approxMatches&lt;/code&gt; parameter, but it will respect the value of
+     * &lt;code&gt;includeCancelled&lt;/code&gt;. In addition, an LQL query will ignore
+     * the &lt;code&gt;orderBy&lt;/code&gt; parameter, since LQL queries always return
+     * results in ID order.
      *
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to {@code false}. This is ignored for LQL queries.
      * @param includeCancelled [optional] Flag to allow cancelled groups to
      * be included. Defaults to {@code false}.
      * @param offset [optional] The number of results to skip at the start
@@ -174,8 +256,9 @@
      * @param limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param orderBy [optional] The order in which to list the results.
-     * This may be {@code "groupid"}, {@code "name"} (the default) or
-     * {@code "title"}.
+     * This may be {@code "groupid"}, {@code "name"} (the default for non-LQL
+     * queries) or {@code "title"}. This is ignored for LQL queries, which
+     * always return results in groupid order.
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -204,11 +287,17 @@
     /**
      * Count the number of groups that would be returned by a search using
      * a free text query string.
+     * &lt;p&gt;
+     * NOTE: If the query string starts with the prefix {@code "group:"}, it
+     * is treated as an &lt;a href="/lql" target="_top"&gt;LQL query&lt;/a&gt;, allowing
+     * more advanced searches. An LQL query will ignore the
+     * &lt;code&gt;approxMatches&lt;/code&gt; parameter, but it will respect the value of
+     * &lt;code&gt;includeCancelled&lt;/code&gt;.
      *
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to {@code false}. This is ignored for LQL queries.
      * @param includeCancelled [optional] Flag to allow cancelled groups to
      * be included. Defaults to {@code false}.
      *
@@ -570,6 +659,63 @@
                     </response>
                 </method>
             </resource>
+            <resource path="modified-insts">
+                <method id="modifiedInsts" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
+                    <doc>
+    /**
+     * Find all institutions modified between the specified pair of
+     * transactions.
+     * &lt;p&gt;
+     * The transaction IDs specified should be the IDs from two different
+     * requests for the last (most recent) transaction ID, made at different
+     * times, that returned different values, indicating that some Lookup
+     * data was modified in the period between the two requests. This method
+     * then determines which (if any) institutions were affected.
+     * &lt;p&gt;
+     * By default, only a few basic details about each institution are
+     * returned, but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used
+     * to fetch additional attributes or references.
+     * &lt;p&gt;
+     * NOTE: All data returned reflects the latest available data about each
+     * institution. It is not possible to query for old data, or more
+     * detailed information about the specific changes made.
+     *
+     * @param minTxId [required] Include modifications made in transactions
+     * after (but not including) this one.
+     * @param maxTxId [required] Include modifications made in transactions
+     * up to and including this one.
+     * @param instids [optional] Only include institutions with instids in
+     * this list. By default, all modified institutions will be included.
+     * @param includeCancelled  [optional] Include cancelled institutions. By
+     * default, cancelled institutions are excluded.
+     * @param contactRowChanges [optional] Include institutions whose contact
+     * rows have changed. By default, changes to institution contact rows are
+     * not taken into consideration.
+     * @param membershipChanges [optional] Include institutions whose members
+     * have changed. By default, changes to institutional memberships are not
+     * taken into consideration.
+     * @param fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return The modified institutions (in instid order).
+     */</doc>
+                    <request>
+                        <param name="minTxId" style="query" type="xs:long" javaType="long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="maxTxId" style="query" type="xs:long" javaType="long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="instids" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="contactRowChanges" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="membershipChanges" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </request>
+                    <response>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+            </resource>
             <resource path="search">
                 <method id="search" name="GET" resultField="institutions:java.util.List&lt;IbisInstitution&gt;">
                     <doc>
@@ -580,22 +726,33 @@
      * By default, only a few basic details about each institution are
      * returned, but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used
      * to fetch additional attributes or references.
+     * &lt;p&gt;
+     * NOTE: If the query string starts with the prefix {@code "inst:"}, it
+     * is treated as an &lt;a href="/lql" target="_top"&gt;LQL query&lt;/a&gt;, allowing
+     * more advanced searches. An LQL query will ignore the
+     * &lt;code&gt;approxMatches&lt;/code&gt; and &lt;code&gt;attributes&lt;/code&gt; parameters, but
+     * it will respect the value of &lt;code&gt;includeCancelled&lt;/code&gt;. In
+     * addition, an LQL query will ignore the &lt;code&gt;orderBy&lt;/code&gt; parameter,
+     * since LQL queries always return results in ID order.
      *
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to {@code false}. This is ignored for LQL queries.
      * @param includeCancelled [optional] Flag to allow cancelled institutions
      * to be included. Defaults to {@code false}.
      * @param attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is {@code null} (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      * @param offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param orderBy [optional] The order in which to list the results.
-     * This may be either {@code "instid"} or {@code "name"} (the default).
+     * This may be either {@code "instid"} or {@code "name"} (the default for
+     * non-LQL queries). This is ignored for LQL queries, which always return
+     * results in instid order.
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -625,16 +782,23 @@
     /**
      * Count the number of institutions that would be returned by a search
      * using a free text query string.
+     * &lt;p&gt;
+     * NOTE: If the query string starts with the prefix {@code "inst:"}, it
+     * is treated as an &lt;a href="/lql" target="_top"&gt;LQL query&lt;/a&gt;, allowing
+     * more advanced searches. An LQL query will ignore the
+     * &lt;code&gt;approxMatches&lt;/code&gt; and &lt;code&gt;attributes&lt;/code&gt; parameters, but
+     * it will respect the value of &lt;code&gt;includeCancelled&lt;/code&gt;.
      *
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to {@code false}. This is ignored for LQL queries.
      * @param includeCancelled [optional] Flag to allow cancelled institutions
      * to be included. Defaults to {@code false}.
      * @param attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is {@code null} (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      *
      * @return The number of matching institutions.
      */</doc>
@@ -1071,6 +1235,48 @@
                     </response>
                 </method>
             </resource>
+            <resource path="all-people">
+                <method id="allPeople" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                    <doc>
+    /**
+     * Return a list of all people (in batches).
+     * &lt;p&gt;
+     * The results are sorted by identifier, starting with the first person
+     * after the person with the specified identifier. Thus, to iterate over
+     * all people, pass a {@code null} identifier to get the first batch of
+     * people, then pass the last identifier from the previous batch to get
+     * the next batch, and repeat until no more people are returned.
+     * &lt;p&gt;
+     * By default, only a few basic details about each person are returned,
+     * but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
+     * additional attributes or references.
+     *
+     * @param includeCancelled [optional] Flag to allow cancelled people to
+     * be included (people who are no longer members of the University).
+     * Defaults to {@code false}.
+     * @param identifier [optional] The identifier (CRSid) of the person to
+     * start after, or {@code null} to start from the first person.
+     * @param limit [optional] The maximum number of people to return.
+     * Defaults to 100.
+     * @param fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return The requested people (in identifier order).
+     */</doc>
+                    <request>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="identifier" style="query" type="xs:string" javaType="java.lang.String" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="limit" style="query" type="xs:int" javaType="int" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </request>
+                    <response>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+            </resource>
             <resource path="list">
                 <method id="listPeople" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
@@ -1115,6 +1321,64 @@
                     </response>
                 </method>
             </resource>
+            <resource path="modified-people">
+                <method id="modifiedPeople" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
+                    <doc>
+    /**
+     * Find all people modified between the specified pair of transactions.
+     * &lt;p&gt;
+     * The transaction IDs specified should be the IDs from two different
+     * requests for the last (most recent) transaction ID, made at different
+     * times, that returned different values, indicating that some Lookup
+     * data was modified in the period between the two requests. This method
+     * then determines which (if any) people were affected.
+     * &lt;p&gt;
+     * By default, only a few basic details about each person are returned,
+     * but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
+     * additional attributes or references.
+     * &lt;p&gt;
+     * NOTE: All data returned reflects the latest available data about each
+     * person. It is not possible to query for old data, or more detailed
+     * information about the specific changes made.
+     *
+     * @param minTxId [required] Include modifications made in transactions
+     * after (but not including) this one.
+     * @param maxTxId [required] Include modifications made in transactions
+     * up to and including this one.
+     * @param crsids [optional] Only include people with identifiers in this
+     * list. By default, all modified people will be included.
+     * @param includeCancelled  [optional] Include cancelled people (people
+     * who are no longer members of the University). By default, cancelled
+     * people are excluded.
+     * @param membershipChanges [optional] Include people whose group or
+     * institutional memberships have changed. By default, only people whose
+     * attributes have been directly modified are included.
+     * @param instNameChanges [optional] Include people who are members of
+     * instituions whose names have changed. This will also cause people
+     * whose group or institutional memberships have changed to be included.
+     * By default, changes to institution names do not propagate to people.
+     * @param fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return The modified people (in identifier order).
+     */</doc>
+                    <request>
+                        <param name="minTxId" style="query" type="xs:long" javaType="long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="maxTxId" style="query" type="xs:long" javaType="long" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="crsids" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="includeCancelled" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="membershipChanges" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="instNameChanges" style="query" type="xs:boolean" javaType="boolean" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                        <param name="fetch" style="query" type="xs:string" javaType="java.util.List" xmlns:xs="http://www.w3.org/2001/XMLSchema"/>
+                    </request>
+                    <response>
+                        <representation mediaType="application/xml"/>
+                        <representation mediaType="application/json"/>
+                        <representation mediaType="text/xml"/>
+                        <representation mediaType="text/x-json"/>
+                    </response>
+                </method>
+            </resource>
             <resource path="search">
                 <method id="search" name="GET" resultField="people:java.util.List&lt;IbisPerson&gt;">
                     <doc>
@@ -1125,11 +1389,20 @@
      * By default, only a few basic details about each person are returned,
      * but the optional &lt;code&gt;fetch&lt;/code&gt; parameter may be used to fetch
      * additional attributes or references.
+     * &lt;p&gt;
+     * NOTE: If the query string starts with the prefix {@code "person:"}, it
+     * is treated as an &lt;a href="/lql" target="_top"&gt;LQL query&lt;/a&gt;, allowing
+     * more advanced searches. An LQL query will ignore the
+     * &lt;code&gt;approxMatches&lt;/code&gt; and &lt;code&gt;attributes&lt;/code&gt; parameters, but
+     * it will respect the values of &lt;code&gt;includeCancelled&lt;/code&gt; and
+     * &lt;code&gt;misStatus&lt;/code&gt;. In addition, an LQL query will ignore the
+     * &lt;code&gt;orderBy&lt;/code&gt; parameter, since LQL queries always return
+     * results in ID order.
      *
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to {@code false}. This is ignored for LQL queries.
      * @param includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
      * Defaults to {@code false}.
@@ -1147,14 +1420,16 @@
      * mutually exclusive.
      * @param attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is {@code null} (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      * @param offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param orderBy [optional] The order in which to list the results.
      * This may be either {@code "identifier"} or {@code "surname"} (the
-     * default).
+     * default for non-LQL queries). This is ignored for LQL queries, which
+     * always return results in identifier order.
      * @param fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -1185,11 +1460,18 @@
     /**
      * Count the number of people that would be returned by a search using
      * a free text query string.
+     * &lt;p&gt;
+     * NOTE: If the query string starts with the prefix {@code "person:"}, it
+     * is treated as an &lt;a href="/lql" target="_top"&gt;LQL query&lt;/a&gt;, allowing
+     * more advanced searches. An LQL query will ignore the
+     * &lt;code&gt;approxMatches&lt;/code&gt; and &lt;code&gt;attributes&lt;/code&gt; parameters, but
+     * it will respect the values of &lt;code&gt;includeCancelled&lt;/code&gt; and
+     * &lt;code&gt;misStatus&lt;/code&gt;.
      *
      * @param query [required] The search string.
      * @param approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to {@code false}.
+     * to {@code false}. This is ignored for LQL queries.
      * @param includeCancelled [optional] Flag to allow cancelled people to
      * be included (people who are no longer members of the University).
      * Defaults to {@code false}.
@@ -1207,7 +1489,8 @@
      * mutually exclusive.
      * @param attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is {@code null} (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      *
      * @return The number of matching people.
      */</doc>

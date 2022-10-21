@@ -126,7 +126,7 @@ class IbisClientConnection implements ClientConnection
 
     /*
      * Update the authorization string for HTTP basic authentication, in
-     * response to a change in the username or password. 
+     * response to a change in the username or password.
      */
     private function updateAuthorization()
     {
@@ -257,7 +257,7 @@ class IbisClientConnection implements ClientConnection
         return $this->invokeMethod("GET", $path, $pathParams, $queryParams);
     }
 
-    /* @see ClientConnection::setUsername(string, string, string[], array, array) */
+    /* @see ClientConnection::invokeMethod(string, string, string[], array, array) */
     public function invokeMethod($method, $path, $pathParams,
                                  $queryParams, $formParams=null)
     {
@@ -280,40 +280,6 @@ class IbisClientConnection implements ClientConnection
             $headers[] = "Content-type: application/x-www-form-urlencoded";
         }
 
-        // ---------------------------------------------------------------
-        // Experimental code using Curl to talk to the server. This has
-        // the advantage of being able to force the use of the TLSv1
-        // protocol, but suffers from not having a mechanism for decent
-        // error checking, so this is disabled for now.
-        //
-        // Use Curl for the request
-        //$ch = curl_init();
-        //
-        //curl_setopt($ch, CURLOPT_URL, $url);
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        //
-        //curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-        //curl_setopt($ch, CURLOPT_SSLVERSION, 1 /*CURL_SSLVERSION_TLSv1*/);
-        //curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . "/cacerts.txt");
-        //
-        //if ($content)
-        //{
-        //    curl_setopt($ch, CURLOPT_POST, true);
-        //    curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-        //}
-        //
-        //curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        //
-        // TODO: Proper error checking of result status, etc...
-        //$xml = curl_exec($ch);
-        //curl_close($ch);
-        //
-        // Parse the XML result into an IbisResult object
-        //$parser = new IbisResultParser();
-        //$result = $parser->parseXml($xml);
-        //
-        // ---------------------------------------------------------------
-
         // Set up the HTTPS request headers
         $http_options = array("method" => $method,
                               "header" => $headers,
@@ -321,7 +287,6 @@ class IbisClientConnection implements ClientConnection
                               "ignore_errors" => true);
 
         $ssl_options = array("verify_peer" => true,
-                             "cafile" => dirname(__FILE__) . "/cacerts.txt",
                              "allow_self_signed" => $this->allowSelfSigned);
 
         $ctx_params = array("http" => $http_options,

@@ -204,6 +204,72 @@ class InstitutionMethods
     }
 
     /**
+     * Find all institutions modified between the specified pair of
+     * transactions.
+     *
+     * The transaction IDs specified should be the IDs from two different
+     * requests for the last (most recent) transaction ID, made at different
+     * times, that returned different values, indicating that some Lookup
+     * data was modified in the period between the two requests. This method
+     * then determines which (if any) institutions were affected.
+     *
+     * By default, only a few basic details about each institution are
+     * returned, but the optional ``fetch`` parameter may be used
+     * to fetch additional attributes or references.
+     *
+     * NOTE: All data returned reflects the latest available data about each
+     * institution. It is not possible to query for old data, or more
+     * detailed information about the specific changes made.
+     *
+     * ``[ HTTP: GET /api/v1/inst/modified-insts?minTxId=...&maxTxId=... ]``
+     *
+     * @param long $minTxId [required] Include modifications made in transactions
+     * after (but not including) this one.
+     * @param long $maxTxId [required] Include modifications made in transactions
+     * up to and including this one.
+     * @param string $instids [optional] Only include institutions with instids in
+     * this list. By default, all modified institutions will be included.
+     * @param boolean $includeCancelled  [optional] Include cancelled institutions. By
+     * default, cancelled institutions are excluded.
+     * @param boolean $contactRowChanges [optional] Include institutions whose contact
+     * rows have changed. By default, changes to institution contact rows are
+     * not taken into consideration.
+     * @param boolean $membershipChanges [optional] Include institutions whose members
+     * have changed. By default, changes to institutional memberships are not
+     * taken into consideration.
+     * @param string $fetch [optional] A comma-separated list of any additional
+     * attributes or references to fetch.
+     *
+     * @return IbisInstitution[] The modified institutions (in instid order).
+     */
+    public function modifiedInsts($minTxId,
+                                  $maxTxId,
+                                  $instids=null,
+                                  $includeCancelled=null,
+                                  $contactRowChanges=null,
+                                  $membershipChanges=null,
+                                  $fetch=null)
+    {
+        $pathParams = array();
+        $queryParams = array("minTxId"           => $minTxId,
+                             "maxTxId"           => $maxTxId,
+                             "instids"           => $instids,
+                             "includeCancelled"  => $includeCancelled,
+                             "contactRowChanges" => $contactRowChanges,
+                             "membershipChanges" => $membershipChanges,
+                             "fetch"             => $fetch);
+        $formParams = array();
+        $result = $this->conn->invokeMethod("GET",
+                                            'api/v1/inst/modified-insts',
+                                            $pathParams,
+                                            $queryParams,
+                                            $formParams);
+        if (isset($result->error))
+            throw new IbisException($result->error);
+        return $result->institutions;
+    }
+
+    /**
      * Search for institutions using a free text query string. This is the
      * same search function that is used in the Lookup web application.
      *
@@ -211,23 +277,34 @@ class InstitutionMethods
      * returned, but the optional ``fetch`` parameter may be used
      * to fetch additional attributes or references.
      *
+     * NOTE: If the query string starts with the prefix ``"inst:"``, it
+     * is treated as an <a href="/lql" target="_top">LQL query</a>, allowing
+     * more advanced searches. An LQL query will ignore the
+     * ``approxMatches`` and ``attributes`` parameters, but
+     * it will respect the value of ``includeCancelled``. In
+     * addition, an LQL query will ignore the ``orderBy`` parameter,
+     * since LQL queries always return results in ID order.
+     *
      * ``[ HTTP: GET /api/v1/inst/search?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to ``false``.
+     * to ``false``. This is ignored for LQL queries.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled institutions
      * to be included. Defaults to ``false``.
      * @param string $attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is ``null`` (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      * @param int $offset [optional] The number of results to skip at the start
      * of the search. Defaults to 0.
      * @param int $limit [optional] The maximum number of results to return.
      * Defaults to 100.
      * @param string $orderBy [optional] The order in which to list the results.
-     * This may be either ``"instid"`` or ``"name"`` (the default).
+     * This may be either ``"instid"`` or ``"name"`` (the default for
+     * non-LQL queries). This is ignored for LQL queries, which always return
+     * results in instid order.
      * @param string $fetch [optional] A comma-separated list of any additional
      * attributes or references to fetch.
      *
@@ -266,17 +343,24 @@ class InstitutionMethods
      * Count the number of institutions that would be returned by a search
      * using a free text query string.
      *
+     * NOTE: If the query string starts with the prefix ``"inst:"``, it
+     * is treated as an <a href="/lql" target="_top">LQL query</a>, allowing
+     * more advanced searches. An LQL query will ignore the
+     * ``approxMatches`` and ``attributes`` parameters, but
+     * it will respect the value of ``includeCancelled``.
+     *
      * ``[ HTTP: GET /api/v1/inst/search-count?query=... ]``
      *
      * @param string $query [required] The search string.
      * @param boolean $approxMatches [optional] Flag to enable more approximate
      * matching in the search, causing more results to be returned. Defaults
-     * to ``false``.
+     * to ``false``. This is ignored for LQL queries.
      * @param boolean $includeCancelled [optional] Flag to allow cancelled institutions
      * to be included. Defaults to ``false``.
      * @param string $attributes [optional] A comma-separated list of attributes to
      * consider when searching. If this is ``null`` (the default) then
-     * all attribute schemes marked as searchable will be included.
+     * all attribute schemes marked as searchable will be included. This is
+     * ignored for LQL queries.
      *
      * @return int The number of matching institutions.
      */

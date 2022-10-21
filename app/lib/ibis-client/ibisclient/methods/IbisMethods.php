@@ -44,6 +44,33 @@ class IbisMethods
     }
 
     /**
+     * Get the ID of the last (most recent) transaction.
+     *
+     * A transaction represents an edit made to data in Lookup. Each
+     * transaction is assigned a unique, sequential, numeric ID. Thus
+     * this last transaction ID will increase each time some data in
+     * Lookup is changed.
+     *
+     * ``[ HTTP: GET /api/v1/last-transaction ]``
+     *
+     * @return long The ID of the latest transaction.
+     */
+    public function getLastTransactionId()
+    {
+        $pathParams = array();
+        $queryParams = array();
+        $formParams = array();
+        $result = $this->conn->invokeMethod("GET",
+                                            'api/v1/last-transaction',
+                                            $pathParams,
+                                            $queryParams,
+                                            $formParams);
+        if (isset($result->error))
+            throw new IbisException($result->error);
+        return intval($result->value);
+    }
+
+    /**
      * Get the current API version number.
      *
      * ``[ HTTP: GET /api/v1/version ]``
