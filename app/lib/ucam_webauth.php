@@ -340,7 +340,7 @@ class Ucam_Webauth {
 
   function url() {
     $hostname = urlencode($this->hostname);
-    $port = $_SERVER{'SERVER_PORT'};
+    $port = $_SERVER['SERVER_PORT'];
     if ($this->using_https()) {
       $protocol = 'https://';
       if ($port == '443') $port = '';
