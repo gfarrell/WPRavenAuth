@@ -27,7 +27,11 @@ The plugin does require PHP > 5.3 because it uses the namespace construct, which
 Installation
 ------------
 
-To install the plugin, cd to the `wp-content/plugins` directory, and then run `git clone --recursive https://github.com/gfarrell/WPRavenAuth.git`. In the `WPRavenAuth` directory, create a directory called "keys", and add the files from https://raven.cam.ac.uk/project/keys/ (but call them *2* and *2.crt* instead of *pubkey2* and *pubkey2.crt*).
+To install the plugin, cd to the `wp-content/plugins` directory, and then run `git clone --recursive https://github.com/gfarrell/WPRavenAuth.git`.
+
+In the `WPRavenAuth` directory, create a directory called "keys", and add the Raven public key/cert. (Filenames should be `2` and `2.crt` instead of `pubkey2` and `pubkey2.crt` as they are commonly distributed).
+
+Current canonical source for the keys is https://wiki.cam.ac.uk/raven/Raven_keys however there is a mirror at https://w3.charliejonas.co.uk/mirror/raven/keys/ in case there is a change of availability at the canonical source - follow best practice about validating the keys. Previous source https://raven.cam.ac.uk/project/keys/ still contains the key, but not the cert.
 
 N.B. If you choose to install by downloading a zip from GitHub, it will not include the submodule for ACF (in `app/lib`), and you will need to download the zip for that repository and unpack it in the correct location manually.
 
