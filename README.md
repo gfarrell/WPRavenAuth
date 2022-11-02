@@ -1,6 +1,8 @@
 WPRavenAuth - Raven authentication for Wordpress
 ================================================
 
+:warning: As per [#59](https://github.com/gfarrell/WPRavenAuth/issues/59) this project is now being maintained by [@mo-g](https://github.com/mo-g) and can be found at [mo-g/WPRavenAuth](https://github.com/mo-g/WPRavenAuth). :warning:
+
 Version: 0.1.1
 License: [BSD 3-Clause](http://opensource.org/licenses/BSD-3-Clause)
 
